@@ -6,8 +6,9 @@ import com.puttysoftware.retrorpgcs.core.security.SandboxManager;
 public class Core {
     private static final GameErrorHandler errorHandler = new GameErrorHandler();
 
-    public static void installErrorHandler() {
+    public static void initializeCore() {
         Diane.installErrorHandler(Core.errorHandler);
+        System.setSecurityManager(new CoreSecurityManager());
     }
 
     public static void exception(final Throwable t) {
@@ -23,15 +24,15 @@ public class Core {
             final String message) {
         Core.errorHandler.handleWithMessage(t, message);
     }
-    
+
     public static String getCachesDirectory() {
         return SandboxManager.getSandboxManager().getCachesDirectory();
     }
-    
+
     public static String getDocumentsDirectory() {
         return SandboxManager.getSandboxManager().getDocumentsDirectory();
     }
-    
+
     public static String getSupportDirectory() {
         return SandboxManager.getSandboxManager().getSupportDirectory();
     }

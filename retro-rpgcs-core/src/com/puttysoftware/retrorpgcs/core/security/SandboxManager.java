@@ -27,4 +27,10 @@ public abstract class SandboxManager {
     public abstract String getCachesDirectory();
 
     public abstract String getSupportDirectory();
+
+    public final boolean checkPath(String path) {
+        return path != null && (path.startsWith(this.getCachesDirectory())
+                || path.startsWith(this.getDocumentsDirectory())
+                || path.startsWith(this.getSupportDirectory()));
+    }
 }
