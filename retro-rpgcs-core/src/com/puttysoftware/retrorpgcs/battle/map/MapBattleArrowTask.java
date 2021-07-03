@@ -2,8 +2,6 @@
 package com.puttysoftware.retrorpgcs.battle.map;
 
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
-import com.puttysoftware.retrorpgcs.battle.Battle;
-import com.puttysoftware.retrorpgcs.creatures.faiths.Faith;
 import com.puttysoftware.retrorpgcs.maze.Maze;
 import com.puttysoftware.retrorpgcs.maze.MazeConstants;
 import com.puttysoftware.retrorpgcs.maze.abc.AbstractMazeObject;
@@ -17,6 +15,10 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.SoundConstants;
 import com.puttysoftware.retrorpgcs.resourcemanagers.SoundManager;
 
 public class MapBattleArrowTask extends Thread {
+    private static AbstractTransientObject createArrow() {
+        return new Arrow();
+    }
+
     // Fields
     private final int x, y;
     private final Maze battleMaze;
@@ -35,15 +37,15 @@ public class MapBattleArrowTask extends Thread {
     @Override
     public void run() {
         try {
-            boolean res = true;
-            final RetroRPGCS app = RetroRPGCS.getInstance();
-            final Maze m = this.battleMaze;
-            final int px = this.active.getX();
-            final int py = this.active.getY();
-            int cumX = this.x;
-            int cumY = this.y;
-            final int incX = this.x;
-            final int incY = this.y;
+            var res = true;
+            final var app = RetroRPGCS.getInstance();
+            final var m = this.battleMaze;
+            final var px = this.active.getX();
+            final var py = this.active.getY();
+            var cumX = this.x;
+            var cumY = this.y;
+            final var incX = this.x;
+            final var incY = this.y;
             AbstractMazeObject o = null;
             try {
                 o = m.getCell(px + cumX, py + cumY, 0,
@@ -51,8 +53,8 @@ public class MapBattleArrowTask extends Thread {
             } catch (final ArrayIndexOutOfBoundsException ae) {
                 o = new Wall();
             }
-            final AbstractTransientObject a = MapBattleArrowTask.createArrow();
-            final int newDir = DirectionResolver.resolveRelativeDirection(incX,
+            final var a = MapBattleArrowTask.createArrow();
+            final var newDir = DirectionResolver.resolveRelativeDirection(incX,
                     incY);
             a.setDirection(newDir);
             SoundManager.playSound(SoundConstants.SOUND_ARROW);
@@ -82,26 +84,33 @@ public class MapBattleArrowTask extends Thread {
             if (o instanceof BattleCharacter) {
                 // Arrow hit a creature, hurt it
                 hit = (BattleCharacter) o;
-                final Faith shooter = this.active.getTemplate().getFaith();
-                final Faith target = hit.getTemplate().getFaith();
-                final int mult = (int) (shooter
+                final var shooter = this.active.getTemplate().getFaith();
+                final var target = hit.getTemplate().getFaith();
+                final var mult = (int) (shooter
                         .getMultiplierForOtherFaith(target.getFaithID()) * 10);
-                final Battle bl = app.getBattle();
-                if (mult == 0) {
+                final var bl = app.getBattle();
+                switch (mult) {
+                case 0:
                     hit.getTemplate().doDamage(1);
                     bl.setStatusMessage(
                             "Ow, you got shot! It didn't hurt much.");
-                } else if (mult == 5) {
+                    break;
+                case 5:
                     hit.getTemplate().doDamage(3);
                     bl.setStatusMessage(
                             "Ow, you got shot! It hurt a little bit.");
-                } else if (mult == 10) {
+                    break;
+                case 10:
                     hit.getTemplate().doDamage(5);
                     bl.setStatusMessage("Ow, you got shot! It hurt somewhat.");
-                } else if (mult == 20) {
+                    break;
+                case 20:
                     hit.getTemplate().doDamage(8);
                     bl.setStatusMessage(
                             "Ow, you got shot! It hurt significantly!");
+                    break;
+                default:
+                    break;
                 }
             }
             // Arrow has died
@@ -110,9 +119,5 @@ public class MapBattleArrowTask extends Thread {
         } catch (final Throwable t) {
             RetroRPGCS.getInstance().handleError(t);
         }
-    }
-
-    private static AbstractTransientObject createArrow() {
-        return new Arrow();
     }
 }

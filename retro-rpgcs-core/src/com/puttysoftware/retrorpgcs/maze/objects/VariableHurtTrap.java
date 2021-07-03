@@ -20,6 +20,11 @@ public class VariableHurtTrap extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "Variable Hurt Traps hurt you when stepped on, then disappear.";
+    }
+
+    @Override
     public String getName() {
         return "Variable Hurt Trap";
     }
@@ -32,20 +37,15 @@ public class VariableHurtTrap extends AbstractTrap {
     @Override
     public void postMoveAction(final boolean ie, final int dirX,
             final int dirY) {
-        int maxDamage = PartyManager.getParty().getLeader().getMaximumHP() / 5;
+        var maxDamage = PartyManager.getParty().getLeader().getMaximumHP() / 5;
         if (maxDamage < VariableHurtTrap.MIN_DAMAGE) {
             maxDamage = VariableHurtTrap.MIN_DAMAGE;
         }
-        final RandomRange damageDealt = new RandomRange(
+        final var damageDealt = new RandomRange(
                 VariableHurtTrap.MIN_DAMAGE, maxDamage);
         PartyManager.getParty().getLeader().doDamage(damageDealt.generate());
         SoundManager.playSound(SoundConstants.SOUND_BARRIER);
         RetroRPGCS.getInstance().getGameManager();
         GameLogicManager.decay();
-    }
-
-    @Override
-    public String getDescription() {
-        return "Variable Hurt Traps hurt you when stepped on, then disappear.";
     }
 }

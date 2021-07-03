@@ -1,6 +1,8 @@
 /* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.creatures.monsters;
 
+import java.util.Objects;
+
 import com.puttysoftware.images.BufferedImageIcon;
 import com.puttysoftware.randomrange.RandomLongRange;
 import com.puttysoftware.randomrange.RandomRange;
@@ -12,7 +14,6 @@ import com.puttysoftware.retrorpgcs.creatures.Creature;
 import com.puttysoftware.retrorpgcs.creatures.faiths.Faith;
 import com.puttysoftware.retrorpgcs.creatures.faiths.FaithManager;
 import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
-import com.puttysoftware.retrorpgcs.creatures.party.PartyMember;
 import com.puttysoftware.retrorpgcs.prefs.PreferencesManager;
 import com.puttysoftware.retrorpgcs.resourcemanagers.MonsterImageManager;
 import com.puttysoftware.retrorpgcs.resourcemanagers.MonsterNames;
@@ -42,6 +43,74 @@ public final class Monster extends Creature {
     private static final int PERFECT_GOLD_MAX = 3;
     private static final int BATTLES_SCALE_FACTOR = 2;
     private static final int BATTLES_START = 2;
+
+    private static double getExpMultiplierForDifficulty() {
+        final var difficulty = PreferencesManager.getGameDifficulty();
+        switch (difficulty) {
+        case PreferencesManager.DIFFICULTY_VERY_EASY:
+            return Monster.EXP_MULT_VERY_EASY;
+        case PreferencesManager.DIFFICULTY_EASY:
+            return Monster.EXP_MULT_EASY;
+        case PreferencesManager.DIFFICULTY_NORMAL:
+            return Monster.EXP_MULT_NORMAL;
+        case PreferencesManager.DIFFICULTY_HARD:
+            return Monster.EXP_MULT_HARD;
+        case PreferencesManager.DIFFICULTY_VERY_HARD:
+            return Monster.EXP_MULT_VERY_HARD;
+        default:
+            return Monster.EXP_MULT_NORMAL;
+        }
+    }
+
+    private static double getGoldMultiplierForDifficulty() {
+        final var difficulty = PreferencesManager.getGameDifficulty();
+        switch (difficulty) {
+        case PreferencesManager.DIFFICULTY_VERY_EASY:
+            return Monster.GOLD_MULT_VERY_EASY;
+        case PreferencesManager.DIFFICULTY_EASY:
+            return Monster.GOLD_MULT_EASY;
+        case PreferencesManager.DIFFICULTY_NORMAL:
+            return Monster.GOLD_MULT_NORMAL;
+        case PreferencesManager.DIFFICULTY_HARD:
+            return Monster.GOLD_MULT_HARD;
+        case PreferencesManager.DIFFICULTY_VERY_HARD:
+            return Monster.GOLD_MULT_VERY_HARD;
+        default:
+            return Monster.GOLD_MULT_NORMAL;
+        }
+    }
+
+    private static Element getInitialElement() {
+        return new Element(FaithManager.getRandomFaith());
+    }
+
+    private static MapAI getInitialMapAI() {
+        return MapAIPicker.getNextRoutine();
+    }
+
+    // Helper Methods
+    private static WindowAI getInitialWindowAI() {
+        return WindowAIPicker.getNextRoutine();
+    }
+
+    private static int getStatMultiplierForDifficulty() {
+        final var difficulty = PreferencesManager.getGameDifficulty();
+        switch (difficulty) {
+        case PreferencesManager.DIFFICULTY_VERY_EASY:
+            return Monster.STAT_MULT_VERY_EASY;
+        case PreferencesManager.DIFFICULTY_EASY:
+            return Monster.STAT_MULT_EASY;
+        case PreferencesManager.DIFFICULTY_NORMAL:
+            return Monster.STAT_MULT_NORMAL;
+        case PreferencesManager.DIFFICULTY_HARD:
+            return Monster.STAT_MULT_HARD;
+        case PreferencesManager.DIFFICULTY_VERY_HARD:
+            return Monster.STAT_MULT_VERY_HARD;
+        default:
+            return Monster.STAT_MULT_NORMAL;
+        }
+    }
+
     // Fields
     private String type;
     protected Element element;
@@ -58,9 +127,182 @@ public final class Monster extends Creature {
         this.image = this.getInitialImage();
     }
 
+    protected double adjustForLevelDifference() {
+        return Math.max(0.0, this.getLevelDifference() / 4.0 + 1.0);
+    }
+
+    @Override
+    public boolean checkLevelUp() {
+        return false;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj) || !(obj instanceof Monster)) {
+            return false;
+        }
+        final var other = (Monster) obj;
+        if (!Objects.equals(this.element, other.element)) {
+            return false;
+        }
+        if (!Objects.equals(this.type, other.type)) {
+            return false;
+        }
+        return true;
+    }
+
+    protected int getBattlesToNextLevel() {
+        return Monster.BATTLES_START
+                + (this.getLevel() + 1) * Monster.BATTLES_SCALE_FACTOR;
+    }
+
+    Element getElement() {
+        return this.element;
+    }
+
+    @Override
+    public Faith getFaith() {
+        return this.element.getFaith();
+    }
+
+    private int getInitialAgility() {
+        final var r = new RandomRange(1, Math.max(
+                this.getLevel() * Monster.getStatMultiplierForDifficulty(), 1));
+        return r.generate();
+    }
+
+    private int getInitialBlock() {
+        final var r = new RandomRange(0,
+                this.getLevel() * Monster.getStatMultiplierForDifficulty());
+        return r.generate();
+    }
+
+    private long getInitialExperience() {
+        int minvar, maxvar;
+        minvar = (int) (this.getLevel()
+                * Monster.MINIMUM_EXPERIENCE_RANDOM_VARIANCE);
+        maxvar = (int) (this.getLevel()
+                * Monster.MAXIMUM_EXPERIENCE_RANDOM_VARIANCE);
+        final var r = new RandomLongRange(minvar, maxvar);
+        final var expbase = PartyManager.getParty().getPartyMaxToNextLevel();
+        final long factor = this.getBattlesToNextLevel();
+        return (int) (expbase / factor
+                + r.generate() * this.adjustForLevelDifference()
+                        * Monster.getExpMultiplierForDifficulty());
+    }
+
+    private int getInitialGold() {
+        final var playerCharacter = PartyManager.getParty().getLeader();
+        final var needed = Shop.getEquipmentCost(playerCharacter.getLevel() + 1)
+                * 4;
+        final var factor = this.getBattlesToNextLevel();
+        final var min = 0;
+        final var max = needed / factor * 2;
+        final var r = new RandomRange(min, max);
+        return (int) (r.generate() * this.adjustForLevelDifference()
+                * Monster.getGoldMultiplierForDifficulty());
+    }
+
+    @Override
+    protected BufferedImageIcon getInitialImage() {
+        if (this.getLevel() == 0) {
+            return null;
+        } else {
+            final var types = MonsterNames.getAllNames();
+            final var r = new RandomRange(0, types.length - 1);
+            this.setType(types[r.generate()]);
+            return MonsterImageManager.getImage(this.getType(),
+                    this.getElement());
+        }
+    }
+
+    private int getInitialIntelligence() {
+        final var r = new RandomRange(0,
+                this.getLevel() * Monster.getStatMultiplierForDifficulty());
+        return r.generate();
+    }
+
+    private int getInitialLuck() {
+        final var r = new RandomRange(0,
+                this.getLevel() * Monster.getStatMultiplierForDifficulty());
+        return r.generate();
+    }
+
+    @Override
+    protected int getInitialPerfectBonusGold() {
+        final var tough = this.getToughness();
+        final var min = tough * Monster.PERFECT_GOLD_MIN;
+        final var max = tough * Monster.PERFECT_GOLD_MAX;
+        final var r = new RandomRange(min, max);
+        return (int) (r.generate() * this.adjustForLevelDifference());
+    }
+
+    private int getInitialStrength() {
+        final var r = new RandomRange(1, Math.max(
+                this.getLevel() * Monster.getStatMultiplierForDifficulty(), 1));
+        return r.generate();
+    }
+
+    private int getInitialVitality() {
+        final var r = new RandomRange(1, Math.max(
+                this.getLevel() * Monster.getStatMultiplierForDifficulty(), 1));
+        return r.generate();
+    }
+
+    @Override
+    public String getName() {
+        return this.element.getName() + " " + this.type;
+    }
+
+    @Override
+    public int getSpeed() {
+        final var difficulty = PreferencesManager.getGameDifficulty();
+        final var base = this.getBaseSpeed();
+        switch (difficulty) {
+        case PreferencesManager.DIFFICULTY_VERY_EASY:
+            return (int) (base * Creature.SPEED_ADJUST_SLOWEST);
+        case PreferencesManager.DIFFICULTY_EASY:
+            return (int) (base * Creature.SPEED_ADJUST_SLOW);
+        case PreferencesManager.DIFFICULTY_NORMAL:
+            return (int) (base * Creature.SPEED_ADJUST_NORMAL);
+        case PreferencesManager.DIFFICULTY_HARD:
+            return (int) (base * Creature.SPEED_ADJUST_FAST);
+        case PreferencesManager.DIFFICULTY_VERY_HARD:
+            return (int) (base * Creature.SPEED_ADJUST_FASTEST);
+        default:
+            return (int) (base * Creature.SPEED_ADJUST_NORMAL);
+        }
+    }
+
+    private int getToughness() {
+        return this.getStrength() + this.getBlock() + this.getAgility()
+                + this.getVitality() + this.getIntelligence() + this.getLuck();
+    }
+
+    String getType() {
+        return this.type;
+    }
+
+    @Override
+    public int hashCode() {
+        final var prime = 31;
+        var result = super.hashCode();
+        result = prime * result
+                + (this.element == null ? 0 : this.element.hashCode());
+        return prime * result + (this.type == null ? 0 : this.type.hashCode());
+    }
+
+    @Override
+    protected void levelUpHook() {
+        // Do nothing
+    }
+
     @Override
     public void loadCreature() {
-        final int newLevel = PartyManager.getParty().getTowerLevel() + 1;
+        final var newLevel = PartyManager.getParty().getTowerLevel() + 1;
         this.setLevel(newLevel);
         this.setVitality(this.getInitialVitality());
         this.setCurrentHP(this.getMaximumHP());
@@ -78,254 +320,7 @@ public final class Monster extends Creature {
         this.image = this.getInitialImage();
     }
 
-    private int getInitialStrength() {
-        final RandomRange r = new RandomRange(1, Math.max(
-                this.getLevel() * Monster.getStatMultiplierForDifficulty(), 1));
-        return r.generate();
-    }
-
-    private int getInitialBlock() {
-        final RandomRange r = new RandomRange(0,
-                this.getLevel() * Monster.getStatMultiplierForDifficulty());
-        return r.generate();
-    }
-
-    private long getInitialExperience() {
-        int minvar, maxvar;
-        minvar = (int) (this.getLevel()
-                * Monster.MINIMUM_EXPERIENCE_RANDOM_VARIANCE);
-        maxvar = (int) (this.getLevel()
-                * Monster.MAXIMUM_EXPERIENCE_RANDOM_VARIANCE);
-        final RandomLongRange r = new RandomLongRange(minvar, maxvar);
-        final long expbase = PartyManager.getParty().getPartyMaxToNextLevel();
-        final long factor = this.getBattlesToNextLevel();
-        return (int) (expbase / factor
-                + r.generate() * this.adjustForLevelDifference()
-                        * Monster.getExpMultiplierForDifficulty());
-    }
-
-    private int getInitialGold() {
-        final PartyMember playerCharacter = PartyManager.getParty().getLeader();
-        final int needed = Shop.getEquipmentCost(playerCharacter.getLevel() + 1)
-                * 4;
-        final int factor = this.getBattlesToNextLevel();
-        final int min = 0;
-        final int max = needed / factor * 2;
-        final RandomRange r = new RandomRange(min, max);
-        return (int) (r.generate() * this.adjustForLevelDifference()
-                * Monster.getGoldMultiplierForDifficulty());
-    }
-
-    private int getInitialAgility() {
-        final RandomRange r = new RandomRange(1, Math.max(
-                this.getLevel() * Monster.getStatMultiplierForDifficulty(), 1));
-        return r.generate();
-    }
-
-    private int getInitialVitality() {
-        final RandomRange r = new RandomRange(1, Math.max(
-                this.getLevel() * Monster.getStatMultiplierForDifficulty(), 1));
-        return r.generate();
-    }
-
-    private int getInitialIntelligence() {
-        final RandomRange r = new RandomRange(0,
-                this.getLevel() * Monster.getStatMultiplierForDifficulty());
-        return r.generate();
-    }
-
-    private int getInitialLuck() {
-        final RandomRange r = new RandomRange(0,
-                this.getLevel() * Monster.getStatMultiplierForDifficulty());
-        return r.generate();
-    }
-
-    private static int getStatMultiplierForDifficulty() {
-        final int difficulty = PreferencesManager.getGameDifficulty();
-        if (difficulty == PreferencesManager.DIFFICULTY_VERY_EASY) {
-            return Monster.STAT_MULT_VERY_EASY;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_EASY) {
-            return Monster.STAT_MULT_EASY;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_NORMAL) {
-            return Monster.STAT_MULT_NORMAL;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_HARD) {
-            return Monster.STAT_MULT_HARD;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_VERY_HARD) {
-            return Monster.STAT_MULT_VERY_HARD;
-        } else {
-            return Monster.STAT_MULT_NORMAL;
-        }
-    }
-
-    private static double getGoldMultiplierForDifficulty() {
-        final int difficulty = PreferencesManager.getGameDifficulty();
-        if (difficulty == PreferencesManager.DIFFICULTY_VERY_EASY) {
-            return Monster.GOLD_MULT_VERY_EASY;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_EASY) {
-            return Monster.GOLD_MULT_EASY;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_NORMAL) {
-            return Monster.GOLD_MULT_NORMAL;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_HARD) {
-            return Monster.GOLD_MULT_HARD;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_VERY_HARD) {
-            return Monster.GOLD_MULT_VERY_HARD;
-        } else {
-            return Monster.GOLD_MULT_NORMAL;
-        }
-    }
-
-    private static double getExpMultiplierForDifficulty() {
-        final int difficulty = PreferencesManager.getGameDifficulty();
-        if (difficulty == PreferencesManager.DIFFICULTY_VERY_EASY) {
-            return Monster.EXP_MULT_VERY_EASY;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_EASY) {
-            return Monster.EXP_MULT_EASY;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_NORMAL) {
-            return Monster.EXP_MULT_NORMAL;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_HARD) {
-            return Monster.EXP_MULT_HARD;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_VERY_HARD) {
-            return Monster.EXP_MULT_VERY_HARD;
-        } else {
-            return Monster.EXP_MULT_NORMAL;
-        }
-    }
-
-    @Override
-    protected BufferedImageIcon getInitialImage() {
-        if (this.getLevel() == 0) {
-            return null;
-        } else {
-            final String[] types = MonsterNames.getAllNames();
-            final RandomRange r = new RandomRange(0, types.length - 1);
-            this.setType(types[r.generate()]);
-            return MonsterImageManager.getImage(this.getType(),
-                    this.getElement());
-        }
-    }
-
-    private static Element getInitialElement() {
-        return new Element(FaithManager.getRandomFaith());
-    }
-
-    @Override
-    public String getName() {
-        return this.element.getName() + " " + this.type;
-    }
-
-    @Override
-    public Faith getFaith() {
-        return this.element.getFaith();
-    }
-
-    @Override
-    public boolean checkLevelUp() {
-        return false;
-    }
-
-    @Override
-    protected void levelUpHook() {
-        // Do nothing
-    }
-
-    @Override
-    protected final int getInitialPerfectBonusGold() {
-        final int tough = this.getToughness();
-        final int min = tough * Monster.PERFECT_GOLD_MIN;
-        final int max = tough * Monster.PERFECT_GOLD_MAX;
-        final RandomRange r = new RandomRange(min, max);
-        return (int) (r.generate() * this.adjustForLevelDifference());
-    }
-
-    @Override
-    public int getSpeed() {
-        final int difficulty = PreferencesManager.getGameDifficulty();
-        final int base = this.getBaseSpeed();
-        if (difficulty == PreferencesManager.DIFFICULTY_VERY_EASY) {
-            return (int) (base * Creature.SPEED_ADJUST_SLOWEST);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_EASY) {
-            return (int) (base * Creature.SPEED_ADJUST_SLOW);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_NORMAL) {
-            return (int) (base * Creature.SPEED_ADJUST_NORMAL);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_HARD) {
-            return (int) (base * Creature.SPEED_ADJUST_FAST);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_VERY_HARD) {
-            return (int) (base * Creature.SPEED_ADJUST_FASTEST);
-        } else {
-            return (int) (base * Creature.SPEED_ADJUST_NORMAL);
-        }
-    }
-
-    private int getToughness() {
-        return this.getStrength() + this.getBlock() + this.getAgility()
-                + this.getVitality() + this.getIntelligence() + this.getLuck();
-    }
-
-    final String getType() {
-        return this.type;
-    }
-
-    final Element getElement() {
-        return this.element;
-    }
-
-    final void setType(final String newType) {
+    void setType(final String newType) {
         this.type = newType;
-    }
-
-    protected double adjustForLevelDifference() {
-        return Math.max(0.0, this.getLevelDifference() / 4.0 + 1.0);
-    }
-
-    // Helper Methods
-    private static WindowAI getInitialWindowAI() {
-        return WindowAIPicker.getNextRoutine();
-    }
-
-    private static MapAI getInitialMapAI() {
-        return MapAIPicker.getNextRoutine();
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result
-                + (this.element == null ? 0 : this.element.hashCode());
-        return prime * result + (this.type == null ? 0 : this.type.hashCode());
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (!(obj instanceof Monster)) {
-            return false;
-        }
-        final Monster other = (Monster) obj;
-        if (this.element == null) {
-            if (other.element != null) {
-                return false;
-            }
-        } else if (!this.element.equals(other.element)) {
-            return false;
-        }
-        if (this.type == null) {
-            if (other.type != null) {
-                return false;
-            }
-        } else if (!this.type.equals(other.type)) {
-            return false;
-        }
-        return true;
-    }
-
-    protected final int getBattlesToNextLevel() {
-        return Monster.BATTLES_START
-                + (this.getLevel() + 1) * Monster.BATTLES_SCALE_FACTOR;
     }
 }

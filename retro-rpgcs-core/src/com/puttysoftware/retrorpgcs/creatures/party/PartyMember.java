@@ -23,11 +23,70 @@ import com.puttysoftware.retrorpgcs.maze.GenerateTask;
 import com.puttysoftware.retrorpgcs.maze.objects.Player;
 import com.puttysoftware.retrorpgcs.prefs.PreferencesManager;
 import com.puttysoftware.retrorpgcs.resourcemanagers.BattleImageManager;
-import com.puttysoftware.retrorpgcs.spells.SpellBook;
 import com.puttysoftware.xio.XDataReader;
 import com.puttysoftware.xio.XDataWriter;
 
 public class PartyMember extends Creature {
+    private static final int START_GOLD = 0;
+    private static final double BASE_COEFF = 10.0;
+    private static final Player ME = new Player();
+
+    public static PartyMember read(final XDataReader worldFile)
+            throws IOException {
+        final int version = worldFile.readByte();
+        if (version < FormatConstants.CHARACTER_FORMAT_2) {
+            throw new VersionException(
+                    "Invalid character version found: " + version);
+        }
+        final var k = worldFile.readInt();
+        final var pAtk = worldFile.readInt();
+        final var pDef = worldFile.readInt();
+        final var pHP = worldFile.readInt();
+        final var pMP = worldFile.readInt();
+        final var strength = worldFile.readInt();
+        final var block = worldFile.readInt();
+        final var agility = worldFile.readInt();
+        final var vitality = worldFile.readInt();
+        final var intelligence = worldFile.readInt();
+        final var luck = worldFile.readInt();
+        final var lvl = worldFile.readInt();
+        final var cHP = worldFile.readInt();
+        final var cMP = worldFile.readInt();
+        final var gld = worldFile.readInt();
+        final var apr = worldFile.readInt();
+        final var spr = worldFile.readInt();
+        final var load = worldFile.readInt();
+        final var exp = worldFile.readLong();
+        final var r = worldFile.readInt();
+        final var c = worldFile.readInt();
+        final var f = worldFile.readInt();
+        final var p = worldFile.readInt();
+        final var g = worldFile.readInt();
+        final var max = worldFile.readInt();
+        final var known = new boolean[max];
+        for (var x = 0; x < max; x++) {
+            known[x] = worldFile.readBoolean();
+        }
+        final var n = worldFile.readString();
+        final var pm = PartyManager.getNewPCInstance(r, c, f, p, g, n);
+        pm.setStrength(strength);
+        pm.setBlock(block);
+        pm.setAgility(agility);
+        pm.setVitality(vitality);
+        pm.setIntelligence(intelligence);
+        pm.setLuck(luck);
+        pm.setAttacksPerRound(apr);
+        pm.setSpellsPerRound(spr);
+        pm.setItems(ItemInventory.readItemInventory(worldFile, version));
+        pm.kills = k;
+        pm.permanentAttack = pAtk;
+        pm.permanentDefense = pDef;
+        pm.permanentHP = pHP;
+        pm.permanentMP = pMP;
+        pm.loadPartyMember(lvl, cHP, cMP, gld, load, exp, c, known);
+        return pm;
+    }
+
     // Fields
     private Race race;
     private Caste caste;
@@ -40,9 +99,6 @@ public class PartyMember extends Creature {
     private int permanentHP;
     private int permanentMP;
     private int kills;
-    private static final int START_GOLD = 0;
-    private static final double BASE_COEFF = 10.0;
-    private static final Player ME = new Player();
 
     // Constructors
     PartyMember(final Race r, final Caste c, final Faith f, final Personality p,
@@ -78,8 +134,8 @@ public class PartyMember extends Creature {
         this.healAndRegenerateFully();
         this.setGold(PartyMember.START_GOLD);
         this.setExperience(0L);
-        final PolyTable nextLevelEquation = new PolyTable(3, 1, 0, true);
-        final double value = PartyMember.BASE_COEFF
+        final var nextLevelEquation = new PolyTable(3, 1, 0, true);
+        final var value = PartyMember.BASE_COEFF
                 * this.personality.getAttribute(
                         PersonalityConstants.PERSONALITY_ATTRIBUTE_LEVEL_UP_SPEED);
         nextLevelEquation.setCoefficient(1, value);
@@ -90,9 +146,40 @@ public class PartyMember extends Creature {
                 CasteManager.getSpellBookByID(this.caste.getCasteID()));
     }
 
-    // Methods
-    public String getXPString() {
-        return this.getExperience() + "/" + this.getToNextLevelValue();
+    @Override
+    public int getAttack() {
+        return super.getAttack() + this.getPermanentAttackPoints();
+    }
+
+    @Override
+    public int getCapacity() {
+        return Math.max(StatConstants.MIN_CAPACITY,
+                (int) (super.getCapacity() * this.getPersonality().getAttribute(
+                        PersonalityConstants.PERSONALITY_ATTRIBUTE_CAPACITY_MOD)));
+    }
+
+    public Caste getCaste() {
+        return this.caste;
+    }
+
+    @Override
+    public int getDefense() {
+        return super.getDefense() + this.getPermanentDefensePoints();
+    }
+
+    @Override
+    public Faith getFaith() {
+        return this.faith;
+    }
+
+    protected Gender getGender() {
+        return this.gender;
+    }
+
+    @Override
+    protected BufferedImageIcon getInitialImage() {
+        return BattleImageManager.getImage(PartyMember.ME.getName(),
+                PartyMember.ME.getBaseID(), this.faith.getColor().getRGB());
     }
 
     @Override
@@ -104,65 +191,13 @@ public class PartyMember extends Creature {
     }
 
     @Override
-    public int getWindowBattleActionsPerRound() {
-        return Math.max((int) (super.getWindowBattleActionsPerRound()
-                * this.personality.getAttribute(
-                        PersonalityConstants.PERSONALITY_ATTRIBUTE_ACTION_MOD)),
-                1);
-    }
-
-    // Transformers
-    @Override
-    protected void levelUpHook() {
-        this.offsetStrength(StatConstants.GAIN_STRENGTH + this.race
-                .getAttribute(RaceConstants.RACE_ATTRIBUTE_STRENGTH_PER_LEVEL));
-        this.offsetBlock(StatConstants.GAIN_BLOCK + this.race
-                .getAttribute(RaceConstants.RACE_ATTRIBUTE_BLOCK_PER_LEVEL));
-        this.offsetVitality(StatConstants.GAIN_VITALITY + this.race
-                .getAttribute(RaceConstants.RACE_ATTRIBUTE_VITALITY_PER_LEVEL));
-        this.offsetIntelligence(
-                StatConstants.GAIN_INTELLIGENCE + this.race.getAttribute(
-                        RaceConstants.RACE_ATTRIBUTE_INTELLIGENCE_PER_LEVEL));
-        this.offsetAgility(StatConstants.GAIN_AGILITY + this.race
-                .getAttribute(RaceConstants.RACE_ATTRIBUTE_AGILITY_PER_LEVEL));
-        this.offsetLuck(StatConstants.GAIN_LUCK + this.race
-                .getAttribute(RaceConstants.RACE_ATTRIBUTE_LUCK_PER_LEVEL));
-        this.healAndRegenerateFully();
-    }
-
-    private void loadPartyMember(final int newLevel, final int chp,
-            final int cmp, final int newGold, final int newLoad,
-            final long newExperience, final int bookID, final boolean[] known) {
-        this.setLevel(newLevel);
-        this.setCurrentHP(chp);
-        this.setCurrentMP(cmp);
-        this.setGold(newGold);
-        this.setLoad(newLoad);
-        this.setExperience(newExperience);
-        final SpellBook book = CasteManager.getSpellBookByID(bookID);
-        for (int x = 0; x < known.length; x++) {
-            if (known[x]) {
-                book.learnSpellByID(x);
-            }
-        }
-        this.setSpellBook(book);
+    public int getMaximumHP() {
+        return super.getMaximumHP() + this.getPermanentHPPoints();
     }
 
     @Override
-    public int getCapacity() {
-        return Math.max(StatConstants.MIN_CAPACITY,
-                (int) (super.getCapacity() * this.getPersonality().getAttribute(
-                        PersonalityConstants.PERSONALITY_ATTRIBUTE_CAPACITY_MOD)));
-    }
-
-    @Override
-    public void offsetGold(final int value) {
-        int fixedValue = value;
-        if (value > 0) {
-            fixedValue = (int) (fixedValue * this.getPersonality().getAttribute(
-                    PersonalityConstants.PERSONALITY_ATTRIBUTE_WEALTH_MOD));
-        }
-        super.offsetGold(fixedValue);
+    public int getMaximumMP() {
+        return super.getMaximumMP() + this.getPermanentMPPoints();
     }
 
     @Override
@@ -170,44 +205,61 @@ public class PartyMember extends Creature {
         return this.name;
     }
 
-    public Race getRace() {
-        return this.race;
+    public int getPermanentAttackPoints() {
+        return this.permanentAttack;
     }
 
-    public Caste getCaste() {
-        return this.caste;
+    public int getPermanentDefensePoints() {
+        return this.permanentDefense;
     }
 
-    @Override
-    public Faith getFaith() {
-        return this.faith;
+    public int getPermanentHPPoints() {
+        return this.permanentHP;
+    }
+
+    public int getPermanentMPPoints() {
+        return this.permanentMP;
     }
 
     protected Personality getPersonality() {
         return this.personality;
     }
 
-    protected Gender getGender() {
-        return this.gender;
+    public Race getRace() {
+        return this.race;
     }
 
     @Override
     public int getSpeed() {
-        final int difficulty = PreferencesManager.getGameDifficulty();
-        final int base = this.getBaseSpeed();
-        if (difficulty == PreferencesManager.DIFFICULTY_VERY_EASY) {
+        final var difficulty = PreferencesManager.getGameDifficulty();
+        final var base = this.getBaseSpeed();
+        switch (difficulty) {
+        case PreferencesManager.DIFFICULTY_VERY_EASY:
             return (int) (base * Creature.SPEED_ADJUST_FASTEST);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_EASY) {
+        case PreferencesManager.DIFFICULTY_EASY:
             return (int) (base * Creature.SPEED_ADJUST_FAST);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_NORMAL) {
+        case PreferencesManager.DIFFICULTY_NORMAL:
             return (int) (base * Creature.SPEED_ADJUST_NORMAL);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_HARD) {
+        case PreferencesManager.DIFFICULTY_HARD:
             return (int) (base * Creature.SPEED_ADJUST_SLOW);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_VERY_HARD) {
+        case PreferencesManager.DIFFICULTY_VERY_HARD:
             return (int) (base * Creature.SPEED_ADJUST_SLOWEST);
-        } else {
+        default:
             return (int) (base * Creature.SPEED_ADJUST_NORMAL);
         }
+    }
+
+    @Override
+    public int getWindowBattleActionsPerRound() {
+        return Math.max((int) (super.getWindowBattleActionsPerRound()
+                * this.personality.getAttribute(
+                        PersonalityConstants.PERSONALITY_ATTRIBUTE_ACTION_MOD)),
+                1);
+    }
+
+    // Methods
+    public String getXPString() {
+        return this.getExperience() + "/" + this.getToNextLevelValue();
     }
 
     public void initPostKill(final Race r, final Caste c, final Faith f,
@@ -238,8 +290,8 @@ public class PartyMember extends Creature {
         this.setExperience(0L);
         this.getItems().resetInventory();
         RetroRPGCS.getInstance().getGameManager().deactivateAllEffects();
-        final PolyTable nextLevelEquation = new PolyTable(3, 1, 0, true);
-        final double value = PartyMember.BASE_COEFF
+        final var nextLevelEquation = new PolyTable(3, 1, 0, true);
+        final var value = PartyMember.BASE_COEFF
                 * this.personality.getAttribute(
                         PersonalityConstants.PERSONALITY_ATTRIBUTE_LEVEL_UP_SPEED);
         nextLevelEquation.setCoefficient(1, value);
@@ -252,40 +304,62 @@ public class PartyMember extends Creature {
         new GenerateTask(true).start();
     }
 
+    // Transformers
     @Override
-    public int getAttack() {
-        return super.getAttack() + this.getPermanentAttackPoints();
+    protected void levelUpHook() {
+        this.offsetStrength(StatConstants.GAIN_STRENGTH + this.race
+                .getAttribute(RaceConstants.RACE_ATTRIBUTE_STRENGTH_PER_LEVEL));
+        this.offsetBlock(StatConstants.GAIN_BLOCK + this.race
+                .getAttribute(RaceConstants.RACE_ATTRIBUTE_BLOCK_PER_LEVEL));
+        this.offsetVitality(StatConstants.GAIN_VITALITY + this.race
+                .getAttribute(RaceConstants.RACE_ATTRIBUTE_VITALITY_PER_LEVEL));
+        this.offsetIntelligence(
+                StatConstants.GAIN_INTELLIGENCE + this.race.getAttribute(
+                        RaceConstants.RACE_ATTRIBUTE_INTELLIGENCE_PER_LEVEL));
+        this.offsetAgility(StatConstants.GAIN_AGILITY + this.race
+                .getAttribute(RaceConstants.RACE_ATTRIBUTE_AGILITY_PER_LEVEL));
+        this.offsetLuck(StatConstants.GAIN_LUCK + this.race
+                .getAttribute(RaceConstants.RACE_ATTRIBUTE_LUCK_PER_LEVEL));
+        this.healAndRegenerateFully();
     }
 
     @Override
-    public int getDefense() {
-        return super.getDefense() + this.getPermanentDefensePoints();
+    public void loadCreature() {
+        // Do nothing
+    }
+
+    private void loadPartyMember(final int newLevel, final int chp,
+            final int cmp, final int newGold, final int newLoad,
+            final long newExperience, final int bookID, final boolean[] known) {
+        this.setLevel(newLevel);
+        this.setCurrentHP(chp);
+        this.setCurrentMP(cmp);
+        this.setGold(newGold);
+        this.setLoad(newLoad);
+        this.setExperience(newExperience);
+        final var book = CasteManager.getSpellBookByID(bookID);
+        for (var x = 0; x < known.length; x++) {
+            if (known[x]) {
+                book.learnSpellByID(x);
+            }
+        }
+        this.setSpellBook(book);
     }
 
     @Override
-    public int getMaximumHP() {
-        return super.getMaximumHP() + this.getPermanentHPPoints();
+    public void offsetGold(final int value) {
+        var fixedValue = value;
+        if (value > 0) {
+            fixedValue = (int) (fixedValue * this.getPersonality().getAttribute(
+                    PersonalityConstants.PERSONALITY_ATTRIBUTE_WEALTH_MOD));
+        }
+        super.offsetGold(fixedValue);
     }
 
-    @Override
-    public int getMaximumMP() {
-        return super.getMaximumMP() + this.getPermanentMPPoints();
-    }
-
-    public int getPermanentAttackPoints() {
-        return this.permanentAttack;
-    }
-
-    public int getPermanentDefensePoints() {
-        return this.permanentDefense;
-    }
-
-    public int getPermanentHPPoints() {
-        return this.permanentHP;
-    }
-
-    public int getPermanentMPPoints() {
-        return this.permanentMP;
+    public void onDeath(final int penalty) {
+        this.offsetExperiencePercentage(penalty);
+        this.healAndRegenerateFully();
+        this.setGold(0);
     }
 
     public void spendPointOnAttack() {
@@ -306,68 +380,6 @@ public class PartyMember extends Creature {
     public void spendPointOnMP() {
         this.kills++;
         this.permanentMP++;
-    }
-
-    public void onDeath(final int penalty) {
-        this.offsetExperiencePercentage(penalty);
-        this.healAndRegenerateFully();
-        this.setGold(0);
-    }
-
-    public static PartyMember read(final XDataReader worldFile)
-            throws IOException {
-        final int version = worldFile.readByte();
-        if (version < FormatConstants.CHARACTER_FORMAT_2) {
-            throw new VersionException(
-                    "Invalid character version found: " + version);
-        }
-        final int k = worldFile.readInt();
-        final int pAtk = worldFile.readInt();
-        final int pDef = worldFile.readInt();
-        final int pHP = worldFile.readInt();
-        final int pMP = worldFile.readInt();
-        final int strength = worldFile.readInt();
-        final int block = worldFile.readInt();
-        final int agility = worldFile.readInt();
-        final int vitality = worldFile.readInt();
-        final int intelligence = worldFile.readInt();
-        final int luck = worldFile.readInt();
-        final int lvl = worldFile.readInt();
-        final int cHP = worldFile.readInt();
-        final int cMP = worldFile.readInt();
-        final int gld = worldFile.readInt();
-        final int apr = worldFile.readInt();
-        final int spr = worldFile.readInt();
-        final int load = worldFile.readInt();
-        final long exp = worldFile.readLong();
-        final int r = worldFile.readInt();
-        final int c = worldFile.readInt();
-        final int f = worldFile.readInt();
-        final int p = worldFile.readInt();
-        final int g = worldFile.readInt();
-        final int max = worldFile.readInt();
-        final boolean[] known = new boolean[max];
-        for (int x = 0; x < max; x++) {
-            known[x] = worldFile.readBoolean();
-        }
-        final String n = worldFile.readString();
-        final PartyMember pm = PartyManager.getNewPCInstance(r, c, f, p, g, n);
-        pm.setStrength(strength);
-        pm.setBlock(block);
-        pm.setAgility(agility);
-        pm.setVitality(vitality);
-        pm.setIntelligence(intelligence);
-        pm.setLuck(luck);
-        pm.setAttacksPerRound(apr);
-        pm.setSpellsPerRound(spr);
-        pm.setItems(ItemInventory.readItemInventory(worldFile, version));
-        pm.kills = k;
-        pm.permanentAttack = pAtk;
-        pm.permanentDefense = pDef;
-        pm.permanentHP = pHP;
-        pm.permanentMP = pMP;
-        pm.loadPartyMember(lvl, cHP, cMP, gld, load, exp, c, known);
-        return pm;
     }
 
     public void write(final XDataWriter worldFile) throws IOException {
@@ -396,23 +408,12 @@ public class PartyMember extends Creature {
         worldFile.writeInt(this.getFaith().getFaithID());
         worldFile.writeInt(this.getPersonality().getPersonalityID());
         worldFile.writeInt(this.getGender().getGenderID());
-        final int max = this.getSpellBook().getSpellCount();
+        final var max = this.getSpellBook().getSpellCount();
         worldFile.writeInt(max);
-        for (int x = 0; x < max; x++) {
+        for (var x = 0; x < max; x++) {
             worldFile.writeBoolean(this.getSpellBook().isSpellKnown(x));
         }
         worldFile.writeString(this.getName());
         this.getItems().writeItemInventory(worldFile);
-    }
-
-    @Override
-    protected BufferedImageIcon getInitialImage() {
-        return BattleImageManager.getImage(PartyMember.ME.getName(),
-                PartyMember.ME.getBaseID(), this.faith.getColor().getRGB());
-    }
-
-    @Override
-    public void loadCreature() {
-        // Do nothing
     }
 }

@@ -13,13 +13,9 @@ public abstract class AbstractPassThroughObject extends AbstractMazeObject {
     }
 
     @Override
-    public void postMoveAction(final boolean ie, final int dirX,
-            final int dirY) {
-        SoundManager.playSound(SoundConstants.SOUND_WALK);
+    public int getCustomProperty(final int propID) {
+        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
     }
-
-    @Override
-    public abstract String getName();
 
     @Override
     public int getLayer() {
@@ -27,17 +23,21 @@ public abstract class AbstractPassThroughObject extends AbstractMazeObject {
     }
 
     @Override
-    protected void setTypes() {
-        this.type.set(TypeConstants.TYPE_PASS_THROUGH);
-    }
+    public abstract String getName();
 
     @Override
-    public int getCustomProperty(final int propID) {
-        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
+    public void postMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        SoundManager.playSound(SoundConstants.SOUND_WALK);
     }
 
     @Override
     public void setCustomProperty(final int propID, final int value) {
         // Do nothing
+    }
+
+    @Override
+    protected void setTypes() {
+        this.type.set(TypeConstants.TYPE_PASS_THROUGH);
     }
 }

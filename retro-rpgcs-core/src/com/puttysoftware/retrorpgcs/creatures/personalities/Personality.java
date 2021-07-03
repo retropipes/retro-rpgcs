@@ -2,6 +2,7 @@
 package com.puttysoftware.retrorpgcs.creatures.personalities;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import com.puttysoftware.retrorpgcs.datamanagers.PersonalityDataManager;
 import com.puttysoftware.retrorpgcs.descriptionmanagers.PersonalityDescriptionManager;
@@ -18,6 +19,24 @@ public final class Personality {
         this.personalityID = pid;
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || !(obj instanceof Personality)) {
+            return false;
+        }
+        final var other = (Personality) obj;
+        if (this.personalityID != other.personalityID) {
+            return false;
+        }
+        if (!Arrays.equals(this.data, other.data)) {
+            return false;
+        }
+        return true;
+    }
+
     public double getAttribute(final int aid) {
         return this.data[aid];
     }
@@ -32,30 +51,6 @@ public final class Personality {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.personalityID;
-        return prime * result + Arrays.hashCode(this.data);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof Personality)) {
-            return false;
-        }
-        final Personality other = (Personality) obj;
-        if (this.personalityID != other.personalityID) {
-            return false;
-        }
-        if (!Arrays.equals(this.data, other.data)) {
-            return false;
-        }
-        return true;
+        return Objects.hash(this.personalityID, Arrays.hashCode(this.data));
     }
 }

@@ -3,10 +3,8 @@ package com.puttysoftware.retrorpgcs.creatures.party;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,11 +26,53 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
 class ListWithDescDialog extends JDialog implements ActionListener {
+    private static class SubJList<T> extends JList<T> {
+        private static final long serialVersionUID = 1L;
+
+        // Subclass JList to workaround bug 4832765, which can cause the
+        // scroll pane to not let the user easily scroll up to the beginning
+        // of the list. An alternative would be to set the unitIncrement
+        // of the JScrollBar to a fixed value. You wouldn't get the nice
+        // aligned scrolling, but it should work.
+        SubJList(final T[] data) {
+            super(data);
+        }
+
+        @Override
+        public int getScrollableUnitIncrement(final Rectangle visibleRect,
+                final int orientation, final int direction) {
+            int row;
+            if (orientation == SwingConstants.VERTICAL && direction < 0
+                    && (row = this.getFirstVisibleIndex()) != -1) {
+                final var r = this.getCellBounds(row, row);
+                if (r.y == visibleRect.y && row != 0) {
+                    final var loc = r.getLocation();
+                    loc.y--;
+                    final var prevIndex = this.locationToIndex(loc);
+                    final var prevR = this.getCellBounds(prevIndex,
+                            prevIndex);
+                    if (prevR == null || prevR.y >= r.y) {
+                        return 0;
+                    }
+                    return prevR.height;
+                }
+            }
+            return super.getScrollableUnitIncrement(visibleRect, orientation,
+                    direction);
+        }
+    }
+
     private static final long serialVersionUID = 1L;
     static String[] descs;
     private static ListWithDescDialog dialog;
     private static String value = null;
     static JList<String> list;
+
+    private static void setValue(final String newValue) {
+        ListWithDescDialog.value = newValue;
+        ListWithDescDialog.list.setSelectedValue(ListWithDescDialog.value,
+                true);
+    }
 
     /**
      * Set up and show the dialog. The first Component argument determines which
@@ -48,18 +88,12 @@ class ListWithDescDialog extends JDialog implements ActionListener {
             final String initialValue, final String descValue,
             final String... possibleDescriptions) {
         ListWithDescDialog.value = null;
-        final Frame frame = JOptionPane.getFrameForComponent(frameComp);
+        final var frame = JOptionPane.getFrameForComponent(frameComp);
         ListWithDescDialog.dialog = new ListWithDescDialog(frame, locationComp,
                 labelText, title, possibleValues, initialValue, descValue,
                 possibleDescriptions);
         ListWithDescDialog.dialog.setVisible(true);
         return ListWithDescDialog.value;
-    }
-
-    private static void setValue(final String newValue) {
-        ListWithDescDialog.value = newValue;
-        ListWithDescDialog.list.setSelectedValue(ListWithDescDialog.value,
-                true);
     }
 
     private ListWithDescDialog(final Frame frame, final Component locationComp,
@@ -70,16 +104,16 @@ class ListWithDescDialog extends JDialog implements ActionListener {
         // Initialize the descriptions
         ListWithDescDialog.descs = possibleDescriptions;
         // Create and initialize the buttons.
-        final JButton cancelButton = new JButton("Cancel");
+        final var cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(this);
         //
-        final JButton setButton = new JButton("OK");
+        final var setButton = new JButton("OK");
         setButton.setActionCommand("OK");
         setButton.addActionListener(this);
         this.getRootPane().setDefaultButton(setButton);
         // Create a text area to hold the description
-        final JPanel descPane = new JPanel();
-        final JTextArea descArea = new JTextArea(descValue);
+        final var descPane = new JPanel();
+        final var descArea = new JTextArea(descValue);
         descArea.setLineWrap(true);
         descArea.setWrapStyleWord(true);
         descArea.setPreferredSize(new Dimension(250, 80));
@@ -101,7 +135,7 @@ class ListWithDescDialog extends JDialog implements ActionListener {
         ListWithDescDialog.list.addListSelectionListener(e -> descArea
                 .setText(ListWithDescDialog.descs[ListWithDescDialog.list
                         .getSelectedIndex()]));
-        final JScrollPane listScroller = new JScrollPane(
+        final var listScroller = new JScrollPane(
                 ListWithDescDialog.list);
         listScroller.setPreferredSize(new Dimension(250, 80));
         listScroller.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -109,16 +143,16 @@ class ListWithDescDialog extends JDialog implements ActionListener {
         // the scroll pane. Can't add a title directly to the
         // scroll pane because its background would be white.
         // Lay out the label and scroll pane from top to bottom.
-        final JPanel listPane = new JPanel();
+        final var listPane = new JPanel();
         listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
-        final JLabel label = new JLabel(labelText);
+        final var label = new JLabel(labelText);
         label.setLabelFor(ListWithDescDialog.list);
         listPane.add(label);
         listPane.add(Box.createRigidArea(new Dimension(0, 5)));
         listPane.add(listScroller);
         listPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         // Lay out the buttons from left to right.
-        final JPanel buttonPane = new JPanel();
+        final var buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
         buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         buttonPane.add(Box.createHorizontalGlue());
@@ -126,7 +160,7 @@ class ListWithDescDialog extends JDialog implements ActionListener {
         buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
         buttonPane.add(setButton);
         // Put everything together, using the content pane's BorderLayout.
-        final Container contentPane = this.getContentPane();
+        final var contentPane = this.getContentPane();
         contentPane.add(listPane, BorderLayout.NORTH);
         contentPane.add(descPane, BorderLayout.CENTER);
         contentPane.add(buttonPane, BorderLayout.PAGE_END);
@@ -146,41 +180,5 @@ class ListWithDescDialog extends JDialog implements ActionListener {
             ListWithDescDialog.setValue(null);
         }
         ListWithDescDialog.dialog.setVisible(false);
-    }
-
-    private static class SubJList<T> extends JList<T> {
-        private static final long serialVersionUID = 1L;
-
-        // Subclass JList to workaround bug 4832765, which can cause the
-        // scroll pane to not let the user easily scroll up to the beginning
-        // of the list. An alternative would be to set the unitIncrement
-        // of the JScrollBar to a fixed value. You wouldn't get the nice
-        // aligned scrolling, but it should work.
-        SubJList(final T[] data) {
-            super(data);
-        }
-
-        @Override
-        public int getScrollableUnitIncrement(final Rectangle visibleRect,
-                final int orientation, final int direction) {
-            int row;
-            if (orientation == SwingConstants.VERTICAL && direction < 0
-                    && (row = this.getFirstVisibleIndex()) != -1) {
-                final Rectangle r = this.getCellBounds(row, row);
-                if (r.y == visibleRect.y && row != 0) {
-                    final Point loc = r.getLocation();
-                    loc.y--;
-                    final int prevIndex = this.locationToIndex(loc);
-                    final Rectangle prevR = this.getCellBounds(prevIndex,
-                            prevIndex);
-                    if (prevR == null || prevR.y >= r.y) {
-                        return 0;
-                    }
-                    return prevR.height;
-                }
-            }
-            return super.getScrollableUnitIncrement(visibleRect, orientation,
-                    direction);
-        }
     }
 }

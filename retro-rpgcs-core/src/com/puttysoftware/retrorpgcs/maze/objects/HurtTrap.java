@@ -14,6 +14,11 @@ public class HurtTrap extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "Hurt Traps hurt you when stepped on.";
+    }
+
+    @Override
     public String getName() {
         return "Hurt Trap";
     }
@@ -26,16 +31,11 @@ public class HurtTrap extends AbstractTrap {
     @Override
     public void postMoveAction(final boolean ie, final int dirX,
             final int dirY) {
-        int damage = PartyManager.getParty().getLeader().getMaximumHP() / 10;
+        var damage = PartyManager.getParty().getLeader().getMaximumHP() / 10;
         if (damage < 1) {
             damage = 1;
         }
         PartyManager.getParty().getLeader().doDamage(damage);
         SoundManager.playSound(SoundConstants.SOUND_BARRIER);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Hurt Traps hurt you when stepped on.";
     }
 }

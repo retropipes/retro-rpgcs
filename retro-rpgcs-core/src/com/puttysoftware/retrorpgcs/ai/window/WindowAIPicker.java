@@ -6,18 +6,19 @@ import com.puttysoftware.retrorpgcs.prefs.PreferencesManager;
 public final class WindowAIPicker {
     // Methods
     public static WindowAI getNextRoutine() {
-        final int difficulty = PreferencesManager.getGameDifficulty();
-        if (difficulty == PreferencesManager.DIFFICULTY_VERY_EASY) {
+        final var difficulty = PreferencesManager.getGameDifficulty();
+        switch (difficulty) {
+        case PreferencesManager.DIFFICULTY_VERY_EASY:
             return new VeryEasyWindowAI();
-        } else if (difficulty == PreferencesManager.DIFFICULTY_EASY) {
+        case PreferencesManager.DIFFICULTY_EASY:
             return new EasyWindowAI();
-        } else if (difficulty == PreferencesManager.DIFFICULTY_NORMAL) {
+        case PreferencesManager.DIFFICULTY_NORMAL:
             return new NormalWindowAI();
-        } else if (difficulty == PreferencesManager.DIFFICULTY_HARD) {
+        case PreferencesManager.DIFFICULTY_HARD:
             return new HardWindowAI();
-        } else if (difficulty == PreferencesManager.DIFFICULTY_VERY_HARD) {
+        case PreferencesManager.DIFFICULTY_VERY_HARD:
             return new VeryHardWindowAI();
-        } else {
+        default:
             return new NormalWindowAI();
         }
     }

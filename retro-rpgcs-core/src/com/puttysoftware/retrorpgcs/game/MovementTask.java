@@ -4,7 +4,6 @@ package com.puttysoftware.retrorpgcs.game;
 import com.puttysoftware.diane.gui.CommonDialogs;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
-import com.puttysoftware.retrorpgcs.maze.Maze;
 import com.puttysoftware.retrorpgcs.maze.MazeConstants;
 import com.puttysoftware.retrorpgcs.maze.abc.AbstractMazeObject;
 import com.puttysoftware.retrorpgcs.maze.effects.MazeEffectConstants;
@@ -16,6 +15,65 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.SoundConstants;
 import com.puttysoftware.retrorpgcs.resourcemanagers.SoundManager;
 
 final class MovementTask extends Thread {
+    private static void checkGameOver() {
+        if (!PartyManager.getParty().isAlive()) {
+            SoundManager.playSound(SoundConstants.SOUND_GAME_OVER);
+            CommonDialogs.showDialog(
+                    "You have died! You lose 10% of your experience and all your Gold, but you are healed fully.");
+            PartyManager.getParty().getLeader().onDeath(-10);
+        }
+    }
+
+    private static boolean checkSolid(final AbstractMazeObject inside,
+            final AbstractMazeObject below, final AbstractMazeObject nextBelow,
+            final AbstractMazeObject nextAbove) {
+        final var insideSolid = inside.isSolid();
+        final var belowSolid = below.isSolid();
+        final var nextBelowSolid = nextBelow.isSolid();
+        final var nextAboveSolid = nextAbove.isSolid();
+        if (insideSolid || belowSolid || nextBelowSolid || nextAboveSolid) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private static boolean checkSolidAbsolute(final AbstractMazeObject inside,
+            final AbstractMazeObject below, final AbstractMazeObject nextBelow,
+            final AbstractMazeObject nextAbove) {
+        final var insideSolid = inside.isSolid();
+        final var belowSolid = below.isSolid();
+        final var nextBelowSolid = nextBelow.isSolid();
+        final var nextAboveSolid = nextAbove.isSolid();
+        if (insideSolid || belowSolid || nextBelowSolid || nextAboveSolid) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static void fireMoveFailedActions(final int x, final int y,
+            final AbstractMazeObject inside, final AbstractMazeObject below,
+            final AbstractMazeObject nextBelow,
+            final AbstractMazeObject nextAbove) {
+        final var insideSolid = inside.isSolid();
+        final var belowSolid = below.isSolid();
+        final var nextBelowSolid = nextBelow.isSolid();
+        final var nextAboveSolid = nextAbove.isSolid();
+        if (insideSolid) {
+            inside.moveFailedAction(false, x, y);
+        }
+        if (belowSolid) {
+            below.moveFailedAction(false, x, y);
+        }
+        if (nextBelowSolid) {
+            nextBelow.moveFailedAction(false, x, y);
+        }
+        if (nextAboveSolid) {
+            nextAbove.moveFailedAction(false, x, y);
+        }
+    }
+
     // Fields
     private final GameViewingWindowManager vwMgr;
     private final GameGUIManager gui;
@@ -33,6 +91,57 @@ final class MovementTask extends Thread {
         this.em = effect;
         this.gui = gameGUI;
         this.saved = new Empty();
+    }
+
+    private boolean checkLoopCondition(final AbstractMazeObject below,
+            final AbstractMazeObject nextBelow,
+            final AbstractMazeObject nextAbove) {
+        return this.proceed
+                && !this.em.isEffectActive(MazeEffectConstants.EFFECT_STICKY)
+                && !nextBelow.hasFriction() && MovementTask
+                        .checkSolid(this.saved, below, nextBelow, nextAbove);
+    }
+
+    private void decayEffects() {
+        this.em.decayEffects();
+    }
+
+    private int[] doEffects(final int x, final int y) {
+        return this.em.doEffects(x, y);
+    }
+
+    void fireStepActions() {
+        final var m = RetroRPGCS.getInstance().getMazeManager().getMaze();
+        final var px = m.getPlayerLocationX();
+        final var py = m.getPlayerLocationY();
+        final var pz = m.getPlayerLocationZ();
+        m.updateVisibleSquares(px, py, pz);
+        m.tickTimers(pz);
+        PartyManager.getParty().fireStepActions();
+        this.gui.updateStats();
+        MovementTask.checkGameOver();
+    }
+
+    public synchronized void moveAbsolute(final int x, final int y,
+            final int z) {
+        this.moveX = x;
+        this.moveY = y;
+        this.moveZ = z;
+        this.relative = false;
+        this.notify();
+    }
+
+    public synchronized void moveRelative(final int x, final int y,
+            final int z) {
+        this.moveX = x;
+        this.moveY = y;
+        this.moveZ = z;
+        this.relative = true;
+        this.notify();
+    }
+
+    private void redrawMaze() {
+        this.gui.redrawMaze();
     }
 
     // Methods
@@ -55,42 +164,20 @@ final class MovementTask extends Thread {
         }
     }
 
-    private synchronized void waitForWork() {
-        try {
-            this.wait();
-        } catch (final InterruptedException e) {
-            // Ignore
-        }
-    }
-
-    public synchronized void moveRelative(final int x, final int y,
-            final int z) {
-        this.moveX = x;
-        this.moveY = y;
-        this.moveZ = z;
-        this.relative = true;
-        this.notify();
-    }
-
-    public synchronized void moveAbsolute(final int x, final int y,
-            final int z) {
-        this.moveX = x;
-        this.moveY = y;
-        this.moveZ = z;
-        this.relative = false;
-        this.notify();
+    public void stopMovement() {
+        this.proceed = false;
     }
 
     public boolean tryAbsolute(final int x, final int y, final int z) {
         try {
-            final RetroRPGCS app = RetroRPGCS.getInstance();
-            final Maze m = app.getMazeManager().getMaze();
-            final AbstractMazeObject below = m.getCell(m.getPlayerLocationX(),
+            final var app = RetroRPGCS.getInstance();
+            final var m = app.getMazeManager().getMaze();
+            final var below = m.getCell(m.getPlayerLocationX(),
                     m.getPlayerLocationY(), m.getPlayerLocationZ(),
                     MazeConstants.LAYER_GROUND);
-            final AbstractMazeObject nextBelow = m.getCell(x, y, z,
+            final var nextBelow = m.getCell(x, y, z,
                     MazeConstants.LAYER_GROUND);
-            final AbstractMazeObject nextAbove = m.getCell(x, y, z,
+            final var nextAbove = m.getCell(x, y, z,
                     MazeConstants.LAYER_OBJECT);
             return MovementTask.checkSolidAbsolute(this.saved, below, nextBelow,
                     nextAbove);
@@ -99,55 +186,61 @@ final class MovementTask extends Thread {
         }
     }
 
-    public void stopMovement() {
-        this.proceed = false;
-    }
-
-    void fireStepActions() {
-        final Maze m = RetroRPGCS.getInstance().getMazeManager().getMaze();
-        final int px = m.getPlayerLocationX();
-        final int py = m.getPlayerLocationY();
-        final int pz = m.getPlayerLocationZ();
-        m.updateVisibleSquares(px, py, pz);
-        m.tickTimers(pz);
-        PartyManager.getParty().fireStepActions();
-        this.gui.updateStats();
-        MovementTask.checkGameOver();
-    }
-
-    private void decayEffects() {
-        this.em.decayEffects();
-    }
-
-    private int[] doEffects(final int x, final int y) {
-        return this.em.doEffects(x, y);
-    }
-
-    private static boolean checkSolidAbsolute(final AbstractMazeObject inside,
-            final AbstractMazeObject below, final AbstractMazeObject nextBelow,
-            final AbstractMazeObject nextAbove) {
-        final boolean insideSolid = inside.isSolid();
-        final boolean belowSolid = below.isSolid();
-        final boolean nextBelowSolid = nextBelow.isSolid();
-        final boolean nextAboveSolid = nextAbove.isSolid();
-        if (insideSolid || belowSolid || nextBelowSolid || nextAboveSolid) {
-            return true;
-        } else {
-            return false;
+    private void updatePositionAbsolute(final int x, final int y, final int z) {
+        final var app = RetroRPGCS.getInstance();
+        final var m = app.getMazeManager().getMaze();
+        try {
+            m.getCell(x, y, z, MazeConstants.LAYER_OBJECT).preMoveAction(true,
+                    x, y);
+        } catch (final ArrayIndexOutOfBoundsException ae) {
+            // Ignore
+        } catch (final NullPointerException np) {
+            // Ignore
+        }
+        m.savePlayerLocation();
+        this.vwMgr.saveViewingWindow();
+        try {
+            if (!m.getCell(x, y, z, MazeConstants.LAYER_OBJECT).isSolid()) {
+                m.setPlayerLocationX(x);
+                m.setPlayerLocationY(y);
+                m.setPlayerLocationZ(z);
+                this.vwMgr.setViewingWindowLocationX(m.getPlayerLocationY()
+                        - GameViewingWindowManager.getOffsetFactorX());
+                this.vwMgr.setViewingWindowLocationY(m.getPlayerLocationX()
+                        - GameViewingWindowManager.getOffsetFactorY());
+                this.saved = m.getCell(m.getPlayerLocationX(),
+                        m.getPlayerLocationY(), m.getPlayerLocationZ(),
+                        MazeConstants.LAYER_OBJECT);
+                app.getMazeManager().setDirty(true);
+                this.saved.postMoveAction(false, x, y);
+                final var px = m.getPlayerLocationX();
+                final var py = m.getPlayerLocationY();
+                final var pz = m.getPlayerLocationZ();
+                m.updateVisibleSquares(px, py, pz);
+                this.redrawMaze();
+            }
+        } catch (final ArrayIndexOutOfBoundsException ae) {
+            m.restorePlayerLocation();
+            this.vwMgr.restoreViewingWindow();
+            app.showMessage("Can't go outside the maze");
+        } catch (final NullPointerException np) {
+            m.restorePlayerLocation();
+            this.vwMgr.restoreViewingWindow();
+            app.showMessage("Can't go outside the maze");
         }
     }
 
     private void updatePositionRelative(final int dirX, final int dirY,
             final int dirZ) {
-        final RetroRPGCS app = RetroRPGCS.getInstance();
-        final Maze m = app.getMazeManager().getMaze();
-        int px = m.getPlayerLocationX();
-        int py = m.getPlayerLocationY();
-        int pz = m.getPlayerLocationZ();
+        final var app = RetroRPGCS.getInstance();
+        final var m = app.getMazeManager().getMaze();
+        var px = m.getPlayerLocationX();
+        var py = m.getPlayerLocationY();
+        var pz = m.getPlayerLocationZ();
         int fX;
         int fY;
-        final int fZ = dirZ;
-        final int[] mod = this.doEffects(dirX, dirY);
+        final var fZ = dirZ;
+        final var mod = this.doEffects(dirX, dirY);
         fX = mod[0];
         fY = mod[1];
         this.proceed = false;
@@ -251,105 +344,11 @@ final class MovementTask extends Thread {
         } while (this.checkLoopCondition(below, nextBelow, nextAbove));
     }
 
-    private boolean checkLoopCondition(final AbstractMazeObject below,
-            final AbstractMazeObject nextBelow,
-            final AbstractMazeObject nextAbove) {
-        return this.proceed
-                && !this.em.isEffectActive(MazeEffectConstants.EFFECT_STICKY)
-                && !nextBelow.hasFriction() && MovementTask
-                        .checkSolid(this.saved, below, nextBelow, nextAbove);
-    }
-
-    private static boolean checkSolid(final AbstractMazeObject inside,
-            final AbstractMazeObject below, final AbstractMazeObject nextBelow,
-            final AbstractMazeObject nextAbove) {
-        final boolean insideSolid = inside.isSolid();
-        final boolean belowSolid = below.isSolid();
-        final boolean nextBelowSolid = nextBelow.isSolid();
-        final boolean nextAboveSolid = nextAbove.isSolid();
-        if (insideSolid || belowSolid || nextBelowSolid || nextAboveSolid) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private static void fireMoveFailedActions(final int x, final int y,
-            final AbstractMazeObject inside, final AbstractMazeObject below,
-            final AbstractMazeObject nextBelow,
-            final AbstractMazeObject nextAbove) {
-        final boolean insideSolid = inside.isSolid();
-        final boolean belowSolid = below.isSolid();
-        final boolean nextBelowSolid = nextBelow.isSolid();
-        final boolean nextAboveSolid = nextAbove.isSolid();
-        if (insideSolid) {
-            inside.moveFailedAction(false, x, y);
-        }
-        if (belowSolid) {
-            below.moveFailedAction(false, x, y);
-        }
-        if (nextBelowSolid) {
-            nextBelow.moveFailedAction(false, x, y);
-        }
-        if (nextAboveSolid) {
-            nextAbove.moveFailedAction(false, x, y);
-        }
-    }
-
-    private void updatePositionAbsolute(final int x, final int y, final int z) {
-        final RetroRPGCS app = RetroRPGCS.getInstance();
-        final Maze m = app.getMazeManager().getMaze();
+    private synchronized void waitForWork() {
         try {
-            m.getCell(x, y, z, MazeConstants.LAYER_OBJECT).preMoveAction(true,
-                    x, y);
-        } catch (final ArrayIndexOutOfBoundsException ae) {
-            // Ignore
-        } catch (final NullPointerException np) {
+            this.wait();
+        } catch (final InterruptedException e) {
             // Ignore
         }
-        m.savePlayerLocation();
-        this.vwMgr.saveViewingWindow();
-        try {
-            if (!m.getCell(x, y, z, MazeConstants.LAYER_OBJECT).isSolid()) {
-                m.setPlayerLocationX(x);
-                m.setPlayerLocationY(y);
-                m.setPlayerLocationZ(z);
-                this.vwMgr.setViewingWindowLocationX(m.getPlayerLocationY()
-                        - GameViewingWindowManager.getOffsetFactorX());
-                this.vwMgr.setViewingWindowLocationY(m.getPlayerLocationX()
-                        - GameViewingWindowManager.getOffsetFactorY());
-                this.saved = m.getCell(m.getPlayerLocationX(),
-                        m.getPlayerLocationY(), m.getPlayerLocationZ(),
-                        MazeConstants.LAYER_OBJECT);
-                app.getMazeManager().setDirty(true);
-                this.saved.postMoveAction(false, x, y);
-                final int px = m.getPlayerLocationX();
-                final int py = m.getPlayerLocationY();
-                final int pz = m.getPlayerLocationZ();
-                m.updateVisibleSquares(px, py, pz);
-                this.redrawMaze();
-            }
-        } catch (final ArrayIndexOutOfBoundsException ae) {
-            m.restorePlayerLocation();
-            this.vwMgr.restoreViewingWindow();
-            app.showMessage("Can't go outside the maze");
-        } catch (final NullPointerException np) {
-            m.restorePlayerLocation();
-            this.vwMgr.restoreViewingWindow();
-            app.showMessage("Can't go outside the maze");
-        }
-    }
-
-    private static void checkGameOver() {
-        if (!PartyManager.getParty().isAlive()) {
-            SoundManager.playSound(SoundConstants.SOUND_GAME_OVER);
-            CommonDialogs.showDialog(
-                    "You have died! You lose 10% of your experience and all your Gold, but you are healed fully.");
-            PartyManager.getParty().getLeader().onDeath(-10);
-        }
-    }
-
-    private void redrawMaze() {
-        this.gui.redrawMaze();
     }
 }

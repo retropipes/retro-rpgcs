@@ -15,6 +15,11 @@ public class DizzinessTrap extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "Dizziness Traps randomly alter your controls each step for 3 steps when stepped on.";
+    }
+
+    @Override
     public String getName() {
         return "Dizziness Trap";
     }
@@ -31,10 +36,5 @@ public class DizzinessTrap extends AbstractTrap {
         RetroRPGCS.getInstance().getGameManager()
                 .activateEffect(MazeEffectConstants.EFFECT_DIZZY);
         SoundManager.playSound(SoundConstants.SOUND_DIZZY);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Dizziness Traps randomly alter your controls each step for 3 steps when stepped on.";
     }
 }

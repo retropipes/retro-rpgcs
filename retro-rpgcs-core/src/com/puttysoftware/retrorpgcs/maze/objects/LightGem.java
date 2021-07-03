@@ -14,12 +14,16 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.SoundManager;
 public class LightGem extends AbstractMPModifier {
     // Constructors
     public LightGem() {
-        super();
     }
 
     @Override
     public int getBaseID() {
         return ObjectImageConstants.OBJECT_IMAGE_LIGHT_GEM;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Light Gems regenerate MP.";
     }
 
     @Override
@@ -30,11 +34,6 @@ public class LightGem extends AbstractMPModifier {
     @Override
     public String getPluralName() {
         return "Light Gems";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Light Gems regenerate MP.";
     }
 
     @Override
@@ -51,7 +50,7 @@ public class LightGem extends AbstractMPModifier {
     public boolean shouldGenerateObject(final Maze maze, final int row,
             final int col, final int floor, final int level, final int layer) {
         // Generate Light Gems at 30% rate
-        final RandomRange reject = new RandomRange(1, 100);
+        final var reject = new RandomRange(1, 100);
         return reject.generate() < 30;
     }
 }

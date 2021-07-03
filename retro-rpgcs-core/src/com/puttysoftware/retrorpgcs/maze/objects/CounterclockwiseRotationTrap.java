@@ -15,6 +15,11 @@ public class CounterclockwiseRotationTrap extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "Counterclockwise Rotation Traps rotate your controls counterclockwise for 6 steps when stepped on.";
+    }
+
+    @Override
     public String getName() {
         return "Counterclockwise Rotation Trap";
     }
@@ -31,10 +36,5 @@ public class CounterclockwiseRotationTrap extends AbstractTrap {
         RetroRPGCS.getInstance().showMessage("Your controls are rotated!");
         RetroRPGCS.getInstance().getGameManager().activateEffect(
                 MazeEffectConstants.EFFECT_ROTATED_COUNTERCLOCKWISE);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Counterclockwise Rotation Traps rotate your controls counterclockwise for 6 steps when stepped on.";
     }
 }

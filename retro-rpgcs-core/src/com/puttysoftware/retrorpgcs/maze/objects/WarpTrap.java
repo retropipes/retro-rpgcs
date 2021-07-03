@@ -15,6 +15,11 @@ public class WarpTrap extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "Warp Traps send anything that steps on one to a random location.";
+    }
+
+    @Override
     public String getName() {
         return "Warp Trap";
     }
@@ -28,7 +33,7 @@ public class WarpTrap extends AbstractTrap {
     public void postMoveAction(final boolean ie, final int dirX,
             final int dirY) {
         RandomRange rr, rc, rf;
-        final RetroRPGCS app = RetroRPGCS.getInstance();
+        final var app = RetroRPGCS.getInstance();
         int maxRow, maxCol, maxFloor, rRow, rCol, rFloor;
         maxRow = app.getMazeManager().getMaze().getRows() - 1;
         rr = new RandomRange(0, maxRow);
@@ -45,10 +50,5 @@ public class WarpTrap extends AbstractTrap {
                 rFloor));
         app.getGameManager().updatePositionAbsolute(rRow, rCol, rFloor);
         SoundManager.playSound(SoundConstants.SOUND_TELEPORT);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Warp Traps send anything that steps on one to a random location.";
     }
 }

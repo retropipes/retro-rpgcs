@@ -22,6 +22,28 @@ import com.puttysoftware.fileutils.FilenameChecker;
 import com.puttysoftware.images.BufferedImageIcon;
 
 public final class GraphicalHelpViewer {
+    private static String getExtension(final File f) {
+        String ext = null;
+        final var s = f.getName();
+        final var i = s.lastIndexOf('.');
+        if (i > 0 && i < s.length() - 1) {
+            ext = s.substring(i + 1).toLowerCase();
+        }
+        return ext;
+    }
+
+    private static String getNameWithoutExtension(final File f) {
+        String ext = null;
+        final var s = f.getAbsolutePath();
+        final var i = s.lastIndexOf('.');
+        if (i > 0 && i < s.length() - 1) {
+            ext = s.substring(0, i);
+        } else {
+            ext = s;
+        }
+        return ext;
+    }
+
     // Fields
     private final Container helpContainer;
     private final Container choiceContainer;
@@ -62,43 +84,19 @@ public final class GraphicalHelpViewer {
         this.updateHelp(pictures, descriptions);
     }
 
-    // Methods
-    public Container getHelp() {
-        return this.helpContainer;
-    }
-
-    public void updateHelp(final BufferedImageIcon[] newImages,
-            final String[] newNames) {
-        BufferedImageIcon[] choices;
-        String[] choiceNames;
-        JLabel[] choiceArray;
-        choices = newImages;
-        choiceNames = newNames;
-        this.choiceContainer.removeAll();
-        this.choiceContainer.setLayout(new GridLayout(choices.length, 1));
-        choiceArray = new JLabel[choices.length];
-        for (int x = 0; x < choices.length; x++) {
-            choiceArray[x] = new JLabel(choiceNames[x], choices[x],
-                    SwingConstants.LEFT);
-            choiceArray[x].setOpaque(true);
-            choiceArray[x].setBackground(this.fill);
-            this.choiceContainer.add(choiceArray[x]);
-        }
-    }
-
     public void exportHelp() {
-        String filename = ""; //$NON-NLS-1$
-        String fileOnly = "\\"; //$NON-NLS-1$
+        var filename = ""; //$NON-NLS-1$
+        var fileOnly = "\\"; //$NON-NLS-1$
         String extension;
-        final FileDialog fc = new FileDialog((JFrame) null, "Export Help", //$NON-NLS-1$
+        final var fc = new FileDialog((JFrame) null, "Export Help", //$NON-NLS-1$
                 FileDialog.SAVE);
         while (!FilenameChecker.isFilenameOK(fileOnly)) {
             fc.setVisible(true);
             if (fc.getFile() != null && fc.getDirectory() != null) {
-                final File file = new File(fc.getDirectory() + fc.getFile());
+                final var file = new File(fc.getDirectory() + fc.getFile());
                 extension = GraphicalHelpViewer.getExtension(file);
                 filename = file.getAbsolutePath();
-                final String dirOnly = fc.getDirectory();
+                final var dirOnly = fc.getDirectory();
                 fileOnly = filename.substring(dirOnly.length() + 1);
                 if (!FilenameChecker.isFilenameOK(fileOnly)) {
                     CommonDialogs.showErrorDialog(
@@ -116,13 +114,13 @@ public final class GraphicalHelpViewer {
                     } else {
                         filename += ".png"; //$NON-NLS-1$
                     }
-                    final Container c = this.choiceContainer;
-                    final Dimension d = c.getPreferredSize();
-                    final BufferedImage bi = new BufferedImage(d.width,
+                    final var c = this.choiceContainer;
+                    final var d = c.getPreferredSize();
+                    final var bi = new BufferedImage(d.width,
                             d.height, BufferedImage.TYPE_INT_ARGB);
                     if (this.fill != null) {
-                        for (int x = 0; x < d.width; x++) {
-                            for (int y = 0; y < d.height; y++) {
+                        for (var x = 0; x < d.width; x++) {
+                            for (var y = 0; y < d.height; y++) {
                                 bi.setRGB(x, y, this.fill.getRGB());
                             }
                         }
@@ -141,30 +139,32 @@ public final class GraphicalHelpViewer {
         }
     }
 
+    // Methods
+    public Container getHelp() {
+        return this.helpContainer;
+    }
+
     public void setHelpSize(final int horz, final int vert) {
         this.helpContainer.setPreferredSize(new Dimension(horz, vert));
         this.scrollPane.setPreferredSize(new Dimension(horz, vert));
     }
 
-    private static String getExtension(final File f) {
-        String ext = null;
-        final String s = f.getName();
-        final int i = s.lastIndexOf('.');
-        if (i > 0 && i < s.length() - 1) {
-            ext = s.substring(i + 1).toLowerCase();
+    public void updateHelp(final BufferedImageIcon[] newImages,
+            final String[] newNames) {
+        BufferedImageIcon[] choices;
+        String[] choiceNames;
+        JLabel[] choiceArray;
+        choices = newImages;
+        choiceNames = newNames;
+        this.choiceContainer.removeAll();
+        this.choiceContainer.setLayout(new GridLayout(choices.length, 1));
+        choiceArray = new JLabel[choices.length];
+        for (var x = 0; x < choices.length; x++) {
+            choiceArray[x] = new JLabel(choiceNames[x], choices[x],
+                    SwingConstants.LEFT);
+            choiceArray[x].setOpaque(true);
+            choiceArray[x].setBackground(this.fill);
+            this.choiceContainer.add(choiceArray[x]);
         }
-        return ext;
-    }
-
-    private static String getNameWithoutExtension(final File f) {
-        String ext = null;
-        final String s = f.getAbsolutePath();
-        final int i = s.lastIndexOf('.');
-        if (i > 0 && i < s.length() - 1) {
-            ext = s.substring(0, i);
-        } else {
-            ext = s;
-        }
-        return ext;
     }
 }

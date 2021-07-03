@@ -8,12 +8,16 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.ObjectImageConstants;
 public class Empty extends AbstractPassThroughObject {
     // Constructors
     public Empty() {
-        super();
     }
 
     @Override
     public int getBaseID() {
         return ObjectImageConstants.OBJECT_IMAGE_EMPTY;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Squares of Emptiness are what fills areas that aren't occupied by other objects.";
     }
 
     @Override
@@ -24,11 +28,6 @@ public class Empty extends AbstractPassThroughObject {
     @Override
     public String getPluralName() {
         return "Squares of Emptiness";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Squares of Emptiness are what fills areas that aren't occupied by other objects.";
     }
 
     @Override

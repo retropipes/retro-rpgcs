@@ -17,6 +17,11 @@ public class FaithPowerShop extends AbstractShop {
     }
 
     @Override
+    public String getDescription() {
+        return "Faith Power Shops will imbue your equipment with the power of your faith, for a fee.";
+    }
+
+    @Override
     public String getName() {
         return "Faith Power Shop";
     }
@@ -24,10 +29,5 @@ public class FaithPowerShop extends AbstractShop {
     @Override
     public String getPluralName() {
         return "Faith Power Shops";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Faith Power Shops will imbue your equipment with the power of your faith, for a fee.";
     }
 }

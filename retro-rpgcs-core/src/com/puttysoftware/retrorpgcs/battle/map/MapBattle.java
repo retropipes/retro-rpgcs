@@ -10,7 +10,6 @@ public class MapBattle {
 
     // Constructors
     public MapBattle() {
-        super();
         this.monster = new BattleCharacter(
                 MonsterFactory.getNewMonsterInstance());
     }

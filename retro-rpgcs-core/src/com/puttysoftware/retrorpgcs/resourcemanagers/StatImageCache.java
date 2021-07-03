@@ -9,33 +9,6 @@ public class StatImageCache {
     private static int CACHE_INCREMENT = 20;
     private static int CACHE_SIZE = 0;
 
-    // Methods
-    static BufferedImageIcon getCachedImage(final String name) {
-        if (!StatImageCache.isInCache(name)) {
-            final BufferedImageIcon bii = StatImageManager
-                    .getUncachedImage(name);
-            final BufferedImageIcon fixed = ImageTransformer
-                    .getTransformedImage(bii,
-                            ImageTransformer.getGraphicSize());
-            StatImageCache.addToCache(name, fixed);
-        }
-        for (final CacheEntry element : StatImageCache.cache) {
-            if (name.equals(element.getName())) {
-                return element.getImage();
-            }
-        }
-        return null;
-    }
-
-    private static void expandCache() {
-        final CacheEntry[] tempCache = new CacheEntry[StatImageCache.cache.length
-                + StatImageCache.CACHE_INCREMENT];
-        for (int x = 0; x < StatImageCache.CACHE_SIZE; x++) {
-            tempCache[x] = StatImageCache.cache[x];
-        }
-        StatImageCache.cache = tempCache;
-    }
-
     static synchronized void addToCache(final String name,
             final BufferedImageIcon bii) {
         if (StatImageCache.cache == null) {
@@ -49,11 +22,38 @@ public class StatImageCache {
         StatImageCache.CACHE_SIZE++;
     }
 
+    private static void expandCache() {
+        final var tempCache = new CacheEntry[StatImageCache.cache.length
+                + StatImageCache.CACHE_INCREMENT];
+        for (var x = 0; x < StatImageCache.CACHE_SIZE; x++) {
+            tempCache[x] = StatImageCache.cache[x];
+        }
+        StatImageCache.cache = tempCache;
+    }
+
+    // Methods
+    static BufferedImageIcon getCachedImage(final String name) {
+        if (!StatImageCache.isInCache(name)) {
+            final var bii = StatImageManager
+                    .getUncachedImage(name);
+            final var fixed = ImageTransformer
+                    .getTransformedImage(bii,
+                            ImageTransformer.getGraphicSize());
+            StatImageCache.addToCache(name, fixed);
+        }
+        for (final CacheEntry element : StatImageCache.cache) {
+            if (name.equals(element.getName())) {
+                return element.getImage();
+            }
+        }
+        return null;
+    }
+
     static synchronized boolean isInCache(final String name) {
         if (StatImageCache.cache == null) {
             StatImageCache.cache = new CacheEntry[StatImageCache.CACHE_INCREMENT];
         }
-        for (int x = 0; x < StatImageCache.CACHE_SIZE; x++) {
+        for (var x = 0; x < StatImageCache.CACHE_SIZE; x++) {
             if (name.equals(StatImageCache.cache[x].getName())) {
                 return true;
             }

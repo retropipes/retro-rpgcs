@@ -7,12 +7,16 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.ObjectImageConstants;
 public class SealingWall extends AbstractWall {
     // Constructors
     public SealingWall() {
-        super();
     }
 
     @Override
     public int getBaseID() {
         return ObjectImageConstants.OBJECT_IMAGE_SEALING_WALL;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Sealing Walls are impassable and indestructible - you'll need to go around them.";
     }
 
     @Override
@@ -23,10 +27,5 @@ public class SealingWall extends AbstractWall {
     @Override
     public String getPluralName() {
         return "Sealing Walls";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Sealing Walls are impassable and indestructible - you'll need to go around them.";
     }
 }

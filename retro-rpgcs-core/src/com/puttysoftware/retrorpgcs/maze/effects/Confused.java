@@ -5,8 +5,6 @@ import com.puttysoftware.randomrange.RandomRange;
 import com.puttysoftware.retrorpgcs.maze.utilities.DirectionConstants;
 
 public class Confused extends MazeEffect {
-    // Fields
-    private int state;
     private static final int CONFUSED_STATE_UDRL = 1;
     private static final int CONFUSED_STATE_ULDR = 2;
     private static final int CONFUSED_STATE_ULRD = 3;
@@ -32,6 +30,8 @@ public class Confused extends MazeEffect {
     private static final int CONFUSED_STATE_RULD = 23;
     private static final int MIN_CONFUSED_STATE = 1;
     private static final int MAX_CONFUSED_STATE = 23;
+    // Fields
+    private int state;
 
     // Constructor
     public Confused(final int newRounds) {
@@ -39,10 +39,12 @@ public class Confused extends MazeEffect {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        final int result = super.hashCode();
-        return prime * result + this.state;
+    public void customExtendLogic() {
+        if (this.rounds == 0) {
+            final var r = new RandomRange(Confused.MIN_CONFUSED_STATE,
+                    Confused.MAX_CONFUSED_STATE);
+            this.state = r.generate();
+        }
     }
 
     @Override
@@ -50,13 +52,10 @@ public class Confused extends MazeEffect {
         if (this == obj) {
             return true;
         }
-        if (!super.equals(obj)) {
+        if (!super.equals(obj) || !(obj instanceof Confused)) {
             return false;
         }
-        if (!(obj instanceof Confused)) {
-            return false;
-        }
-        final Confused other = (Confused) obj;
+        final var other = (Confused) obj;
         if (this.state != other.state) {
             return false;
         }
@@ -64,12 +63,10 @@ public class Confused extends MazeEffect {
     }
 
     @Override
-    public void customExtendLogic() {
-        if (this.rounds == 0) {
-            final RandomRange r = new RandomRange(Confused.MIN_CONFUSED_STATE,
-                    Confused.MAX_CONFUSED_STATE);
-            this.state = r.generate();
-        }
+    public int hashCode() {
+        final var prime = 31;
+        final var result = super.hashCode();
+        return prime * result + this.state;
     }
 
     @Override

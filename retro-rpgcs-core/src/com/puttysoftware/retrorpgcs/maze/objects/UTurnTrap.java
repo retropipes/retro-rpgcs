@@ -15,6 +15,11 @@ public class UTurnTrap extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "U Turn Traps invert your controls for 6 steps when stepped on.";
+    }
+
+    @Override
     public String getName() {
         return "U Turn Trap";
     }
@@ -32,10 +37,5 @@ public class UTurnTrap extends AbstractTrap {
         RetroRPGCS.getInstance().getGameManager()
                 .activateEffect(MazeEffectConstants.EFFECT_U_TURNED);
         SoundManager.playSound(SoundConstants.SOUND_CHANGE);
-    }
-
-    @Override
-    public String getDescription() {
-        return "U Turn Traps invert your controls for 6 steps when stepped on.";
     }
 }

@@ -7,11 +7,6 @@ import com.puttysoftware.retrorpgcs.creatures.castes.predefined.Curer;
 import com.puttysoftware.retrorpgcs.creatures.castes.predefined.Debuffer;
 
 class CasteLoader {
-    // Constructors
-    private CasteLoader() {
-        // Do nothing
-    }
-
     // Methods
     static Caste loadCaste(final String name) {
         if (name.equals(
@@ -30,5 +25,10 @@ class CasteLoader {
             // Invalid caste name
             return null;
         }
+    }
+
+    // Constructors
+    private CasteLoader() {
+        // Do nothing
     }
 }

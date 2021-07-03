@@ -19,11 +19,9 @@ import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
-import com.puttysoftware.images.BufferedImageIcon;
-import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.DrawGrid;
+import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.ai.map.MapAI;
-import com.puttysoftware.retrorpgcs.battle.Battle;
 import com.puttysoftware.retrorpgcs.battle.map.MapBattleDraw;
 import com.puttysoftware.retrorpgcs.battle.map.MapBattleEffects;
 import com.puttysoftware.retrorpgcs.battle.map.MapBattleViewingWindowManager;
@@ -36,6 +34,209 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.BattleImageManager;
 import com.puttysoftware.retrorpgcs.resourcemanagers.ImageTransformer;
 
 class MapTurnBattleGUI {
+    private class EventHandler extends AbstractAction implements KeyListener {
+        private static final long serialVersionUID = 20239525230523524L;
+
+        public EventHandler() {
+            // Do nothing
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            try {
+                final var cmd = e.getActionCommand();
+                final var b = RetroRPGCS.getInstance().getBattle();
+                // Do Player Actions
+                if (cmd.equals("Cast Spell") || cmd.equals("c")) {
+                    // Cast Spell
+                    b.doPlayerActions(MapAI.ACTION_CAST_SPELL);
+                } else if (cmd.equals("Steal") || cmd.equals("t")) {
+                    // Steal Money
+                    b.doPlayerActions(MapAI.ACTION_STEAL);
+                } else if (cmd.equals("Drain") || cmd.equals("d")) {
+                    // Drain Enemy
+                    b.doPlayerActions(MapAI.ACTION_DRAIN);
+                } else if (cmd.equals("Use Item") || cmd.equals("i")) {
+                    // Use Item
+                    b.doPlayerActions(MapAI.ACTION_USE_ITEM);
+                } else if (cmd.equals("End Turn") || cmd.equals("e")) {
+                    // End Turn
+                    b.endTurn();
+                }
+            } catch (final Throwable t) {
+                RetroRPGCS.getInstance().handleError(t);
+            }
+        }
+
+        private void handleArrows(final KeyEvent e) {
+            try {
+                if (System.getProperty("os.name")
+                        .equalsIgnoreCase("Mac OS X")) {
+                    if (e.isMetaDown()) {
+                        return;
+                    }
+                } else if (e.isControlDown()) {
+                    return;
+                }
+                final var bl = RetroRPGCS.getInstance().getBattle();
+                final var bg = MapTurnBattleGUI.this;
+                if (bg.eventHandlersOn) {
+                    final var keyCode = e.getKeyCode();
+                    switch (keyCode) {
+                    case KeyEvent.VK_NUMPAD4:
+                    case KeyEvent.VK_LEFT:
+                    case KeyEvent.VK_A:
+                        bl.fireArrow(-1, 0);
+                        break;
+                    case KeyEvent.VK_NUMPAD2:
+                    case KeyEvent.VK_DOWN:
+                    case KeyEvent.VK_X:
+                        bl.fireArrow(0, 1);
+                        break;
+                    case KeyEvent.VK_NUMPAD6:
+                    case KeyEvent.VK_RIGHT:
+                    case KeyEvent.VK_D:
+                        bl.fireArrow(1, 0);
+                        break;
+                    case KeyEvent.VK_NUMPAD8:
+                    case KeyEvent.VK_UP:
+                    case KeyEvent.VK_W:
+                        bl.fireArrow(0, -1);
+                        break;
+                    case KeyEvent.VK_NUMPAD7:
+                    case KeyEvent.VK_Q:
+                        bl.fireArrow(-1, -1);
+                        break;
+                    case KeyEvent.VK_NUMPAD9:
+                    case KeyEvent.VK_E:
+                        bl.fireArrow(1, -1);
+                        break;
+                    case KeyEvent.VK_NUMPAD3:
+                    case KeyEvent.VK_C:
+                        bl.fireArrow(1, 1);
+                        break;
+                    case KeyEvent.VK_NUMPAD1:
+                    case KeyEvent.VK_Z:
+                        bl.fireArrow(-1, 1);
+                        break;
+                    case KeyEvent.VK_NUMPAD5:
+                    case KeyEvent.VK_S:
+                        // Confirm before attacking self
+                        final var res = CommonDialogs.showConfirmDialog(
+                                "Are you sure you want to attack yourself?",
+                                "Battle");
+                        if (res == JOptionPane.YES_OPTION) {
+                            bl.fireArrow(0, 0);
+                        }
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            } catch (final Exception ex) {
+                RetroRPGCS.getInstance().handleError(ex);
+            }
+        }
+
+        private void handleMovement(final KeyEvent e) {
+            try {
+                if (System.getProperty("os.name")
+                        .equalsIgnoreCase("Mac OS X")) {
+                    if (e.isMetaDown()) {
+                        return;
+                    }
+                } else if (e.isControlDown()) {
+                    return;
+                }
+                final var bl = RetroRPGCS.getInstance().getBattle();
+                final var bg = MapTurnBattleGUI.this;
+                if (bg.eventHandlersOn) {
+                    final var keyCode = e.getKeyCode();
+                    switch (keyCode) {
+                    case KeyEvent.VK_NUMPAD4:
+                    case KeyEvent.VK_LEFT:
+                    case KeyEvent.VK_A:
+                        bl.updatePosition(-1, 0);
+                        break;
+                    case KeyEvent.VK_NUMPAD2:
+                    case KeyEvent.VK_DOWN:
+                    case KeyEvent.VK_X:
+                        bl.updatePosition(0, 1);
+                        break;
+                    case KeyEvent.VK_NUMPAD6:
+                    case KeyEvent.VK_RIGHT:
+                    case KeyEvent.VK_D:
+                        bl.updatePosition(1, 0);
+                        break;
+                    case KeyEvent.VK_NUMPAD8:
+                    case KeyEvent.VK_UP:
+                    case KeyEvent.VK_W:
+                        bl.updatePosition(0, -1);
+                        break;
+                    case KeyEvent.VK_NUMPAD7:
+                    case KeyEvent.VK_Q:
+                        bl.updatePosition(-1, -1);
+                        break;
+                    case KeyEvent.VK_NUMPAD9:
+                    case KeyEvent.VK_E:
+                        bl.updatePosition(1, -1);
+                        break;
+                    case KeyEvent.VK_NUMPAD3:
+                    case KeyEvent.VK_C:
+                        bl.updatePosition(1, 1);
+                        break;
+                    case KeyEvent.VK_NUMPAD1:
+                    case KeyEvent.VK_Z:
+                        bl.updatePosition(-1, 1);
+                        break;
+                    case KeyEvent.VK_NUMPAD5:
+                    case KeyEvent.VK_S:
+                        // Confirm before attacking self
+                        final var res = CommonDialogs.showConfirmDialog(
+                                "Are you sure you want to attack yourself?",
+                                "Battle");
+                        if (res == JOptionPane.YES_OPTION) {
+                            bl.updatePosition(0, 0);
+                        }
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            } catch (final Exception ex) {
+                RetroRPGCS.getInstance().handleError(ex);
+            }
+        }
+
+        @Override
+        public void keyPressed(final KeyEvent e) {
+            if (!PreferencesManager.oneMove()) {
+                if (e.isShiftDown()) {
+                    this.handleArrows(e);
+                } else {
+                    this.handleMovement(e);
+                }
+            }
+        }
+
+        @Override
+        public void keyReleased(final KeyEvent e) {
+            if (PreferencesManager.oneMove()) {
+                if (e.isShiftDown()) {
+                    this.handleArrows(e);
+                } else {
+                    this.handleMovement(e);
+                }
+            }
+        }
+
+        @Override
+        public void keyTyped(final KeyEvent e) {
+            // Do nothing
+        }
+    }
+
+    private static final int MAX_TEXT = 1000;
     // Fields
     private JFrame battleFrame;
     private MapBattleDraw battlePane;
@@ -46,7 +247,6 @@ class MapTurnBattleGUI {
     private DrawGrid drawGrid;
     boolean eventHandlersOn;
     private JButton spell, steal, drain, item, end;
-    private static final int MAX_TEXT = 1000;
 
     // Constructors
     MapTurnBattleGUI() {
@@ -57,6 +257,14 @@ class MapTurnBattleGUI {
         this.eventHandlersOn = true;
     }
 
+    boolean areEventHandlersOn() {
+        return this.eventHandlersOn;
+    }
+
+    void clearStatusMessage() {
+        this.messageLabel.setText(" ");
+    }
+
     // Methods
     JFrame getOutputFrame() {
         return this.battleFrame;
@@ -64,25 +272,6 @@ class MapTurnBattleGUI {
 
     MapBattleViewingWindowManager getViewManager() {
         return this.vwMgr;
-    }
-
-    void clearStatusMessage() {
-        this.messageLabel.setText(" ");
-    }
-
-    void setStatusMessage(final String msg) {
-        if (this.messageLabel.getText().length() > MapTurnBattleGUI.MAX_TEXT) {
-            this.clearStatusMessage();
-        }
-        if (!msg.isEmpty() && !msg.matches("\\s+")) {
-            this.messageLabel.setText(msg);
-        }
-    }
-
-    void showBattle() {
-        this.battleFrame.setVisible(true);
-        this.battleFrame.setJMenuBar(
-                RetroRPGCS.getInstance().getMenus().getMainMenuBar());
     }
 
     void hideBattle() {
@@ -96,19 +285,19 @@ class MapTurnBattleGUI {
         if (this.battleFrame.isVisible()) {
             int x, y;
             int xFix, yFix;
-            final int xView = this.vwMgr.getViewingWindowLocationX();
-            final int yView = this.vwMgr.getViewingWindowLocationY();
-            final int xlView = this.vwMgr.getLowerRightViewingWindowLocationX();
-            final int ylView = this.vwMgr.getLowerRightViewingWindowLocationY();
+            final var xView = this.vwMgr.getViewingWindowLocationX();
+            final var yView = this.vwMgr.getViewingWindowLocationY();
+            final var xlView = this.vwMgr.getLowerRightViewingWindowLocationX();
+            final var ylView = this.vwMgr.getLowerRightViewingWindowLocationY();
             for (x = xView; x <= xlView; x++) {
                 for (y = yView; y <= ylView; y++) {
                     xFix = x - xView;
                     yFix = y - yView;
                     try {
-                        final BufferedImageIcon icon1 = bd.getBattleMaze()
+                        final var icon1 = bd.getBattleMaze()
                                 .getCell(y, x, 0, MazeConstants.LAYER_GROUND)
                                 .battleRenderHook();
-                        final BufferedImageIcon icon2 = bd.getBattleMaze()
+                        final var icon2 = bd.getBattleMaze()
                                 .getCell(y, x, 0, MazeConstants.LAYER_OBJECT)
                                 .battleRenderHook();
                         this.drawGrid.setImageCell(
@@ -116,11 +305,11 @@ class MapTurnBattleGUI {
                                         BattleImageManager.getGraphicSize()),
                                 xFix, yFix);
                     } catch (final ArrayIndexOutOfBoundsException ae) {
-                        final EmptyVoid ev = new EmptyVoid();
+                        final var ev = new EmptyVoid();
                         this.drawGrid.setImageCell(ev.battleRenderHook(), xFix,
                                 yFix);
                     } catch (final NullPointerException np) {
-                        final EmptyVoid ev = new EmptyVoid();
+                        final var ev = new EmptyVoid();
                         this.drawGrid.setImageCell(ev.battleRenderHook(), xFix,
                                 yFix);
                     }
@@ -137,17 +326,17 @@ class MapTurnBattleGUI {
         if (this.battleFrame.isVisible()) {
             try {
                 int xFix, yFix;
-                final int xView = this.vwMgr.getViewingWindowLocationX();
-                final int yView = this.vwMgr.getViewingWindowLocationY();
+                final var xView = this.vwMgr.getViewingWindowLocationX();
+                final var yView = this.vwMgr.getViewingWindowLocationY();
                 xFix = y - xView;
                 yFix = x - yView;
-                final BufferedImageIcon icon1 = bd.getBattleMaze()
+                final var icon1 = bd.getBattleMaze()
                         .getCell(x, y, 0, MazeConstants.LAYER_GROUND)
                         .battleRenderHook();
-                final BufferedImageIcon icon2 = bd.getBattleMaze()
+                final var icon2 = bd.getBattleMaze()
                         .getCell(x, y, 0, MazeConstants.LAYER_OBJECT)
                         .battleRenderHook();
-                final BufferedImageIcon icon3 = obj3.battleRenderHook();
+                final var icon3 = obj3.battleRenderHook();
                 this.drawGrid.setImageCell(
                         ImageTransformer.getVirtualCompositeImage(icon1, icon2,
                                 icon3, BattleImageManager.getGraphicSize()),
@@ -162,15 +351,19 @@ class MapTurnBattleGUI {
         }
     }
 
-    void updateStatsAndEffects(final MapTurnBattleDefinitions bd) {
-        this.bs.updateStats(bd.getActiveCharacter());
-        this.be.updateEffects(bd.getActiveCharacter());
+    void setStatusMessage(final String msg) {
+        if (this.messageLabel.getText().length() > MapTurnBattleGUI.MAX_TEXT) {
+            this.clearStatusMessage();
+        }
+        if (!msg.isEmpty() && !msg.matches("\\s+")) {
+            this.messageLabel.setText(msg);
+        }
     }
 
     private void setUpGUI() {
-        final EventHandler handler = new EventHandler();
-        final Container borderPane = new Container();
-        final Container buttonPane = new Container();
+        final var handler = new EventHandler();
+        final var borderPane = new Container();
+        final var buttonPane = new Container();
         borderPane.setLayout(new BorderLayout());
         this.messageLabel = new JLabel(" ");
         this.messageLabel.setOpaque(true);
@@ -224,11 +417,11 @@ class MapTurnBattleGUI {
         this.battleFrame.setResizable(false);
         this.drawGrid = new DrawGrid(
                 MapBattleViewingWindowManager.getViewingWindowSize());
-        for (int x = 0; x < MapBattleViewingWindowManager
+        for (var x = 0; x < MapBattleViewingWindowManager
                 .getViewingWindowSize(); x++) {
-            for (int y = 0; y < MapBattleViewingWindowManager
+            for (var y = 0; y < MapBattleViewingWindowManager
                     .getViewingWindowSize(); y++) {
-                final AbstractMazeObject dark = new Darkness().gameRenderHook(y,
+                final var dark = new Darkness().gameRenderHook(y,
                         x, 0);
                 this.drawGrid.setImageCell(BattleImageManager.getImage(
                         dark.getName(), dark.getGameBaseID(),
@@ -242,6 +435,12 @@ class MapTurnBattleGUI {
         borderPane.add(this.bs.getStatsPane(), BorderLayout.EAST);
         borderPane.add(this.be.getEffectsPane(), BorderLayout.SOUTH);
         this.battleFrame.addKeyListener(handler);
+    }
+
+    void showBattle() {
+        this.battleFrame.setVisible(true);
+        this.battleFrame.setJMenuBar(
+                RetroRPGCS.getInstance().getMenus().getMainMenuBar());
     }
 
     void turnEventHandlersOff() {
@@ -262,213 +461,8 @@ class MapTurnBattleGUI {
         this.end.setEnabled(true);
     }
 
-    boolean areEventHandlersOn() {
-        return this.eventHandlersOn;
-    }
-
-    private class EventHandler extends AbstractAction implements KeyListener {
-        private static final long serialVersionUID = 20239525230523524L;
-
-        public EventHandler() {
-            // Do nothing
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            try {
-                final String cmd = e.getActionCommand();
-                final Battle b = RetroRPGCS.getInstance().getBattle();
-                // Do Player Actions
-                if (cmd.equals("Cast Spell") || cmd.equals("c")) {
-                    // Cast Spell
-                    b.doPlayerActions(MapAI.ACTION_CAST_SPELL);
-                } else if (cmd.equals("Steal") || cmd.equals("t")) {
-                    // Steal Money
-                    b.doPlayerActions(MapAI.ACTION_STEAL);
-                } else if (cmd.equals("Drain") || cmd.equals("d")) {
-                    // Drain Enemy
-                    b.doPlayerActions(MapAI.ACTION_DRAIN);
-                } else if (cmd.equals("Use Item") || cmd.equals("i")) {
-                    // Use Item
-                    b.doPlayerActions(MapAI.ACTION_USE_ITEM);
-                } else if (cmd.equals("End Turn") || cmd.equals("e")) {
-                    // End Turn
-                    b.endTurn();
-                }
-            } catch (final Throwable t) {
-                RetroRPGCS.getInstance().handleError(t);
-            }
-        }
-
-        @Override
-        public void keyPressed(final KeyEvent e) {
-            if (!PreferencesManager.oneMove()) {
-                if (e.isShiftDown()) {
-                    this.handleArrows(e);
-                } else {
-                    this.handleMovement(e);
-                }
-            }
-        }
-
-        @Override
-        public void keyReleased(final KeyEvent e) {
-            if (PreferencesManager.oneMove()) {
-                if (e.isShiftDown()) {
-                    this.handleArrows(e);
-                } else {
-                    this.handleMovement(e);
-                }
-            }
-        }
-
-        @Override
-        public void keyTyped(final KeyEvent e) {
-            // Do nothing
-        }
-
-        private void handleMovement(final KeyEvent e) {
-            try {
-                if (System.getProperty("os.name")
-                        .equalsIgnoreCase("Mac OS X")) {
-                    if (e.isMetaDown()) {
-                        return;
-                    }
-                } else {
-                    if (e.isControlDown()) {
-                        return;
-                    }
-                }
-                final Battle bl = RetroRPGCS.getInstance().getBattle();
-                final MapTurnBattleGUI bg = MapTurnBattleGUI.this;
-                if (bg.eventHandlersOn) {
-                    final int keyCode = e.getKeyCode();
-                    switch (keyCode) {
-                    case KeyEvent.VK_NUMPAD4:
-                    case KeyEvent.VK_LEFT:
-                    case KeyEvent.VK_A:
-                        bl.updatePosition(-1, 0);
-                        break;
-                    case KeyEvent.VK_NUMPAD2:
-                    case KeyEvent.VK_DOWN:
-                    case KeyEvent.VK_X:
-                        bl.updatePosition(0, 1);
-                        break;
-                    case KeyEvent.VK_NUMPAD6:
-                    case KeyEvent.VK_RIGHT:
-                    case KeyEvent.VK_D:
-                        bl.updatePosition(1, 0);
-                        break;
-                    case KeyEvent.VK_NUMPAD8:
-                    case KeyEvent.VK_UP:
-                    case KeyEvent.VK_W:
-                        bl.updatePosition(0, -1);
-                        break;
-                    case KeyEvent.VK_NUMPAD7:
-                    case KeyEvent.VK_Q:
-                        bl.updatePosition(-1, -1);
-                        break;
-                    case KeyEvent.VK_NUMPAD9:
-                    case KeyEvent.VK_E:
-                        bl.updatePosition(1, -1);
-                        break;
-                    case KeyEvent.VK_NUMPAD3:
-                    case KeyEvent.VK_C:
-                        bl.updatePosition(1, 1);
-                        break;
-                    case KeyEvent.VK_NUMPAD1:
-                    case KeyEvent.VK_Z:
-                        bl.updatePosition(-1, 1);
-                        break;
-                    case KeyEvent.VK_NUMPAD5:
-                    case KeyEvent.VK_S:
-                        // Confirm before attacking self
-                        final int res = CommonDialogs.showConfirmDialog(
-                                "Are you sure you want to attack yourself?",
-                                "Battle");
-                        if (res == JOptionPane.YES_OPTION) {
-                            bl.updatePosition(0, 0);
-                        }
-                        break;
-                    default:
-                        break;
-                    }
-                }
-            } catch (final Exception ex) {
-                RetroRPGCS.getInstance().handleError(ex);
-            }
-        }
-
-        private void handleArrows(final KeyEvent e) {
-            try {
-                if (System.getProperty("os.name")
-                        .equalsIgnoreCase("Mac OS X")) {
-                    if (e.isMetaDown()) {
-                        return;
-                    }
-                } else {
-                    if (e.isControlDown()) {
-                        return;
-                    }
-                }
-                final Battle bl = RetroRPGCS.getInstance().getBattle();
-                final MapTurnBattleGUI bg = MapTurnBattleGUI.this;
-                if (bg.eventHandlersOn) {
-                    final int keyCode = e.getKeyCode();
-                    switch (keyCode) {
-                    case KeyEvent.VK_NUMPAD4:
-                    case KeyEvent.VK_LEFT:
-                    case KeyEvent.VK_A:
-                        bl.fireArrow(-1, 0);
-                        break;
-                    case KeyEvent.VK_NUMPAD2:
-                    case KeyEvent.VK_DOWN:
-                    case KeyEvent.VK_X:
-                        bl.fireArrow(0, 1);
-                        break;
-                    case KeyEvent.VK_NUMPAD6:
-                    case KeyEvent.VK_RIGHT:
-                    case KeyEvent.VK_D:
-                        bl.fireArrow(1, 0);
-                        break;
-                    case KeyEvent.VK_NUMPAD8:
-                    case KeyEvent.VK_UP:
-                    case KeyEvent.VK_W:
-                        bl.fireArrow(0, -1);
-                        break;
-                    case KeyEvent.VK_NUMPAD7:
-                    case KeyEvent.VK_Q:
-                        bl.fireArrow(-1, -1);
-                        break;
-                    case KeyEvent.VK_NUMPAD9:
-                    case KeyEvent.VK_E:
-                        bl.fireArrow(1, -1);
-                        break;
-                    case KeyEvent.VK_NUMPAD3:
-                    case KeyEvent.VK_C:
-                        bl.fireArrow(1, 1);
-                        break;
-                    case KeyEvent.VK_NUMPAD1:
-                    case KeyEvent.VK_Z:
-                        bl.fireArrow(-1, 1);
-                        break;
-                    case KeyEvent.VK_NUMPAD5:
-                    case KeyEvent.VK_S:
-                        // Confirm before attacking self
-                        final int res = CommonDialogs.showConfirmDialog(
-                                "Are you sure you want to attack yourself?",
-                                "Battle");
-                        if (res == JOptionPane.YES_OPTION) {
-                            bl.fireArrow(0, 0);
-                        }
-                        break;
-                    default:
-                        break;
-                    }
-                }
-            } catch (final Exception ex) {
-                RetroRPGCS.getInstance().handleError(ex);
-            }
-        }
+    void updateStatsAndEffects(final MapTurnBattleDefinitions bd) {
+        this.bs.updateStats(bd.getActiveCharacter());
+        this.be.updateEffects(bd.getActiveCharacter());
     }
 }

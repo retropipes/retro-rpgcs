@@ -56,12 +56,12 @@ public class SoundConstants {
     public static final int SOUND_WEAKNESS = 78;
     private static final String[] SOUND_NAMES = SoundDataManager.getSoundData();
 
+    static String getSoundName(final int ID) {
+        return SoundConstants.SOUND_NAMES[ID];
+    }
+
     // Private constructor
     private SoundConstants() {
         // Do nothing
-    }
-
-    static String getSoundName(final int ID) {
-        return SoundConstants.SOUND_NAMES[ID];
     }
 }

@@ -4,7 +4,6 @@ package com.puttysoftware.retrorpgcs.maze.abc;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.maze.MazeConstants;
 import com.puttysoftware.retrorpgcs.maze.utilities.TypeConstants;
-import com.puttysoftware.retrorpgcs.shops.Shop;
 
 public abstract class AbstractShop extends AbstractMazeObject {
     // Fields
@@ -16,20 +15,9 @@ public abstract class AbstractShop extends AbstractMazeObject {
         this.shopType = newShopType;
     }
 
-    // Methods
     @Override
-    protected void setTypes() {
-        this.type.set(TypeConstants.TYPE_SHOP);
-    }
-
-    @Override
-    public void postMoveAction(final boolean ie, final int dirX,
-            final int dirY) {
-        final Shop shop = RetroRPGCS.getInstance()
-                .getGenericShop(this.shopType);
-        if (shop != null) {
-            shop.showShop();
-        }
+    public int getCustomProperty(final int propID) {
+        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
     }
 
     @Override
@@ -38,12 +26,23 @@ public abstract class AbstractShop extends AbstractMazeObject {
     }
 
     @Override
-    public int getCustomProperty(final int propID) {
-        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
+    public void postMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        final var shop = RetroRPGCS.getInstance()
+                .getGenericShop(this.shopType);
+        if (shop != null) {
+            shop.showShop();
+        }
     }
 
     @Override
     public void setCustomProperty(final int propID, final int value) {
         // Do nothing
+    }
+
+    // Methods
+    @Override
+    protected void setTypes() {
+        this.type.set(TypeConstants.TYPE_SHOP);
     }
 }

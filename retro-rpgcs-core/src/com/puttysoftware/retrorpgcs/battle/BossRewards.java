@@ -4,20 +4,14 @@ package com.puttysoftware.retrorpgcs.battle;
 import javax.swing.JOptionPane;
 
 import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
-import com.puttysoftware.retrorpgcs.creatures.party.PartyMember;
 
 public class BossRewards {
     // Fields
     static final String[] rewardOptions = { "Attack", "Defense", "HP", "MP" };
 
-    // Constructor
-    private BossRewards() {
-        // Do nothing
-    }
-
     // Methods
     public static void doRewards() {
-        final PartyMember player = PartyManager.getParty().getLeader();
+        final var player = PartyManager.getParty().getLeader();
         String dialogResult = null;
         while (dialogResult == null) {
             dialogResult = (String) JOptionPane.showInputDialog(null,
@@ -39,5 +33,10 @@ public class BossRewards {
             player.spendPointOnMP();
         }
         PartyManager.updatePostKill();
+    }
+
+    // Constructor
+    private BossRewards() {
+        // Do nothing
     }
 }

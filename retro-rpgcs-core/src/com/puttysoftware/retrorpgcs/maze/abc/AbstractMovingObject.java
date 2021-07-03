@@ -10,6 +10,19 @@ public abstract class AbstractMovingObject extends AbstractMazeObject {
         super(solid, false);
     }
 
+    @Override
+    public int getCustomProperty(final int propID) {
+        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
+    }
+
+    @Override
+    public int getLayer() {
+        return MazeConstants.LAYER_OBJECT;
+    }
+
+    @Override
+    public abstract String getName();
+
     // Methods
     @Override
     public boolean isMoving() {
@@ -27,25 +40,12 @@ public abstract class AbstractMovingObject extends AbstractMazeObject {
     }
 
     @Override
-    public abstract String getName();
-
-    @Override
-    public int getLayer() {
-        return MazeConstants.LAYER_OBJECT;
+    public void setCustomProperty(final int propID, final int value) {
+        // Do nothing
     }
 
     @Override
     protected void setTypes() {
         this.type.set(TypeConstants.TYPE_DUNGEON);
-    }
-
-    @Override
-    public int getCustomProperty(final int propID) {
-        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
-    }
-
-    @Override
-    public void setCustomProperty(final int propID, final int value) {
-        // Do nothing
     }
 }

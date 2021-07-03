@@ -2,10 +2,27 @@
 package com.puttysoftware.retrorpgcs.maze.utilities;
 
 public class DirectionResolver {
+    public static final String resolveDirectionConstantToName(final int dir) {
+        String res = null;
+        res = switch (dir) {
+        case DirectionConstants.DIRECTION_NORTH -> DirectionConstants.DIRECTION_NORTH_NAME;
+        case DirectionConstants.DIRECTION_SOUTH -> DirectionConstants.DIRECTION_SOUTH_NAME;
+        case DirectionConstants.DIRECTION_WEST -> DirectionConstants.DIRECTION_WEST_NAME;
+        case DirectionConstants.DIRECTION_EAST -> DirectionConstants.DIRECTION_EAST_NAME;
+        case DirectionConstants.DIRECTION_SOUTHEAST -> DirectionConstants.DIRECTION_SOUTHEAST_NAME;
+        case DirectionConstants.DIRECTION_SOUTHWEST -> DirectionConstants.DIRECTION_SOUTHWEST_NAME;
+        case DirectionConstants.DIRECTION_NORTHWEST -> DirectionConstants.DIRECTION_NORTHWEST_NAME;
+        case DirectionConstants.DIRECTION_NORTHEAST -> DirectionConstants.DIRECTION_NORTHEAST_NAME;
+        case DirectionConstants.DIRECTION_NONE -> DirectionConstants.DIRECTION_NONE_NAME;
+        default -> DirectionConstants.DIRECTION_INVALID_NAME;
+        };
+        return res;
+    }
+
     public static final int resolveRelativeDirection(final int dirX,
             final int dirY) {
-        final int fdX = (int) Math.signum(dirX);
-        final int fdY = (int) Math.signum(dirY);
+        final var fdX = (int) Math.signum(dirX);
+        final var fdY = (int) Math.signum(dirY);
         if (fdX == 0 && fdY == 0) {
             return DirectionConstants.DIRECTION_NONE;
         } else if (fdX == 0 && fdY == -1) {
@@ -30,63 +47,73 @@ public class DirectionResolver {
     }
 
     public static final int[] unresolveRelativeDirection(final int dir) {
-        int[] res = new int[2];
-        if (dir == DirectionConstants.DIRECTION_NONE) {
-            res[0] = 0;
-            res[1] = 0;
-        } else if (dir == DirectionConstants.DIRECTION_NORTH) {
-            res[0] = 0;
-            res[1] = -1;
-        } else if (dir == DirectionConstants.DIRECTION_SOUTH) {
-            res[0] = 0;
-            res[1] = 1;
-        } else if (dir == DirectionConstants.DIRECTION_WEST) {
-            res[0] = -1;
-            res[1] = 0;
-        } else if (dir == DirectionConstants.DIRECTION_EAST) {
-            res[0] = 1;
-            res[1] = 0;
-        } else if (dir == DirectionConstants.DIRECTION_SOUTHEAST) {
-            res[0] = 1;
-            res[1] = 1;
-        } else if (dir == DirectionConstants.DIRECTION_SOUTHWEST) {
-            res[0] = -1;
-            res[1] = 1;
-        } else if (dir == DirectionConstants.DIRECTION_NORTHWEST) {
-            res[0] = -1;
-            res[1] = -1;
-        } else if (dir == DirectionConstants.DIRECTION_NORTHEAST) {
-            res[0] = 1;
-            res[1] = -1;
-        } else {
-            res = null;
-        }
-        return res;
+        return new int[] { unresolveRelativeDirectionX(dir),
+                unresolveRelativeDirectionY(dir) };
     }
 
-    public static final String resolveDirectionConstantToName(final int dir) {
-        String res = null;
-        if (dir == DirectionConstants.DIRECTION_NORTH) {
-            res = DirectionConstants.DIRECTION_NORTH_NAME;
-        } else if (dir == DirectionConstants.DIRECTION_SOUTH) {
-            res = DirectionConstants.DIRECTION_SOUTH_NAME;
-        } else if (dir == DirectionConstants.DIRECTION_WEST) {
-            res = DirectionConstants.DIRECTION_WEST_NAME;
-        } else if (dir == DirectionConstants.DIRECTION_EAST) {
-            res = DirectionConstants.DIRECTION_EAST_NAME;
-        } else if (dir == DirectionConstants.DIRECTION_SOUTHEAST) {
-            res = DirectionConstants.DIRECTION_SOUTHEAST_NAME;
-        } else if (dir == DirectionConstants.DIRECTION_SOUTHWEST) {
-            res = DirectionConstants.DIRECTION_SOUTHWEST_NAME;
-        } else if (dir == DirectionConstants.DIRECTION_NORTHWEST) {
-            res = DirectionConstants.DIRECTION_NORTHWEST_NAME;
-        } else if (dir == DirectionConstants.DIRECTION_NORTHEAST) {
-            res = DirectionConstants.DIRECTION_NORTHEAST_NAME;
-        } else if (dir == DirectionConstants.DIRECTION_NONE) {
-            res = DirectionConstants.DIRECTION_NONE_NAME;
-        } else {
-            res = DirectionConstants.DIRECTION_INVALID_NAME;
+    private static final int unresolveRelativeDirectionX(final int dir) {
+        return switch (dir) {
+        case DirectionConstants.DIRECTION_NONE -> {
+            yield 0;
         }
-        return res;
+        case DirectionConstants.DIRECTION_NORTH -> {
+            yield 0;
+        }
+        case DirectionConstants.DIRECTION_SOUTH -> {
+            yield 0;
+        }
+        case DirectionConstants.DIRECTION_WEST -> {
+            yield -1;
+        }
+        case DirectionConstants.DIRECTION_EAST -> {
+            yield 1;
+        }
+        case DirectionConstants.DIRECTION_SOUTHEAST -> {
+            yield 1;
+        }
+        case DirectionConstants.DIRECTION_SOUTHWEST -> {
+            yield -1;
+        }
+        case DirectionConstants.DIRECTION_NORTHWEST -> {
+            yield -1;
+        }
+        case DirectionConstants.DIRECTION_NORTHEAST -> {
+            yield 1;
+        }
+        default -> 0;
+        };
+    }
+
+    private static final int unresolveRelativeDirectionY(final int dir) {
+        return switch (dir) {
+        case DirectionConstants.DIRECTION_NONE -> {
+            yield 0;
+        }
+        case DirectionConstants.DIRECTION_NORTH -> {
+            yield -1;
+        }
+        case DirectionConstants.DIRECTION_SOUTH -> {
+            yield 1;
+        }
+        case DirectionConstants.DIRECTION_WEST -> {
+            yield 0;
+        }
+        case DirectionConstants.DIRECTION_EAST -> {
+            yield 0;
+        }
+        case DirectionConstants.DIRECTION_SOUTHEAST -> {
+            yield 1;
+        }
+        case DirectionConstants.DIRECTION_SOUTHWEST -> {
+            yield 1;
+        }
+        case DirectionConstants.DIRECTION_NORTHWEST -> {
+            yield -1;
+        }
+        case DirectionConstants.DIRECTION_NORTHEAST -> {
+            yield -1;
+        }
+        default -> 0;
+        };
     }
 }

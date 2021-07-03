@@ -2,7 +2,6 @@
 package com.puttysoftware.retrorpgcs;
 
 import java.awt.BorderLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,12 +9,21 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import com.puttysoftware.images.BufferedImageIcon;
 import com.puttysoftware.retrorpgcs.help.GraphicalHelpViewer;
-import com.puttysoftware.retrorpgcs.maze.utilities.MazeObjectList;
 import com.puttysoftware.retrorpgcs.resourcemanagers.ImageTransformer;
 
 public class ObjectHelpManager {
+    private class ButtonHandler implements ActionListener {
+        ButtonHandler() {
+            // Do nothing
+        }
+
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            ObjectHelpManager.this.hv.exportHelp();
+        }
+    }
+
     // Fields
     private JFrame helpFrame;
     GraphicalHelpViewer hv;
@@ -26,25 +34,19 @@ public class ObjectHelpManager {
         // Do nothing
     }
 
-    // Methods
-    public void showHelp() {
-        this.initHelp();
-        this.helpFrame.setVisible(true);
-    }
-
     private void initHelp() {
         if (!this.inited) {
-            final ButtonHandler buttonHandler = new ButtonHandler();
-            final MazeObjectList objectList = RetroRPGCS.getInstance()
+            final var buttonHandler = new ButtonHandler();
+            final var objectList = RetroRPGCS.getInstance()
                     .getObjects();
-            final String[] objectNames = objectList.getAllDescriptions();
-            final BufferedImageIcon[] objectAppearances = objectList
+            final var objectNames = objectList.getAllDescriptions();
+            final var objectAppearances = objectList
                     .getAllEditorAppearances();
             this.hv = new GraphicalHelpViewer(objectAppearances, objectNames);
-            final JButton export = new JButton("Export");
+            final var export = new JButton("Export");
             export.addActionListener(buttonHandler);
             this.helpFrame = new JFrame("RetroRPGCS Object Help");
-            final Image iconlogo = RetroRPGCS.getIconLogo();
+            final var iconlogo = RetroRPGCS.getIconLogo();
             this.helpFrame.setIconImage(iconlogo);
             this.helpFrame
                     .setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
@@ -57,7 +59,7 @@ public class ObjectHelpManager {
             this.helpFrame.setResizable(false);
             // Mac OS X-specific fixes
             if (System.getProperty("os.name").startsWith("Mac OS X")) {
-                final MenuManager menu = new MenuManager();
+                final var menu = new MenuManager();
                 menu.setHelpMenus();
                 this.helpFrame.setJMenuBar(menu.getMainMenuBar());
             }
@@ -65,14 +67,9 @@ public class ObjectHelpManager {
         }
     }
 
-    private class ButtonHandler implements ActionListener {
-        ButtonHandler() {
-            // Do nothing
-        }
-
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            ObjectHelpManager.this.hv.exportHelp();
-        }
+    // Methods
+    public void showHelp() {
+        this.initHelp();
+        this.helpFrame.setVisible(true);
     }
 }

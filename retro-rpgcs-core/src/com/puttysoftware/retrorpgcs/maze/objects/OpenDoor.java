@@ -7,12 +7,16 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.ObjectImageConstants;
 public class OpenDoor extends AbstractPassThroughObject {
     // Constructors
     public OpenDoor() {
-        super();
     }
 
     @Override
     public int getBaseID() {
         return ObjectImageConstants.OBJECT_IMAGE_OPEN_DOOR;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Open Doors are purely decorative.";
     }
 
     // Scriptability
@@ -24,10 +28,5 @@ public class OpenDoor extends AbstractPassThroughObject {
     @Override
     public String getPluralName() {
         return "Open Doors";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Open Doors are purely decorative.";
     }
 }

@@ -15,7 +15,9 @@ public abstract class AbstractGround extends AbstractMazeObject {
     }
 
     @Override
-    public abstract String getName();
+    public int getCustomProperty(final int propID) {
+        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
+    }
 
     @Override
     public int getLayer() {
@@ -23,13 +25,12 @@ public abstract class AbstractGround extends AbstractMazeObject {
     }
 
     @Override
-    protected void setTypes() {
-        this.type.set(TypeConstants.TYPE_GROUND);
-    }
+    public abstract String getName();
 
     @Override
-    public int getCustomProperty(final int propID) {
-        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
+    public void postMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        // Do nothing
     }
 
     @Override
@@ -38,8 +39,7 @@ public abstract class AbstractGround extends AbstractMazeObject {
     }
 
     @Override
-    public void postMoveAction(final boolean ie, final int dirX,
-            final int dirY) {
-        // Do nothing
+    protected void setTypes() {
+        this.type.set(TypeConstants.TYPE_GROUND);
     }
 }

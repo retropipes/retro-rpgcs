@@ -15,6 +15,11 @@ public class ConfusionTrap extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "Confusion Traps randomly alter your controls for 6 steps when stepped on.";
+    }
+
+    @Override
     public String getName() {
         return "Confusion Trap";
     }
@@ -31,10 +36,5 @@ public class ConfusionTrap extends AbstractTrap {
         RetroRPGCS.getInstance().getGameManager()
                 .activateEffect(MazeEffectConstants.EFFECT_CONFUSED);
         SoundManager.playSound(SoundConstants.SOUND_CONFUSED);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Confusion Traps randomly alter your controls for 6 steps when stepped on.";
     }
 }

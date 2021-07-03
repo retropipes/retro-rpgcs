@@ -12,6 +12,22 @@ import com.puttysoftware.xio.XDataReader;
 import com.puttysoftware.xio.XDataWriter;
 
 public class Party {
+    static Party read(final XDataReader worldFile) throws IOException {
+        worldFile.readInt();
+        final var lid = worldFile.readInt();
+        final var apc = worldFile.readInt();
+        final var lvl = worldFile.readInt();
+        final var pty = new Party();
+        pty.leaderID = lid;
+        pty.activePCs = apc;
+        pty.towerLevel = lvl;
+        final var present = worldFile.readBoolean();
+        if (present) {
+            pty.members = PartyMember.read(worldFile);
+        }
+        return pty;
+    }
+
     // Fields
     private PartyMember members;
     private BattleCharacter battlers;
@@ -27,44 +43,9 @@ public class Party {
         this.towerLevel = 0;
     }
 
-    // Methods
-    private void generateBattleCharacters() {
-        this.battlers = new BattleCharacter(this.members);
-    }
-
-    public BattleCharacter getBattleCharacters() {
-        if (this.battlers == null) {
-            this.generateBattleCharacters();
-        }
-        return this.battlers;
-    }
-
-    public long getPartyMaxToNextLevel() {
-        return this.members.getToNextLevelValue();
-    }
-
-    public int getTowerLevel() {
-        return this.towerLevel;
-    }
-
-    void resetTowerLevel() {
-        this.towerLevel = 0;
-    }
-
-    public void offsetTowerLevel(final int offset) {
-        if (this.towerLevel + offset > Maze.getMaxLevels()
-                || this.towerLevel + offset < 0) {
-            return;
-        }
-        this.towerLevel += offset;
-    }
-
-    public String getTowerLevelString() {
-        return "Tower Level: " + (this.towerLevel + 1);
-    }
-
-    public PartyMember getLeader() {
-        return this.members;
+    boolean addPartyMember(final PartyMember member) {
+        this.members = member;
+        return true;
     }
 
     public void checkPartyLevelUp() {
@@ -80,33 +61,52 @@ public class Party {
         }
     }
 
-    public boolean isAlive() {
-        return this.members.isAlive();
-    }
-
     public void fireStepActions() {
         this.members.getItems().fireStepActions(this.members);
     }
 
-    boolean addPartyMember(final PartyMember member) {
-        this.members = member;
-        return true;
+    // Methods
+    private void generateBattleCharacters() {
+        this.battlers = new BattleCharacter(this.members);
     }
 
-    static Party read(final XDataReader worldFile) throws IOException {
-        worldFile.readInt();
-        final int lid = worldFile.readInt();
-        final int apc = worldFile.readInt();
-        final int lvl = worldFile.readInt();
-        final Party pty = new Party();
-        pty.leaderID = lid;
-        pty.activePCs = apc;
-        pty.towerLevel = lvl;
-        final boolean present = worldFile.readBoolean();
-        if (present) {
-            pty.members = PartyMember.read(worldFile);
+    public BattleCharacter getBattleCharacters() {
+        if (this.battlers == null) {
+            this.generateBattleCharacters();
         }
-        return pty;
+        return this.battlers;
+    }
+
+    public PartyMember getLeader() {
+        return this.members;
+    }
+
+    public long getPartyMaxToNextLevel() {
+        return this.members.getToNextLevelValue();
+    }
+
+    public int getTowerLevel() {
+        return this.towerLevel;
+    }
+
+    public String getTowerLevelString() {
+        return "Tower Level: " + (this.towerLevel + 1);
+    }
+
+    public boolean isAlive() {
+        return this.members.isAlive();
+    }
+
+    public void offsetTowerLevel(final int offset) {
+        if (this.towerLevel + offset > Maze.getMaxLevels()
+                || this.towerLevel + offset < 0) {
+            return;
+        }
+        this.towerLevel += offset;
+    }
+
+    void resetTowerLevel() {
+        this.towerLevel = 0;
     }
 
     void write(final XDataWriter worldFile) throws IOException {

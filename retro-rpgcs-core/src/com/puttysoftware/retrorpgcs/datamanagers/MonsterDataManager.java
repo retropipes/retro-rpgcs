@@ -9,12 +9,12 @@ import com.puttysoftware.retrorpgcs.RetroRPGCS;
 
 public class MonsterDataManager {
     public static String[] getMonsterData() {
-        try (final ResourceStreamReader rsr = new ResourceStreamReader(
+        try (final var rsr = new ResourceStreamReader(
                 MonsterDataManager.class.getResourceAsStream(
                         "/com/puttysoftware/retrorpgcs/resources/data/monsters/monsters.txt"))) {
             // Fetch data
-            final ArrayList<String> rawData = new ArrayList<>();
-            String line = "";
+            final var rawData = new ArrayList<String>();
+            var line = "";
             while (line != null) {
                 line = rsr.readString();
                 if (line != null) {

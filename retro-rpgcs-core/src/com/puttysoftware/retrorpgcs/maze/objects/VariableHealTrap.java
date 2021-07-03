@@ -20,6 +20,11 @@ public class VariableHealTrap extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "Variable Heal Traps heal you when stepped on, then disappear.";
+    }
+
+    @Override
     public String getName() {
         return "Variable Heal Trap";
     }
@@ -32,20 +37,15 @@ public class VariableHealTrap extends AbstractTrap {
     @Override
     public void postMoveAction(final boolean ie, final int dirX,
             final int dirY) {
-        int maxHealing = PartyManager.getParty().getLeader().getMaximumHP() / 5;
+        var maxHealing = PartyManager.getParty().getLeader().getMaximumHP() / 5;
         if (maxHealing < VariableHealTrap.MIN_HEALING) {
             maxHealing = VariableHealTrap.MIN_HEALING;
         }
-        final RandomRange healingGiven = new RandomRange(
+        final var healingGiven = new RandomRange(
                 VariableHealTrap.MIN_HEALING, maxHealing);
         PartyManager.getParty().getLeader().heal(healingGiven.generate());
         SoundManager.playSound(SoundConstants.SOUND_HEAL);
         RetroRPGCS.getInstance().getGameManager();
         GameLogicManager.decay();
-    }
-
-    @Override
-    public String getDescription() {
-        return "Variable Heal Traps heal you when stepped on, then disappear.";
     }
 }

@@ -8,12 +8,16 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.ObjectImageConstants;
 public class WallOff extends AbstractPassThroughObject {
     // Constructors
     public WallOff() {
-        super();
     }
 
     @Override
     public int getBaseID() {
         return ObjectImageConstants.OBJECT_IMAGE_WALL_OFF;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Walls Off can be walked through.";
     }
 
     @Override
@@ -24,11 +28,6 @@ public class WallOff extends AbstractPassThroughObject {
     @Override
     public String getPluralName() {
         return "Walls Off";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Walls Off can be walked through.";
     }
 
     @Override

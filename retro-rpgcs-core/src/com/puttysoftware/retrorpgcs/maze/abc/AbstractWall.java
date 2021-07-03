@@ -14,10 +14,17 @@ public abstract class AbstractWall extends AbstractMazeObject {
     }
 
     @Override
-    public void postMoveAction(final boolean ie, final int dirX,
-            final int dirY) {
-        // Do nothing
+    public int getCustomProperty(final int propID) {
+        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
     }
+
+    @Override
+    public int getLayer() {
+        return MazeConstants.LAYER_OBJECT;
+    }
+
+    @Override
+    public abstract String getName();
 
     @Override
     public void moveFailedAction(final boolean ie, final int dirX,
@@ -28,25 +35,18 @@ public abstract class AbstractWall extends AbstractMazeObject {
     }
 
     @Override
-    public abstract String getName();
-
-    @Override
-    public int getLayer() {
-        return MazeConstants.LAYER_OBJECT;
-    }
-
-    @Override
-    protected void setTypes() {
-        this.type.set(TypeConstants.TYPE_WALL);
-    }
-
-    @Override
-    public int getCustomProperty(final int propID) {
-        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
+    public void postMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        // Do nothing
     }
 
     @Override
     public void setCustomProperty(final int propID, final int value) {
         // Do nothing
+    }
+
+    @Override
+    protected void setTypes() {
+        this.type.set(TypeConstants.TYPE_WALL);
     }
 }

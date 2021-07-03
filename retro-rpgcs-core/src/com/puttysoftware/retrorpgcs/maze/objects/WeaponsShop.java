@@ -17,6 +17,11 @@ public class WeaponsShop extends AbstractShop {
     }
 
     @Override
+    public String getDescription() {
+        return "Weapons Shops sell weapons used to fight monsters.";
+    }
+
+    @Override
     public String getName() {
         return "Weapons Shop";
     }
@@ -24,10 +29,5 @@ public class WeaponsShop extends AbstractShop {
     @Override
     public String getPluralName() {
         return "Weapons Shops";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Weapons Shops sell weapons used to fight monsters.";
     }
 }

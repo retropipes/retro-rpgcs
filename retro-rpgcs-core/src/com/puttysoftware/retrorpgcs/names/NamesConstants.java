@@ -180,7 +180,7 @@ public class NamesConstants {
                 NamesConstants.EDITOR_SECTION_FAITH_POWERS_BOLT);
         Arrays.fill(NamesConstants.TEMP_SECTION_FAITH_POWERS_BOOM,
                 NamesConstants.EDITOR_SECTION_FAITH_POWERS_BOOM);
-        int counter = 0;
+        var counter = 0;
         System.arraycopy(NamesConstants.TEMP_SECTION_STATS, 0,
                 NamesConstants.EDITOR_SECTION_ARRAY, counter,
                 NamesConstants.TEMP_SECTION_STATS.length);

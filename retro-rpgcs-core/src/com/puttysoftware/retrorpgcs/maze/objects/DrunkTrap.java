@@ -15,6 +15,11 @@ public class DrunkTrap extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "Drunk Traps alter your movement in a way that resembles being intoxicated for 9 steps when stepped on.";
+    }
+
+    @Override
     public String getName() {
         return "Drunk Trap";
     }
@@ -31,10 +36,5 @@ public class DrunkTrap extends AbstractTrap {
         RetroRPGCS.getInstance().getGameManager()
                 .activateEffect(MazeEffectConstants.EFFECT_DRUNK);
         SoundManager.playSound(SoundConstants.SOUND_DRUNK);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Drunk Traps alter your movement in a way that resembles being intoxicated for 9 steps when stepped on.";
     }
 }

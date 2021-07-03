@@ -11,10 +11,10 @@ import com.puttysoftware.retrorpgcs.maze.utilities.DirectionResolver;
 import com.puttysoftware.retrorpgcs.prefs.PreferencesManager;
 
 public class MazeEffectManager {
-    // Fields
-    private final MazeEffect[] activeEffects;
     private static final int NUM_EFFECTS = 9;
     private static final int MAX_ACTIVE_EFFECTS = 3;
+    // Fields
+    private final MazeEffect[] activeEffects;
     private final Container activeEffectMessageContainer;
     private final JLabel[] activeEffectMessages;
     private int newEffectIndex;
@@ -44,25 +44,90 @@ public class MazeEffectManager {
         this.activeEffectMessages = new JLabel[MazeEffectManager.MAX_ACTIVE_EFFECTS];
         this.activeEffectMessageContainer.setLayout(
                 new GridLayout(MazeEffectManager.MAX_ACTIVE_EFFECTS, 1));
-        for (int z = 0; z < MazeEffectManager.MAX_ACTIVE_EFFECTS; z++) {
+        for (var z = 0; z < MazeEffectManager.MAX_ACTIVE_EFFECTS; z++) {
             this.activeEffectMessages[z] = new JLabel("");
             this.activeEffectMessageContainer.add(this.activeEffectMessages[z]);
         }
         // Set up miscellaneous things
         this.activeEffectIndices = new int[MazeEffectManager.MAX_ACTIVE_EFFECTS];
-        for (int z = 0; z < MazeEffectManager.MAX_ACTIVE_EFFECTS; z++) {
+        for (var z = 0; z < MazeEffectManager.MAX_ACTIVE_EFFECTS; z++) {
             this.activeEffectIndices[z] = -1;
         }
         this.newEffectIndex = -1;
     }
 
-    // Methods
-    public Container getEffectMessageContainer() {
-        return this.activeEffectMessageContainer;
+    public void activateEffect(final int effectID) {
+        this.activateEffectInternal(effectID,
+                MazeEffectConstants.DURATIONS[PreferencesManager
+                        .getGameDifficulty()][effectID]);
+    }
+
+    private void activateEffectInternal(final int effectID,
+            final int duration) {
+        this.handleMutualExclusiveEffects(effectID);
+        final var active = this.activeEffects[effectID].isActive();
+        this.activeEffects[effectID].extendEffect(duration);
+        // Update effect grid
+        if (active) {
+            this.updateGridEntry(effectID);
+        } else {
+            this.addGridEntry(effectID);
+        }
+        // Keep effect message
+        RetroRPGCS.getInstance().getGameManager().keepNextMessage();
+    }
+
+    private void addGridEntry(final int effectID) {
+        if (this.newEffectIndex < MazeEffectManager.MAX_ACTIVE_EFFECTS - 1) {
+            this.newEffectIndex++;
+            this.activeEffectIndices[this.newEffectIndex] = effectID;
+            final var effectString = this.activeEffects[effectID]
+                    .getEffectString();
+            this.activeEffectMessages[this.newEffectIndex]
+                    .setText(effectString);
+        }
+    }
+
+    private void clearGridEntry(final int effectID) {
+        final var index = this.lookupEffect(effectID);
+        if (index != -1) {
+            this.clearGridEntryText(index);
+            // Compact grid
+            for (var z = index; z < MazeEffectManager.MAX_ACTIVE_EFFECTS
+                    - 1; z++) {
+                this.activeEffectMessages[z]
+                        .setText(this.activeEffectMessages[z + 1].getText());
+                this.activeEffectIndices[z] = this.activeEffectIndices[z + 1];
+            }
+            // Clear last entry
+            this.clearGridEntryText(MazeEffectManager.MAX_ACTIVE_EFFECTS - 1);
+            this.newEffectIndex--;
+        }
+    }
+
+    private void clearGridEntryText(final int index) {
+        this.activeEffectIndices[index] = -1;
+        this.activeEffectMessages[index].setText("");
+    }
+
+    public void deactivateAllEffects() {
+        for (var effectID = 0; effectID < MazeEffectManager.NUM_EFFECTS; effectID++) {
+            if (this.activeEffects[effectID].isActive()) {
+                this.activeEffects[effectID].deactivateEffect();
+                this.clearGridEntry(effectID);
+            }
+        }
+    }
+
+    public void deactivateEffect(final int effectID) {
+        if (this.activeEffects[effectID].isActive()) {
+            this.activeEffects[effectID].deactivateEffect();
+            this.clearGridEntry(effectID);
+        }
     }
 
     public void decayEffects() {
-        for (int x = 0; x < MazeEffectManager.NUM_EFFECTS; x++) {
+        for (var x = 0; x < MazeEffectManager.NUM_EFFECTS; x++) {
             if (this.activeEffects[x].isActive()) {
                 this.activeEffects[x].useEffect();
                 // Update effect grid
@@ -80,84 +145,10 @@ public class MazeEffectManager {
         }
     }
 
-    public void activateEffect(final int effectID) {
-        this.activateEffectInternal(effectID,
-                MazeEffectConstants.DURATIONS[PreferencesManager
-                        .getGameDifficulty()][effectID]);
-    }
-
-    private void activateEffectInternal(final int effectID,
-            final int duration) {
-        this.handleMutualExclusiveEffects(effectID);
-        final boolean active = this.activeEffects[effectID].isActive();
-        this.activeEffects[effectID].extendEffect(duration);
-        // Update effect grid
-        if (active) {
-            this.updateGridEntry(effectID);
-        } else {
-            this.addGridEntry(effectID);
-        }
-        // Keep effect message
-        RetroRPGCS.getInstance().getGameManager().keepNextMessage();
-    }
-
-    public void deactivateEffect(final int effectID) {
-        if (this.activeEffects[effectID].isActive()) {
-            this.activeEffects[effectID].deactivateEffect();
-            this.clearGridEntry(effectID);
-        }
-    }
-
-    public void deactivateAllEffects() {
-        for (int effectID = 0; effectID < MazeEffectManager.NUM_EFFECTS; effectID++) {
-            if (this.activeEffects[effectID].isActive()) {
-                this.activeEffects[effectID].deactivateEffect();
-                this.clearGridEntry(effectID);
-            }
-        }
-    }
-
-    public boolean isEffectActive(final int effectID) {
-        return this.activeEffects[effectID].isActive();
-    }
-
-    private void handleMutualExclusiveEffects(final int effectID) {
-        if (effectID == MazeEffectConstants.EFFECT_ROTATED_CLOCKWISE) {
-            this.deactivateEffect(
-                    MazeEffectConstants.EFFECT_ROTATED_COUNTERCLOCKWISE);
-            this.deactivateEffect(MazeEffectConstants.EFFECT_U_TURNED);
-        } else if (effectID == MazeEffectConstants.EFFECT_ROTATED_COUNTERCLOCKWISE) {
-            this.deactivateEffect(MazeEffectConstants.EFFECT_ROTATED_CLOCKWISE);
-            this.deactivateEffect(MazeEffectConstants.EFFECT_U_TURNED);
-        } else if (effectID == MazeEffectConstants.EFFECT_U_TURNED) {
-            this.deactivateEffect(MazeEffectConstants.EFFECT_ROTATED_CLOCKWISE);
-            this.deactivateEffect(
-                    MazeEffectConstants.EFFECT_ROTATED_COUNTERCLOCKWISE);
-        } else if (effectID == MazeEffectConstants.EFFECT_CONFUSED) {
-            this.deactivateEffect(MazeEffectConstants.EFFECT_DIZZY);
-            this.deactivateEffect(MazeEffectConstants.EFFECT_DRUNK);
-        } else if (effectID == MazeEffectConstants.EFFECT_DIZZY) {
-            this.deactivateEffect(MazeEffectConstants.EFFECT_CONFUSED);
-            this.deactivateEffect(MazeEffectConstants.EFFECT_DRUNK);
-        } else if (effectID == MazeEffectConstants.EFFECT_DRUNK) {
-            this.deactivateEffect(MazeEffectConstants.EFFECT_CONFUSED);
-            this.deactivateEffect(MazeEffectConstants.EFFECT_DIZZY);
-        } else if (effectID == MazeEffectConstants.EFFECT_STICKY) {
-            this.deactivateEffect(MazeEffectConstants.EFFECT_POWER_GATHER);
-            this.deactivateEffect(MazeEffectConstants.EFFECT_POWER_WITHER);
-        } else if (effectID == MazeEffectConstants.EFFECT_POWER_GATHER) {
-            this.deactivateEffect(MazeEffectConstants.EFFECT_STICKY);
-            this.deactivateEffect(MazeEffectConstants.EFFECT_POWER_WITHER);
-        } else if (effectID == MazeEffectConstants.EFFECT_POWER_WITHER) {
-            this.deactivateEffect(MazeEffectConstants.EFFECT_STICKY);
-            this.deactivateEffect(MazeEffectConstants.EFFECT_POWER_GATHER);
-        }
-    }
-
     public int[] doEffects(final int x, final int y) {
-        int[] res = new int[] { x, y };
-        int dir = DirectionResolver.resolveRelativeDirection(x, y);
-        for (int z = 0; z < MazeEffectManager.NUM_EFFECTS; z++) {
+        var res = new int[] { x, y };
+        var dir = DirectionResolver.resolveRelativeDirection(x, y);
+        for (var z = 0; z < MazeEffectManager.NUM_EFFECTS; z++) {
             if (this.activeEffects[z].isActive()) {
                 dir = this.activeEffects[z].modifyMove1(dir);
                 res = DirectionResolver.unresolveRelativeDirection(dir);
@@ -167,54 +158,75 @@ public class MazeEffectManager {
         return res;
     }
 
-    private void addGridEntry(final int effectID) {
-        if (this.newEffectIndex < MazeEffectManager.MAX_ACTIVE_EFFECTS - 1) {
-            this.newEffectIndex++;
-            this.activeEffectIndices[this.newEffectIndex] = effectID;
-            final String effectString = this.activeEffects[effectID]
-                    .getEffectString();
-            this.activeEffectMessages[this.newEffectIndex]
-                    .setText(effectString);
+    // Methods
+    public Container getEffectMessageContainer() {
+        return this.activeEffectMessageContainer;
+    }
+
+    private void handleMutualExclusiveEffects(final int effectID) {
+        switch (effectID) {
+        case MazeEffectConstants.EFFECT_ROTATED_CLOCKWISE:
+            this.deactivateEffect(
+                    MazeEffectConstants.EFFECT_ROTATED_COUNTERCLOCKWISE);
+            this.deactivateEffect(MazeEffectConstants.EFFECT_U_TURNED);
+            break;
+        case MazeEffectConstants.EFFECT_ROTATED_COUNTERCLOCKWISE:
+            this.deactivateEffect(MazeEffectConstants.EFFECT_ROTATED_CLOCKWISE);
+            this.deactivateEffect(MazeEffectConstants.EFFECT_U_TURNED);
+            break;
+        case MazeEffectConstants.EFFECT_U_TURNED:
+            this.deactivateEffect(MazeEffectConstants.EFFECT_ROTATED_CLOCKWISE);
+            this.deactivateEffect(
+                    MazeEffectConstants.EFFECT_ROTATED_COUNTERCLOCKWISE);
+            break;
+        case MazeEffectConstants.EFFECT_CONFUSED:
+            this.deactivateEffect(MazeEffectConstants.EFFECT_DIZZY);
+            this.deactivateEffect(MazeEffectConstants.EFFECT_DRUNK);
+            break;
+        case MazeEffectConstants.EFFECT_DIZZY:
+            this.deactivateEffect(MazeEffectConstants.EFFECT_CONFUSED);
+            this.deactivateEffect(MazeEffectConstants.EFFECT_DRUNK);
+            break;
+        case MazeEffectConstants.EFFECT_DRUNK:
+            this.deactivateEffect(MazeEffectConstants.EFFECT_CONFUSED);
+            this.deactivateEffect(MazeEffectConstants.EFFECT_DIZZY);
+            break;
+        case MazeEffectConstants.EFFECT_STICKY:
+            this.deactivateEffect(MazeEffectConstants.EFFECT_POWER_GATHER);
+            this.deactivateEffect(MazeEffectConstants.EFFECT_POWER_WITHER);
+            break;
+        case MazeEffectConstants.EFFECT_POWER_GATHER:
+            this.deactivateEffect(MazeEffectConstants.EFFECT_STICKY);
+            this.deactivateEffect(MazeEffectConstants.EFFECT_POWER_WITHER);
+            break;
+        case MazeEffectConstants.EFFECT_POWER_WITHER:
+            this.deactivateEffect(MazeEffectConstants.EFFECT_STICKY);
+            this.deactivateEffect(MazeEffectConstants.EFFECT_POWER_GATHER);
+            break;
+        default:
+            break;
         }
     }
 
-    private void clearGridEntry(final int effectID) {
-        final int index = this.lookupEffect(effectID);
-        if (index != -1) {
-            this.clearGridEntryText(index);
-            // Compact grid
-            for (int z = index; z < MazeEffectManager.MAX_ACTIVE_EFFECTS
-                    - 1; z++) {
-                this.activeEffectMessages[z]
-                        .setText(this.activeEffectMessages[z + 1].getText());
-                this.activeEffectIndices[z] = this.activeEffectIndices[z + 1];
-            }
-            // Clear last entry
-            this.clearGridEntryText(MazeEffectManager.MAX_ACTIVE_EFFECTS - 1);
-            this.newEffectIndex--;
-        }
-    }
-
-    private void clearGridEntryText(final int index) {
-        this.activeEffectIndices[index] = -1;
-        this.activeEffectMessages[index].setText("");
-    }
-
-    private void updateGridEntry(final int effectID) {
-        final int index = this.lookupEffect(effectID);
-        if (index != -1) {
-            final String effectString = this.activeEffects[effectID]
-                    .getEffectString();
-            this.activeEffectMessages[index].setText(effectString);
-        }
+    public boolean isEffectActive(final int effectID) {
+        return this.activeEffects[effectID].isActive();
     }
 
     private int lookupEffect(final int effectID) {
-        for (int z = 0; z < MazeEffectManager.MAX_ACTIVE_EFFECTS; z++) {
+        for (var z = 0; z < MazeEffectManager.MAX_ACTIVE_EFFECTS; z++) {
             if (this.activeEffectIndices[z] == effectID) {
                 return z;
             }
         }
         return -1;
+    }
+
+    private void updateGridEntry(final int effectID) {
+        final var index = this.lookupEffect(effectID);
+        if (index != -1) {
+            final var effectString = this.activeEffects[effectID]
+                    .getEffectString();
+            this.activeEffectMessages[index].setText(effectString);
+        }
     }
 }

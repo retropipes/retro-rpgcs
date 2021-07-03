@@ -9,6 +9,26 @@ import com.puttysoftware.xio.XDataReader;
 import com.puttysoftware.xio.XDataWriter;
 
 public class Equipment extends Item {
+    static Equipment readEquipment(final XDataReader dr) throws IOException {
+        final var i = Item.readItem(dr);
+        if (i == null) {
+            // Abort
+            return null;
+        }
+        final var matID = dr.readInt();
+        final var eCat = dr.readInt();
+        final var ei = new Equipment(i, eCat, matID);
+        ei.firstSlotUsed = dr.readInt();
+        ei.secondSlotUsed = dr.readInt();
+        ei.conditionalSlot = dr.readBoolean();
+        final var fc = FaithConstants.getFaithsCount();
+        for (var z = 0; z < fc; z++) {
+            ei.faithPowerName[z] = dr.readString();
+            ei.faithPowersApplied[z] = dr.readInt();
+        }
+        return ei;
+    }
+
     // Properties
     private final int equipCat;
     private final int materialID;
@@ -17,6 +37,20 @@ public class Equipment extends Item {
     private boolean conditionalSlot;
     private int[] faithPowersApplied;
     private String[] faithPowerName;
+
+    Equipment(final Equipment e) {
+        super(e.getItemName(), e);
+        this.equipCat = e.equipCat;
+        this.materialID = e.materialID;
+        this.firstSlotUsed = e.firstSlotUsed;
+        this.secondSlotUsed = e.secondSlotUsed;
+        this.conditionalSlot = e.conditionalSlot;
+        this.initFaithPowers();
+        System.arraycopy(e.faithPowersApplied, 0, this.faithPowersApplied, 0,
+                e.faithPowersApplied.length);
+        System.arraycopy(e.faithPowerName, 0, this.faithPowerName, 0,
+                e.faithPowerName.length);
+    }
 
     // Constructors
     private Equipment(final Item i, final int equipCategory,
@@ -53,40 +87,20 @@ public class Equipment extends Item {
         this.initFaithPowers();
     }
 
-    Equipment(final Equipment e) {
-        super(e.getItemName(), e);
-        this.equipCat = e.equipCat;
-        this.materialID = e.materialID;
-        this.firstSlotUsed = e.firstSlotUsed;
-        this.secondSlotUsed = e.secondSlotUsed;
-        this.conditionalSlot = e.conditionalSlot;
-        this.initFaithPowers();
-        System.arraycopy(e.faithPowersApplied, 0, this.faithPowersApplied, 0,
-                e.faithPowersApplied.length);
-        System.arraycopy(e.faithPowerName, 0, this.faithPowerName, 0,
-                e.faithPowerName.length);
+    public final void applyFaithPower(final int fid, final String fpName) {
+        this.faithPowerName[fid] = fpName + " ";
+        this.faithPowersApplied[fid]++;
     }
 
-    // Methods
-    private final void initFaithPowers() {
-        this.faithPowersApplied = new int[FaithConstants.getFaithsCount()];
-        this.faithPowerName = new String[FaithConstants.getFaithsCount()];
-        for (int z = 0; z < this.faithPowerName.length; z++) {
-            this.faithPowerName[z] = "";
+    public final void enchantName(final int bonus) {
+        var oldName = this.getName();
+        // Check - is name enchanted already?
+        if (oldName.charAt(oldName.length() - 2) == '+') {
+            // Yes - remove old enchantment
+            oldName = oldName.substring(0, oldName.length() - 3);
         }
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + (this.conditionalSlot ? 1231 : 1237);
-        result = prime * result + this.equipCat;
-        result = prime * result + Arrays.hashCode(this.faithPowerName);
-        result = prime * result + Arrays.hashCode(this.faithPowersApplied);
-        result = prime * result + this.firstSlotUsed;
-        result = prime * result + this.materialID;
-        return prime * result + this.secondSlotUsed;
+        final var newName = oldName + " +" + bonus;
+        this.setName(newName);
     }
 
     @Override
@@ -94,13 +108,10 @@ public class Equipment extends Item {
         if (this == obj) {
             return true;
         }
-        if (!super.equals(obj)) {
+        if (!super.equals(obj) || !(obj instanceof Equipment)) {
             return false;
         }
-        if (!(obj instanceof Equipment)) {
-            return false;
-        }
-        final Equipment other = (Equipment) obj;
+        final var other = (Equipment) obj;
         if (this.conditionalSlot != other.conditionalSlot) {
             return false;
         }
@@ -125,11 +136,31 @@ public class Equipment extends Item {
         return true;
     }
 
+    public final int getEquipCategory() {
+        return this.equipCat;
+    }
+
+    public final int getFaithPowerLevel(final int fid) {
+        return this.faithPowersApplied[fid];
+    }
+
+    public final int getFirstSlotUsed() {
+        return this.firstSlotUsed;
+    }
+
+    private String getItemName() {
+        return super.getName();
+    }
+
+    public final int getMaterial() {
+        return this.materialID;
+    }
+
     @Override
     public String getName() {
-        final StringBuilder faithBuilder = new StringBuilder();
-        final int fc = FaithConstants.getFaithsCount();
-        for (int z = 0; z < fc; z++) {
+        final var faithBuilder = new StringBuilder();
+        final var fc = FaithConstants.getFaithsCount();
+        for (var z = 0; z < fc; z++) {
             if (!this.faithPowerName[z].isEmpty()) {
                 faithBuilder.append(this.faithPowerName[z]);
             }
@@ -137,56 +168,28 @@ public class Equipment extends Item {
         return faithBuilder.toString() + super.getName();
     }
 
-    private String getItemName() {
-        return super.getName();
-    }
-
-    public final void enchantName(final int bonus) {
-        String oldName = this.getName();
-        // Check - is name enchanted already?
-        if (oldName.charAt(oldName.length() - 2) == '+') {
-            // Yes - remove old enchantment
-            oldName = oldName.substring(0, oldName.length() - 3);
-        }
-        final String newName = oldName + " +" + bonus;
-        this.setName(newName);
-    }
-
-    public final void applyFaithPower(final int fid, final String fpName) {
-        this.faithPowerName[fid] = fpName + " ";
-        this.faithPowersApplied[fid]++;
-    }
-
-    public final int getFirstSlotUsed() {
-        return this.firstSlotUsed;
-    }
-
-    public final void setFirstSlotUsed(final int newFirstSlotUsed) {
-        this.firstSlotUsed = newFirstSlotUsed;
-    }
-
     public final int getSecondSlotUsed() {
         return this.secondSlotUsed;
     }
 
-    public final void setSecondSlotUsed(final int newSecondSlotUsed) {
-        this.secondSlotUsed = newSecondSlotUsed;
+    @Override
+    public int hashCode() {
+        final var prime = 31;
+        var result = super.hashCode();
+        result = prime * result + (this.conditionalSlot ? 1231 : 1237);
+        result = prime * result + this.equipCat;
+        result = prime * result + Arrays.hashCode(this.faithPowerName);
+        result = prime * result + Arrays.hashCode(this.faithPowersApplied);
+        result = prime * result + this.firstSlotUsed;
+        result = prime * result + this.materialID;
+        return prime * result + this.secondSlotUsed;
     }
 
-    public final void setConditionalSlot(final boolean newConditionalSlot) {
-        this.conditionalSlot = newConditionalSlot;
-    }
-
-    public final int getEquipCategory() {
-        return this.equipCat;
-    }
-
-    public final int getMaterial() {
-        return this.materialID;
-    }
-
-    public final int getFaithPowerLevel(final int fid) {
-        return this.faithPowersApplied[fid];
+    // Methods
+    private final void initFaithPowers() {
+        this.faithPowersApplied = new int[FaithConstants.getFaithsCount()];
+        this.faithPowerName = new String[FaithConstants.getFaithsCount()];
+        Arrays.fill(this.faithPowerName, "");
     }
 
     public final boolean isTwoHanded() {
@@ -195,24 +198,16 @@ public class Equipment extends Item {
                 && !this.conditionalSlot;
     }
 
-    static Equipment readEquipment(final XDataReader dr) throws IOException {
-        final Item i = Item.readItem(dr);
-        if (i == null) {
-            // Abort
-            return null;
-        }
-        final int matID = dr.readInt();
-        final int eCat = dr.readInt();
-        final Equipment ei = new Equipment(i, eCat, matID);
-        ei.firstSlotUsed = dr.readInt();
-        ei.secondSlotUsed = dr.readInt();
-        ei.conditionalSlot = dr.readBoolean();
-        final int fc = FaithConstants.getFaithsCount();
-        for (int z = 0; z < fc; z++) {
-            ei.faithPowerName[z] = dr.readString();
-            ei.faithPowersApplied[z] = dr.readInt();
-        }
-        return ei;
+    public final void setConditionalSlot(final boolean newConditionalSlot) {
+        this.conditionalSlot = newConditionalSlot;
+    }
+
+    public final void setFirstSlotUsed(final int newFirstSlotUsed) {
+        this.firstSlotUsed = newFirstSlotUsed;
+    }
+
+    public final void setSecondSlotUsed(final int newSecondSlotUsed) {
+        this.secondSlotUsed = newSecondSlotUsed;
     }
 
     final void writeEquipment(final XDataWriter dw) throws IOException {
@@ -222,8 +217,8 @@ public class Equipment extends Item {
         dw.writeInt(this.firstSlotUsed);
         dw.writeInt(this.secondSlotUsed);
         dw.writeBoolean(this.conditionalSlot);
-        final int fc = FaithConstants.getFaithsCount();
-        for (int z = 0; z < fc; z++) {
+        final var fc = FaithConstants.getFaithsCount();
+        for (var z = 0; z < fc; z++) {
             dw.writeString(this.faithPowerName[z]);
             dw.writeInt(this.faithPowersApplied[z]);
         }

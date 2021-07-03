@@ -1,6 +1,8 @@
 /* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.spells;
 
+import java.util.Objects;
+
 import com.puttysoftware.retrorpgcs.battle.BattleTarget;
 import com.puttysoftware.retrorpgcs.effects.Effect;
 
@@ -13,7 +15,6 @@ public class Spell {
 
     // Constructors
     public Spell() {
-        super();
         this.effect = null;
         this.cost = 0;
         this.target = null;
@@ -22,39 +23,10 @@ public class Spell {
 
     public Spell(final Effect newEffect, final int newCost,
             final BattleTarget newTarget, final int sfx) {
-        super();
         this.effect = newEffect;
         this.cost = newCost;
         this.target = newTarget;
         this.soundEffect = sfx;
-    }
-
-    public Effect getEffect() {
-        return this.effect;
-    }
-
-    public int getCost() {
-        return this.cost;
-    }
-
-    BattleTarget getTarget() {
-        return this.target;
-    }
-
-    int getSound() {
-        return this.soundEffect;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.cost;
-        result = prime * result
-                + (this.effect == null ? 0 : this.effect.hashCode());
-        result = prime * result + this.soundEffect;
-        return prime * result
-                + (this.target == null ? 0 : this.target.hashCode());
     }
 
     @Override
@@ -62,21 +34,14 @@ public class Spell {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
+        if ((obj == null) || !(obj instanceof Spell)) {
             return false;
         }
-        if (!(obj instanceof Spell)) {
-            return false;
-        }
-        final Spell other = (Spell) obj;
+        final var other = (Spell) obj;
         if (this.cost != other.cost) {
             return false;
         }
-        if (this.effect == null) {
-            if (other.effect != null) {
-                return false;
-            }
-        } else if (!this.effect.equals(other.effect)) {
+        if (!Objects.equals(this.effect, other.effect)) {
             return false;
         }
         if (this.soundEffect != other.soundEffect) {
@@ -86,5 +51,26 @@ public class Spell {
             return false;
         }
         return true;
+    }
+
+    public int getCost() {
+        return this.cost;
+    }
+
+    public Effect getEffect() {
+        return this.effect;
+    }
+
+    int getSound() {
+        return this.soundEffect;
+    }
+
+    BattleTarget getTarget() {
+        return this.target;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.cost, this.effect, this.soundEffect, this.target);
     }
 }

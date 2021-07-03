@@ -3,13 +3,6 @@ package com.puttysoftware.retrorpgcs.security;
 import java.io.File;
 
 public abstract class SandboxManager {
-    // Constructor
-    protected SandboxManager() {
-        new File(this.getDocumentsDirectory()).mkdirs();
-        new File(this.getCachesDirectory()).mkdirs();
-        new File(this.getSupportDirectory()).mkdirs();
-    }
-
     // Static methods
     public static SandboxManager getSandboxManager() {
         if (System.getProperty("os.name").startsWith("Mac OS X")) {
@@ -21,16 +14,23 @@ public abstract class SandboxManager {
         }
     }
 
-    // Methods
-    public abstract String getDocumentsDirectory();
+    // Constructor
+    protected SandboxManager() {
+        new File(this.getDocumentsDirectory()).mkdirs();
+        new File(this.getCachesDirectory()).mkdirs();
+        new File(this.getSupportDirectory()).mkdirs();
+    }
 
-    public abstract String getCachesDirectory();
-
-    public abstract String getSupportDirectory();
-
-    public final boolean checkPath(String path) {
+    public final boolean checkPath(final String path) {
         return path != null && (path.startsWith(this.getCachesDirectory())
                 || path.startsWith(this.getDocumentsDirectory())
                 || path.startsWith(this.getSupportDirectory()));
     }
+
+    public abstract String getCachesDirectory();
+
+    // Methods
+    public abstract String getDocumentsDirectory();
+
+    public abstract String getSupportDirectory();
 }

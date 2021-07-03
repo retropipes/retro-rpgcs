@@ -17,6 +17,11 @@ public class SocksShop extends AbstractShop {
     }
 
     @Override
+    public String getDescription() {
+        return "Socks Shops sell enchanted socks that act as you walk.";
+    }
+
+    @Override
     public String getName() {
         return "Socks Shop";
     }
@@ -24,10 +29,5 @@ public class SocksShop extends AbstractShop {
     @Override
     public String getPluralName() {
         return "Socks Shops";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Socks Shops sell enchanted socks that act as you walk.";
     }
 }

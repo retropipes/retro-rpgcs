@@ -32,7 +32,7 @@ public class GameLoadTask extends Thread {
         this.setName("Game Loader");
         this.loadFrame = new JFrame("Loading...");
         this.loadFrame.setIconImage(LogoManager.getIconLogo());
-        final JProgressBar loadBar = new JProgressBar();
+        final var loadBar = new JProgressBar();
         loadBar.setIndeterminate(true);
         this.loadFrame.getContentPane().add(loadBar);
         this.loadFrame.setResizable(false);
@@ -44,21 +44,21 @@ public class GameLoadTask extends Thread {
     // Methods
     @Override
     public void run() {
-        final String sg = "Game";
-        final File mazeFile = new File(this.filename);
+        final var sg = "Game";
+        final var mazeFile = new File(this.filename);
         try {
             this.loadFrame.setVisible(true);
-            final RetroRPGCS app = RetroRPGCS.getInstance();
+            final var app = RetroRPGCS.getInstance();
             int startW;
             app.getGameManager().setSavedGameFlag(false);
-            final File tempLock = new File(
+            final var tempLock = new File(
                     Maze.getMazeTempFolder() + "lock.tmp");
-            Maze gameMaze = new Maze();
+            var gameMaze = new Maze();
             // Unlock the file
             GameFileManager.load(mazeFile, tempLock);
             ZipUtilities.unzipDirectory(tempLock,
                     new File(gameMaze.getBasePath()));
-            final boolean success = tempLock.delete();
+            final var success = tempLock.delete();
             if (!success) {
                 throw new IOException("Failed to delete temporary file!");
             }
@@ -73,7 +73,7 @@ public class GameLoadTask extends Thread {
             app.getMazeManager().setMaze(gameMaze);
             startW = gameMaze.getStartLevel();
             gameMaze.switchLevel(startW);
-            final boolean playerExists = gameMaze.doesPlayerExist();
+            final var playerExists = gameMaze.doesPlayerExist();
             if (playerExists) {
                 app.getMazeManager().getMaze().setPlayerToStart();
                 app.getGameManager().resetViewingWindow();

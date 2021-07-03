@@ -11,8 +11,8 @@ public class Drunk extends MazeEffect {
 
     @Override
     public int[] modifyMove2(final int... arg) {
-        final RandomRange rx = new RandomRange(0, 1);
-        final RandomRange ry = new RandomRange(0, 1);
+        final var rx = new RandomRange(0, 1);
+        final var ry = new RandomRange(0, 1);
         arg[0] += rx.generate();
         arg[1] += ry.generate();
         return arg;

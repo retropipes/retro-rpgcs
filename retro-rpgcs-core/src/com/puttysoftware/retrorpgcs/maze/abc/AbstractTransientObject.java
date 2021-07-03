@@ -18,13 +18,6 @@ public abstract class AbstractTransientObject extends AbstractMazeObject {
         this.dir = DirectionConstants.DIRECTION_NONE;
     }
 
-    // Methods
-    @Override
-    public void postMoveAction(final boolean ie, final int dirX,
-            final int dirY) {
-        // Do nothing
-    }
-
     @Override
     public final int getBaseID() {
         switch (this.dir) {
@@ -50,6 +43,21 @@ public abstract class AbstractTransientObject extends AbstractMazeObject {
     }
 
     @Override
+    public int getCustomProperty(final int propID) {
+        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
+    }
+
+    @Override
+    public String getDescription() {
+        return "";
+    }
+
+    @Override
+    public int getLayer() {
+        return MazeConstants.LAYER_OBJECT;
+    }
+
+    @Override
     public final String getName() {
         return this.name + " "
                 + DirectionResolver.resolveDirectionConstantToName(this.dir);
@@ -61,9 +69,16 @@ public abstract class AbstractTransientObject extends AbstractMazeObject {
                 + DirectionResolver.resolveDirectionConstantToName(this.dir);
     }
 
+    // Methods
     @Override
-    public String getDescription() {
-        return "";
+    public void postMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        // Do nothing
+    }
+
+    @Override
+    public void setCustomProperty(final int propID, final int value) {
+        // Do nothing
     }
 
     public final void setDirection(final int newDir) {
@@ -71,22 +86,7 @@ public abstract class AbstractTransientObject extends AbstractMazeObject {
     }
 
     @Override
-    public int getLayer() {
-        return MazeConstants.LAYER_OBJECT;
-    }
-
-    @Override
     protected final void setTypes() {
-        // Do nothing
-    }
-
-    @Override
-    public int getCustomProperty(final int propID) {
-        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
-    }
-
-    @Override
-    public void setCustomProperty(final int propID, final int value) {
         // Do nothing
     }
 }

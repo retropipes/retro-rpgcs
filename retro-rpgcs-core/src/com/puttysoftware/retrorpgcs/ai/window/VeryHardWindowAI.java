@@ -5,13 +5,13 @@ import com.puttysoftware.randomrange.RandomRange;
 import com.puttysoftware.retrorpgcs.creatures.Creature;
 
 public class VeryHardWindowAI extends WindowAI {
-    // Fields
-    private int[] roundsRemaining;
     private static final int CAST_SPELL_CHANCE = 80;
     private static final int STEAL_CHANCE = 16;
     private static final int DRAIN_CHANCE = 80;
     private static final int HEAL_THRESHOLD = 60;
     private static final int FLEE_CHANCE = 1;
+    // Fields
+    private int[] roundsRemaining;
 
     // Constructors
     public VeryHardWindowAI() {
@@ -41,22 +41,31 @@ public class VeryHardWindowAI extends WindowAI {
         }
     }
 
+    @Override
+    public void newRoundHook() {
+        // Decrement effect counters
+        for (var z = 0; z < this.roundsRemaining.length; z++) {
+            if (this.roundsRemaining[z] > 0) {
+                this.roundsRemaining[z]--;
+            }
+        }
+    }
+
     private boolean spellCheck(final Creature c) {
-        final RandomRange random = new RandomRange(1, 100);
-        final int chance = random.generate();
+        final var random = new RandomRange(1, 100);
+        final var chance = random.generate();
         if (chance <= VeryHardWindowAI.CAST_SPELL_CHANCE) {
-            final int maxIndex = CommonWindowAIParts.getMaxCastIndex(c);
+            final var maxIndex = CommonWindowAIParts.getMaxCastIndex(c);
             if (maxIndex > -1) {
                 // Select a random spell to cast
-                final RandomRange randomSpell = new RandomRange(0, maxIndex);
-                final int randomSpellID = randomSpell.generate();
-                if (randomSpellID == CommonWindowAIParts.SPELL_INDEX_HEAL) {
-                    // Healing spell was selected - is healing needed?
-                    if (c.getCurrentHP() > c.getMaximumHP()
-                            * VeryHardWindowAI.HEAL_THRESHOLD / 100) {
-                        // Do not need healing
-                        return false;
-                    }
+                final var randomSpell = new RandomRange(0, maxIndex);
+                final var randomSpellID = randomSpell.generate();
+                // Healing spell was selected - is healing needed?
+                if ((randomSpellID == CommonWindowAIParts.SPELL_INDEX_HEAL)
+                        && (c.getCurrentHP() > c.getMaximumHP()
+                                * VeryHardWindowAI.HEAL_THRESHOLD / 100)) {
+                    // Do not need healing
+                    return false;
                 }
                 if (this.roundsRemaining[randomSpellID] == 0) {
                     this.spell = c.getSpellBook().getSpellByID(randomSpellID);
@@ -74,16 +83,6 @@ public class VeryHardWindowAI extends WindowAI {
         } else {
             // Not casting a spell
             return false;
-        }
-    }
-
-    @Override
-    public void newRoundHook() {
-        // Decrement effect counters
-        for (int z = 0; z < this.roundsRemaining.length; z++) {
-            if (this.roundsRemaining[z] > 0) {
-                this.roundsRemaining[z]--;
-            }
         }
     }
 }

@@ -12,9 +12,8 @@ public abstract class AbstractMarker extends AbstractMazeObject {
     }
 
     @Override
-    public void postMoveAction(final boolean ie, final int dirX,
-            final int dirY) {
-        SoundManager.playSound(SoundConstants.SOUND_WALK);
+    public int getCustomProperty(final int propID) {
+        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
     }
 
     @Override
@@ -23,17 +22,18 @@ public abstract class AbstractMarker extends AbstractMazeObject {
     }
 
     @Override
-    protected void setTypes() {
-        // Do nothing
-    }
-
-    @Override
-    public int getCustomProperty(final int propID) {
-        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
+    public void postMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        SoundManager.playSound(SoundConstants.SOUND_WALK);
     }
 
     @Override
     public void setCustomProperty(final int propID, final int value) {
+        // Do nothing
+    }
+
+    @Override
+    protected void setTypes() {
         // Do nothing
     }
 }

@@ -1,6 +1,8 @@
 /* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.creatures;
 
+import java.util.Objects;
+
 class Statistic {
     // Fields
     private int value;
@@ -20,84 +22,15 @@ class Statistic {
         this.minVal = 0;
     }
 
-    // Methods
-    int getValue() {
-        return this.value;
-    }
-
-    void setValue(final int newValue) {
-        this.value = newValue;
-    }
-
-    void offsetValue(final int newValue) {
-        this.value += newValue;
-    }
-
-    void offsetValueMultiply(final double newValue, final boolean max,
-            final int maxValue) {
-        if (max) {
-            this.value -= (int) (maxValue - maxValue * newValue);
-        } else {
-            this.value *= newValue;
-        }
-    }
-
-    int getDynamism() {
-        return this.dynamism;
-    }
-
-    boolean hasMax() {
-        return this.hasMax;
-    }
-
-    void setHasMax(final boolean newHasMax) {
-        this.hasMax = newHasMax;
-    }
-
-    int getMaxID() {
-        return this.maxID;
-    }
-
-    void setMaxID(final int newMaxID) {
-        this.maxID = newMaxID;
-    }
-
-    boolean hasMin() {
-        return this.hasMin;
-    }
-
-    int getMinVal() {
-        return this.minVal;
-    }
-
-    void setMinVal(final int newMinVal) {
-        this.minVal = newMinVal;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.dynamism;
-        result = prime * result + (this.hasMax ? 1231 : 1237);
-        result = prime * result + (this.hasMin ? 1231 : 1237);
-        result = prime * result + this.maxID;
-        result = prime * result + this.minVal;
-        return prime * result + this.value;
-    }
-
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
+        if ((obj == null) || !(obj instanceof Statistic)) {
             return false;
         }
-        if (!(obj instanceof Statistic)) {
-            return false;
-        }
-        final Statistic other = (Statistic) obj;
+        final var other = (Statistic) obj;
         if (this.dynamism != other.dynamism) {
             return false;
         }
@@ -117,5 +50,65 @@ class Statistic {
             return false;
         }
         return true;
+    }
+
+    int getDynamism() {
+        return this.dynamism;
+    }
+
+    int getMaxID() {
+        return this.maxID;
+    }
+
+    int getMinVal() {
+        return this.minVal;
+    }
+
+    // Methods
+    int getValue() {
+        return this.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.dynamism, this.hasMax, this.hasMin, this.maxID, this.minVal,
+                this.value);
+    }
+
+    boolean hasMax() {
+        return this.hasMax;
+    }
+
+    boolean hasMin() {
+        return this.hasMin;
+    }
+
+    void offsetValue(final int newValue) {
+        this.value += newValue;
+    }
+
+    void offsetValueMultiply(final double newValue, final boolean max,
+            final int maxValue) {
+        if (max) {
+            this.value -= (int) (maxValue - maxValue * newValue);
+        } else {
+            this.value *= newValue;
+        }
+    }
+
+    void setHasMax(final boolean newHasMax) {
+        this.hasMax = newHasMax;
+    }
+
+    void setMaxID(final int newMaxID) {
+        this.maxID = newMaxID;
+    }
+
+    void setMinVal(final int newMinVal) {
+        this.minVal = newMinVal;
+    }
+
+    void setValue(final int newValue) {
+        this.value = newValue;
     }
 }

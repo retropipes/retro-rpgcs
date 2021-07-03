@@ -11,8 +11,8 @@ public abstract class AbstractMPModifier extends AbstractMazeObject {
     }
 
     @Override
-    protected void setTypes() {
-        this.type.set(TypeConstants.TYPE_MP_MODIFIER);
+    public int getCustomProperty(final int propID) {
+        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
     }
 
     @Override
@@ -21,12 +21,12 @@ public abstract class AbstractMPModifier extends AbstractMazeObject {
     }
 
     @Override
-    public int getCustomProperty(final int propID) {
-        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
+    public void setCustomProperty(final int propID, final int value) {
+        // Do nothing
     }
 
     @Override
-    public void setCustomProperty(final int propID, final int value) {
-        // Do nothing
+    protected void setTypes() {
+        this.type.set(TypeConstants.TYPE_MP_MODIFIER);
     }
 }

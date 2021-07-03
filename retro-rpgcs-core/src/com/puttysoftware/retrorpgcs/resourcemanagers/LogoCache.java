@@ -9,29 +9,6 @@ public class LogoCache {
     private static int CACHE_INCREMENT = 5;
     private static int CACHE_SIZE = 0;
 
-    // Methods
-    static BufferedImageIcon getCachedLogo(final String name) {
-        if (!LogoCache.isInCache(name)) {
-            final BufferedImageIcon bii = LogoManager.getUncachedLogo(name);
-            LogoCache.addToCache(name, bii);
-        }
-        for (final CacheEntry element : LogoCache.cache) {
-            if (name.equals(element.getName())) {
-                return element.getImage();
-            }
-        }
-        return null;
-    }
-
-    private static void expandCache() {
-        final CacheEntry[] tempCache = new CacheEntry[LogoCache.cache.length
-                + LogoCache.CACHE_INCREMENT];
-        for (int x = 0; x < LogoCache.CACHE_SIZE; x++) {
-            tempCache[x] = LogoCache.cache[x];
-        }
-        LogoCache.cache = tempCache;
-    }
-
     private static synchronized void addToCache(final String name,
             final BufferedImageIcon bii) {
         if (LogoCache.cache == null) {
@@ -44,11 +21,34 @@ public class LogoCache {
         LogoCache.CACHE_SIZE++;
     }
 
+    private static void expandCache() {
+        final var tempCache = new CacheEntry[LogoCache.cache.length
+                + LogoCache.CACHE_INCREMENT];
+        for (var x = 0; x < LogoCache.CACHE_SIZE; x++) {
+            tempCache[x] = LogoCache.cache[x];
+        }
+        LogoCache.cache = tempCache;
+    }
+
+    // Methods
+    static BufferedImageIcon getCachedLogo(final String name) {
+        if (!LogoCache.isInCache(name)) {
+            final var bii = LogoManager.getUncachedLogo(name);
+            LogoCache.addToCache(name, bii);
+        }
+        for (final CacheEntry element : LogoCache.cache) {
+            if (name.equals(element.getName())) {
+                return element.getImage();
+            }
+        }
+        return null;
+    }
+
     private static synchronized boolean isInCache(final String name) {
         if (LogoCache.cache == null) {
             LogoCache.cache = new CacheEntry[LogoCache.CACHE_INCREMENT];
         }
-        for (int x = 0; x < LogoCache.CACHE_SIZE; x++) {
+        for (var x = 0; x < LogoCache.CACHE_SIZE; x++) {
             if (name.equals(LogoCache.cache[x].getName())) {
                 return true;
             }

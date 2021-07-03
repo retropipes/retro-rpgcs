@@ -7,14 +7,14 @@ public class MapBattleArrowSpeedConstants {
     // Constants
     private static int ARROW_SPEED_FACTOR = 8;
 
-    // Constructor
-    private MapBattleArrowSpeedConstants() {
-        // Do nothing
-    }
-
     // Method
     public static int getArrowSpeed() {
         return PreferencesManager.getBattleSpeed()
                 / MapBattleArrowSpeedConstants.ARROW_SPEED_FACTOR;
+    }
+
+    // Constructor
+    private MapBattleArrowSpeedConstants() {
+        // Do nothing
     }
 }

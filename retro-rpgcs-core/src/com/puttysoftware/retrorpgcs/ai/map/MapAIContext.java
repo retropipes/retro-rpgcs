@@ -5,19 +5,24 @@ import java.awt.Point;
 
 import com.puttysoftware.retrorpgcs.maze.Maze;
 import com.puttysoftware.retrorpgcs.maze.MazeConstants;
-import com.puttysoftware.retrorpgcs.maze.abc.AbstractMazeObject;
 import com.puttysoftware.retrorpgcs.maze.objects.BattleCharacter;
 
 public class MapAIContext {
-    private final BattleCharacter aiContext;
-    private final int myTeam;
-    private final int[][] apCosts;
-    private final int[][] creatureLocations;
     private static final int MINIMUM_RADIUS = 1;
     private static final int MAXIMUM_RADIUS = 16;
     private static final int NOTHING_THERE = -1;
     private static final int CANNOT_MOVE_THERE = -1;
     private static final int AP_COST = 1;
+
+    // Static method
+    public static int getAPCost() {
+        return MapAIContext.AP_COST;
+    }
+
+    private final BattleCharacter aiContext;
+    private final int myTeam;
+    private final int[][] apCosts;
+    private final int[][] creatureLocations;
 
     // Constructor
     public MapAIContext(final BattleCharacter context, final Maze arena) {
@@ -25,38 +30,6 @@ public class MapAIContext {
         this.myTeam = context.getTeamID();
         this.apCosts = new int[arena.getRows()][arena.getColumns()];
         this.creatureLocations = new int[arena.getRows()][arena.getColumns()];
-    }
-
-    // Static method
-    public static int getAPCost() {
-        return MapAIContext.AP_COST;
-    }
-
-    // Methods
-    public void updateContext(final Maze arena) {
-        for (int x = 0; x < this.apCosts.length; x++) {
-            for (int y = 0; y < this.apCosts[x].length; y++) {
-                final AbstractMazeObject obj = arena.getCell(x, y, 0,
-                        MazeConstants.LAYER_OBJECT);
-                if (obj.isSolid()) {
-                    this.apCosts[x][y] = MapAIContext.CANNOT_MOVE_THERE;
-                } else {
-                    this.apCosts[x][y] = MapAIContext.AP_COST;
-                }
-            }
-        }
-        for (int x = 0; x < this.creatureLocations.length; x++) {
-            for (int y = 0; y < this.creatureLocations[x].length; y++) {
-                final AbstractMazeObject obj = arena.getCell(x, y, 0,
-                        MazeConstants.LAYER_OBJECT);
-                if (obj instanceof BattleCharacter) {
-                    final BattleCharacter bc = (BattleCharacter) obj;
-                    this.creatureLocations[x][y] = bc.getTeamID();
-                } else {
-                    this.creatureLocations[x][y] = MapAIContext.NOTHING_THERE;
-                }
-            }
-        }
     }
 
     public BattleCharacter getCharacter() {
@@ -68,8 +41,8 @@ public class MapAIContext {
     }
 
     Point isEnemyNearby(final int minRadius, final int maxRadius) {
-        int fMinR = minRadius;
-        int fMaxR = maxRadius;
+        var fMinR = minRadius;
+        var fMaxR = maxRadius;
         if (fMaxR > MapAIContext.MAXIMUM_RADIUS) {
             fMaxR = MapAIContext.MAXIMUM_RADIUS;
         }
@@ -82,8 +55,8 @@ public class MapAIContext {
         if (fMinR < MapAIContext.MINIMUM_RADIUS) {
             fMinR = MapAIContext.MINIMUM_RADIUS;
         }
-        final int x = this.aiContext.getX();
-        final int y = this.aiContext.getY();
+        final var x = this.aiContext.getX();
+        final var y = this.aiContext.getY();
         int u, v;
         for (u = x - fMaxR; u <= x + fMaxR; u++) {
             for (v = y - fMaxR; v <= y + fMaxR; v++) {
@@ -104,10 +77,10 @@ public class MapAIContext {
     }
 
     Point runAway() {
-        final int fMinR = MapAIContext.MAXIMUM_RADIUS;
-        final int fMaxR = MapAIContext.MAXIMUM_RADIUS;
-        final int x = this.aiContext.getX();
-        final int y = this.aiContext.getY();
+        final var fMinR = MapAIContext.MAXIMUM_RADIUS;
+        final var fMaxR = MapAIContext.MAXIMUM_RADIUS;
+        final var x = this.aiContext.getX();
+        final var y = this.aiContext.getY();
         int u, v;
         for (u = x - fMaxR; u <= x + fMaxR; u++) {
             for (v = y - fMaxR; v <= y + fMaxR; v++) {
@@ -125,5 +98,32 @@ public class MapAIContext {
             }
         }
         return null;
+    }
+
+    // Methods
+    public void updateContext(final Maze arena) {
+        for (var x = 0; x < this.apCosts.length; x++) {
+            for (var y = 0; y < this.apCosts[x].length; y++) {
+                final var obj = arena.getCell(x, y, 0,
+                        MazeConstants.LAYER_OBJECT);
+                if (obj.isSolid()) {
+                    this.apCosts[x][y] = MapAIContext.CANNOT_MOVE_THERE;
+                } else {
+                    this.apCosts[x][y] = MapAIContext.AP_COST;
+                }
+            }
+        }
+        for (var x = 0; x < this.creatureLocations.length; x++) {
+            for (var y = 0; y < this.creatureLocations[x].length; y++) {
+                final var obj = arena.getCell(x, y, 0,
+                        MazeConstants.LAYER_OBJECT);
+                if (obj instanceof BattleCharacter) {
+                    final var bc = (BattleCharacter) obj;
+                    this.creatureLocations[x][y] = bc.getTeamID();
+                } else {
+                    this.creatureLocations[x][y] = MapAIContext.NOTHING_THERE;
+                }
+            }
+        }
     }
 }

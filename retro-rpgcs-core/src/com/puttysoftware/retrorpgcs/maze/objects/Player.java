@@ -8,12 +8,26 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.ObjectImageConstants;
 public class Player extends AbstractCharacter {
     // Constructors
     public Player() {
-        super();
     }
 
     @Override
     public int getBaseID() {
         return ObjectImageConstants.OBJECT_IMAGE_PLAYER;
+    }
+
+    @Override
+    public String getDescription() {
+        return "This is you - the Player.";
+    }
+
+    @Override
+    public int getMaximumRequiredQuantity(final Maze maze) {
+        return 1;
+    }
+
+    @Override
+    public int getMinimumRequiredQuantity(final Maze maze) {
+        return 1;
     }
 
     @Override
@@ -26,24 +40,9 @@ public class Player extends AbstractCharacter {
         return "Players";
     }
 
-    @Override
-    public String getDescription() {
-        return "This is you - the Player.";
-    }
-
     // Random Generation Rules
     @Override
     public boolean isRequired() {
         return true;
-    }
-
-    @Override
-    public int getMinimumRequiredQuantity(final Maze maze) {
-        return 1;
-    }
-
-    @Override
-    public int getMaximumRequiredQuantity(final Maze maze) {
-        return 1;
     }
 }

@@ -23,7 +23,7 @@ public class GenerateTask extends Thread {
         this.setName("Level Generator");
         this.generateFrame = new JFrame("Generating...");
         this.generateFrame.setIconImage(LogoManager.getIconLogo());
-        final JProgressBar loadBar = new JProgressBar();
+        final var loadBar = new JProgressBar();
         loadBar.setIndeterminate(true);
         this.generateFrame.getContentPane().add(loadBar);
         this.generateFrame.setResizable(false);
@@ -37,8 +37,8 @@ public class GenerateTask extends Thread {
     public void run() {
         try {
             this.generateFrame.setVisible(true);
-            final RetroRPGCS app = RetroRPGCS.getInstance();
-            Maze gameMaze = app.getMazeManager().getMaze();
+            final var app = RetroRPGCS.getInstance();
+            var gameMaze = app.getMazeManager().getMaze();
             if (!this.scratch) {
                 app.getGameManager().disableEvents();
             } else {
@@ -48,9 +48,9 @@ public class GenerateTask extends Thread {
             gameMaze.addLevel(Maze.getMaxRows(), Maze.getMaxColumns(),
                     Maze.getMaxFloors());
             gameMaze.fillLevelRandomly();
-            final RandomRange rR = new RandomRange(0, Maze.getMaxRows() - 1);
-            final RandomRange rC = new RandomRange(0, Maze.getMaxColumns() - 1);
-            final RandomRange rF = new RandomRange(0, Maze.getMaxFloors() - 1);
+            final var rR = new RandomRange(0, Maze.getMaxRows() - 1);
+            final var rC = new RandomRange(0, Maze.getMaxColumns() - 1);
+            final var rF = new RandomRange(0, Maze.getMaxFloors() - 1);
             if (this.scratch) {
                 int startR, startC, startF;
                 do {
@@ -63,7 +63,7 @@ public class GenerateTask extends Thread {
                 gameMaze.setStartColumn(startC);
                 gameMaze.setStartFloor(startF);
                 app.getMazeManager().setLoaded(true);
-                final boolean playerExists = gameMaze.doesPlayerExist();
+                final var playerExists = gameMaze.doesPlayerExist();
                 if (playerExists) {
                     gameMaze.setPlayerToStart();
                     app.getGameManager().resetViewingWindow();

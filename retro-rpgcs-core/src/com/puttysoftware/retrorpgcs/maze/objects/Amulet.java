@@ -16,6 +16,11 @@ public class Amulet extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "Amulets make you not slide on ice for 15 steps when stepped on.";
+    }
+
+    @Override
     public String getName() {
         return "Amulet";
     }
@@ -29,14 +34,9 @@ public class Amulet extends AbstractTrap {
     public void postMoveAction(final boolean ie, final int dirX,
             final int dirY) {
         RetroRPGCS.getInstance().showMessage("You no longer slide on ice!");
-        final GameLogicManager glm = RetroRPGCS.getInstance().getGameManager();
+        final var glm = RetroRPGCS.getInstance().getGameManager();
         glm.activateEffect(MazeEffectConstants.EFFECT_STICKY);
         SoundManager.playSound(SoundConstants.SOUND_GRAB);
         GameLogicManager.decay();
-    }
-
-    @Override
-    public String getDescription() {
-        return "Amulets make you not slide on ice for 15 steps when stepped on.";
     }
 }

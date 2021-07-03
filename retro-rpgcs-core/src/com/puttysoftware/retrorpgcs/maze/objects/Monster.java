@@ -15,28 +15,13 @@ public class Monster extends AbstractMovingObject {
     }
 
     @Override
-    public void postMoveAction(final boolean ie, final int dirX,
-            final int dirY) {
-        if (RetroRPGCS.getInstance().getMode() != RetroRPGCS.STATUS_BATTLE) {
-            RetroRPGCS.getInstance().getBattle().doBattle();
-            RetroRPGCS.getInstance().getMazeManager().getMaze().postBattle(this,
-                    dirX, dirY, true);
-        }
-    }
-
-    @Override
-    public void timerExpiredAction(final int dirX, final int dirY) {
-        // Move the monster
-        final RandomRange r = new RandomRange(0, 7);
-        final int move = r.generate();
-        RetroRPGCS.getInstance().getMazeManager().getMaze()
-                .updateMonsterPosition(move, dirX, dirY, this);
-        this.activateTimer(1);
-    }
-
-    @Override
     public int getBaseID() {
         return ObjectImageConstants.OBJECT_IMAGE_MONSTER;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Monsters are dangerous. Encountering one starts a battle.";
     }
 
     @Override
@@ -50,7 +35,22 @@ public class Monster extends AbstractMovingObject {
     }
 
     @Override
-    public String getDescription() {
-        return "Monsters are dangerous. Encountering one starts a battle.";
+    public void postMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        if (RetroRPGCS.getInstance().getMode() != RetroRPGCS.STATUS_BATTLE) {
+            RetroRPGCS.getInstance().getBattle().doBattle();
+            RetroRPGCS.getInstance().getMazeManager().getMaze().postBattle(this,
+                    dirX, dirY, true);
+        }
+    }
+
+    @Override
+    public void timerExpiredAction(final int dirX, final int dirY) {
+        // Move the monster
+        final var r = new RandomRange(0, 7);
+        final var move = r.generate();
+        RetroRPGCS.getInstance().getMazeManager().getMaze()
+                .updateMonsterPosition(move, dirX, dirY, this);
+        this.activateTimer(1);
     }
 }

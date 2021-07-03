@@ -13,83 +13,66 @@ public class EmptyVoid extends AbstractWall {
 
     // Constructors
     public EmptyVoid() {
-        super();
         this.currAppearance = "Void";
-    }
-
-    @Override
-    public int getBaseID() {
-        return ObjectImageConstants.OBJECT_IMAGE_VOID;
-    }
-
-    @Override
-    public AbstractMazeObject gameRenderHook(final int x, final int y,
-            final int z) {
-        this.determineCurrentAppearance(x, y, z);
-        if (this.currAppearance.equals(this.getName())) {
-            return this;
-        } else {
-            return new SealingWall();
-        }
     }
 
     @Override
     public void determineCurrentAppearance(final int x, final int y,
             final int z) {
-        final RetroRPGCS app = RetroRPGCS.getInstance();
+        final var app = RetroRPGCS.getInstance();
         String mo1Name, mo2Name, mo3Name, mo4Name, mo6Name, mo7Name, mo8Name,
                 mo9Name, thisName;
         thisName = this.getName();
-        final AbstractMazeObject mo1 = app.getMazeManager().getMazeObject(x - 1,
+        final var mo1 = app.getMazeManager().getMazeObject(x - 1,
                 y - 1, z, MazeConstants.LAYER_OBJECT);
         try {
             mo1Name = mo1.getName();
         } catch (final NullPointerException np) {
             mo1Name = thisName;
         }
-        final AbstractMazeObject mo2 = app.getMazeManager().getMazeObject(x - 1,
+        final var mo2 = app.getMazeManager().getMazeObject(x - 1,
                 y, z, MazeConstants.LAYER_OBJECT);
         try {
             mo2Name = mo2.getName();
         } catch (final NullPointerException np) {
             mo2Name = thisName;
         }
-        final AbstractMazeObject mo3 = app.getMazeManager().getMazeObject(x - 1,
+        final var mo3 = app.getMazeManager().getMazeObject(x - 1,
                 y + 1, z, MazeConstants.LAYER_OBJECT);
         try {
             mo3Name = mo3.getName();
         } catch (final NullPointerException np) {
             mo3Name = thisName;
         }
-        final AbstractMazeObject mo4 = app.getMazeManager().getMazeObject(x,
+        final var mo4 = app.getMazeManager().getMazeObject(x,
                 y - 1, z, MazeConstants.LAYER_OBJECT);
         try {
             mo4Name = mo4.getName();
         } catch (final NullPointerException np) {
             mo4Name = thisName;
         }
-        final AbstractMazeObject mo6 = app.getMazeManager().getMazeObject(x,
+        final var mo6 = app.getMazeManager().getMazeObject(x,
                 y + 1, z, MazeConstants.LAYER_OBJECT);
         try {
             mo6Name = mo6.getName();
         } catch (final NullPointerException np) {
             mo6Name = thisName;
         }
-        final AbstractMazeObject mo7 = app.getMazeManager().getMazeObject(x + 1,
+        final var mo7 = app.getMazeManager().getMazeObject(x + 1,
                 y - 1, z, MazeConstants.LAYER_OBJECT);
         try {
             mo7Name = mo7.getName();
         } catch (final NullPointerException np) {
             mo7Name = thisName;
         }
-        final AbstractMazeObject mo8 = app.getMazeManager().getMazeObject(x + 1,
+        final var mo8 = app.getMazeManager().getMazeObject(x + 1,
                 y, z, MazeConstants.LAYER_OBJECT);
         try {
             mo8Name = mo8.getName();
         } catch (final NullPointerException np) {
             mo8Name = thisName;
         }
-        final AbstractMazeObject mo9 = app.getMazeManager().getMazeObject(x + 1,
+        final var mo9 = app.getMazeManager().getMazeObject(x + 1,
                 y + 1, z, MazeConstants.LAYER_OBJECT);
         try {
             mo9Name = mo9.getName();
@@ -107,8 +90,24 @@ public class EmptyVoid extends AbstractWall {
     }
 
     @Override
-    public String getName() {
-        return "Void";
+    public AbstractMazeObject gameRenderHook(final int x, final int y,
+            final int z) {
+        this.determineCurrentAppearance(x, y, z);
+        if (this.currAppearance.equals(this.getName())) {
+            return this;
+        } else {
+            return new SealingWall();
+        }
+    }
+
+    @Override
+    public int getBaseID() {
+        return ObjectImageConstants.OBJECT_IMAGE_VOID;
+    }
+
+    @Override
+    public String getDescription() {
+        return "The Void surrounds the maze, and cannot be altered in any way.";
     }
 
     @Override
@@ -117,12 +116,12 @@ public class EmptyVoid extends AbstractWall {
     }
 
     @Override
-    public String getPluralName() {
-        return "Voids";
+    public String getName() {
+        return "Void";
     }
 
     @Override
-    public String getDescription() {
-        return "The Void surrounds the maze, and cannot be altered in any way.";
+    public String getPluralName() {
+        return "Voids";
     }
 }

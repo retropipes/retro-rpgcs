@@ -32,18 +32,14 @@ public class RaceConstants {
         return RaceConstants.RACES_COUNT;
     }
 
-    static boolean racesReady() {
-        return RaceConstants.INITED;
-    }
-
     static void initRaces() {
         if (!RaceConstants.INITED) {
-            try (final ResourceStreamReader rsr = new ResourceStreamReader(
+            try (final var rsr = new ResourceStreamReader(
                     RaceDataManager.class.getResourceAsStream(
                             "/com/puttysoftware/retrorpgcs/resources/data/race/catalog.txt"))) {
                 // Fetch data
-                final ArrayList<String> tempNames = new ArrayList<>();
-                String input = "";
+                final var tempNames = new ArrayList<String>();
+                var input = "";
                 while (input != null) {
                     input = rsr.readString();
                     if (input != null) {
@@ -58,5 +54,9 @@ public class RaceConstants {
                 RetroRPGCS.getInstance().handleError(ioe);
             }
         }
+    }
+
+    static boolean racesReady() {
+        return RaceConstants.INITED;
     }
 }

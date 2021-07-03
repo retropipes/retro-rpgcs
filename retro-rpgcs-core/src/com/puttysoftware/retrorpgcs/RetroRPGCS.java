@@ -56,6 +56,78 @@ public final class RetroRPGCS extends GameShell {
     public static final int STATUS_BATTLE = 2;
     public static final int STATUS_PREFS = 3;
     public static final int STATUS_NULL = 4;
+    // Instance
+    private static RetroRPGCS instance;
+
+    public static int getBattleMazeSize() {
+        return RetroRPGCS.BATTLE_MAZE_SIZE;
+    }
+
+    public static String getCachesDirectory() {
+        return SandboxManager.getSandboxManager().getCachesDirectory();
+    }
+
+    public static String getDocumentsDirectory() {
+        return SandboxManager.getSandboxManager().getDocumentsDirectory();
+    }
+
+    public static Image getIconLogo() {
+        return LogoManager.getIconLogo();
+    }
+
+    public static RetroRPGCS getInstance() {
+        return RetroRPGCS.instance;
+    }
+
+    public static BufferedImageIcon getMicroLogo() {
+        return LogoManager.getMicroLogo();
+    }
+
+    public static String getSupportDirectory() {
+        return SandboxManager.getSandboxManager().getSupportDirectory();
+    }
+
+    private static String getVersionString() {
+        final var code = RetroRPGCS.pd.getCodeVersion();
+        String rt;
+        if (code < ProductData.CODE_STABLE) {
+            rt = "-beta" + RetroRPGCS.VERSION_PRERELEASE;
+        } else {
+            rt = "";
+        }
+        return RetroRPGCS.VERSION_MAJOR + "." + RetroRPGCS.VERSION_MINOR + "."
+                + RetroRPGCS.VERSION_BUGFIX + rt;
+    }
+
+    public static void main(final String[] args) {
+        try {
+            // Integrate with host platform
+            // Platform.hookLAF(RetroRPGCS.PROGRAM_NAME);
+            RetroRPGCS.instance = new RetroRPGCS();
+            RetroRPGCS.instance.postConstruct();
+            RetroRPGCS.playLogoSound();
+            RetroRPGCS.instance.getGUIManager().showGUI();
+            // Register platform hooks
+            // Platform.hookAbout(RetroRPGCS.application.getAboutDialog(),
+            // RetroRPGCS.application.getAboutDialog().getClass().getDeclaredMethod("showAboutDialog"));
+            // Platform.hookPreferences(PreferencesManager.class,
+            // PreferencesManager.class.getDeclaredMethod("showPrefs"));
+            // Platform.hookQuit(RetroRPGCS.application.getGUIManager(),
+            // RetroRPGCS.application.getGUIManager().getClass().getDeclaredMethod("quitHandler"));
+            // Platform.hookDockIcon(LogoManager.getLogo());
+            // Set up Common Dialogs
+            CommonDialogs.setDefaultTitle(RetroRPGCS.PROGRAM_NAME);
+            CommonDialogs.setIcon(RetroRPGCS.getMicroLogo());
+        } catch (final Throwable t) {
+            t.printStackTrace();
+            System.exit(2);
+        }
+    }
+
+    public static void playLogoSound() {
+        SoundManager.playSound(SoundConstants.SOUND_LOGO);
+    }
+
     // Fields
     private AboutDialog about;
     private GameLogicManager gameMgr;
@@ -72,8 +144,6 @@ public final class RetroRPGCS extends GameShell {
     private MapTimeBattleLogic mapTimeBattle;
     private int currentMode;
     private int formerMode;
-    // Instance
-    private static RetroRPGCS instance;
 
     // Constructor
     public RetroRPGCS() {
@@ -86,95 +156,26 @@ public final class RetroRPGCS extends GameShell {
         this.formerMode = RetroRPGCS.STATUS_NULL;
     }
 
-    public static String getCachesDirectory() {
-        return SandboxManager.getSandboxManager().getCachesDirectory();
+    public AboutDialog getAboutDialog() {
+        return this.about;
     }
 
-    public static String getDocumentsDirectory() {
-        return SandboxManager.getSandboxManager().getDocumentsDirectory();
-    }
-
-    public static String getSupportDirectory() {
-        return SandboxManager.getSandboxManager().getSupportDirectory();
-    }
-
-    // Methods
-    void postConstruct() {
-        // Create product data
-        try {
-            pd = new ProductData(RetroRPGCS.UPDATE_SITE,
-                    RetroRPGCS.NEW_VERSION_SITE, RetroRPGCS.VERSION_MAJOR,
-                    RetroRPGCS.VERSION_MINOR, RetroRPGCS.VERSION_BUGFIX,
-                    RetroRPGCS.VERSION_CODE, RetroRPGCS.VERSION_PRERELEASE);
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    public Battle getBattle() {
+        if (PreferencesManager.useMapBattleEngine()) {
+            if (PreferencesManager.useTimeBattleEngine()) {
+                return this.mapTimeBattle;
+            } else {
+                return this.mapTurnBattle;
+            }
+        } else if (PreferencesManager.useTimeBattleEngine()) {
+            return this.windowTimeBattle;
+        } else {
+            return this.windowTurnBattle;
         }
-        // Create Managers
-        this.about = new AboutDialog(RetroRPGCS.getVersionString());
-        this.guiMgr = new GUIManager();
-        this.menuMgr = new MenuManager();
-        this.oHelpMgr = new ObjectHelpManager();
-        this.windowTurnBattle = new WindowTurnBattleLogic();
-        this.windowTimeBattle = new WindowTimeBattleLogic();
-        this.mapTurnBattle = new MapTurnBattleLogic();
-        this.mapTimeBattle = new MapTimeBattleLogic();
-        this.weapons = new Shop(ShopTypes.SHOP_TYPE_WEAPONS);
-        this.armor = new Shop(ShopTypes.SHOP_TYPE_ARMOR);
-        this.healer = new Shop(ShopTypes.SHOP_TYPE_HEALER);
-        this.bank = new Shop(ShopTypes.SHOP_TYPE_BANK);
-        this.regenerator = new Shop(ShopTypes.SHOP_TYPE_REGENERATOR);
-        this.spells = new Shop(ShopTypes.SHOP_TYPE_SPELLS);
-        this.items = new Shop(ShopTypes.SHOP_TYPE_ITEMS);
-        this.socks = new Shop(ShopTypes.SHOP_TYPE_SOCKS);
-        this.enhancements = new Shop(ShopTypes.SHOP_TYPE_ENHANCEMENTS);
-        this.faiths = new Shop(ShopTypes.SHOP_TYPE_FAITH_POWERS);
-        // Cache Logo
-        this.guiMgr.updateLogo();
-    }
-
-    public void setMode(final int newMode) {
-        this.formerMode = this.currentMode;
-        this.currentMode = newMode;
-    }
-
-    public int getMode() {
-        return this.currentMode;
     }
 
     public int getFormerMode() {
         return this.formerMode;
-    }
-
-    public boolean modeChanged() {
-        return this.formerMode != this.currentMode;
-    }
-
-    public void saveFormerMode() {
-        this.formerMode = this.currentMode;
-    }
-
-    public void restoreFormerMode() {
-        this.currentMode = this.formerMode;
-    }
-
-    public void showMessage(final String msg) {
-        if (this.currentMode == RetroRPGCS.STATUS_GAME) {
-            this.getGameManager().setStatusMessage(msg);
-        } else if (this.currentMode == RetroRPGCS.STATUS_BATTLE) {
-            this.getBattle().setStatusMessage(msg);
-        } else {
-            CommonDialogs.showDialog(msg);
-        }
-    }
-
-    @Override
-    public MenuManager getMenus() {
-        return this.menuMgr;
-    }
-
-    public GUIManager getGUIManager() {
-        return this.guiMgr;
     }
 
     public GameLogicManager getGameManager() {
@@ -182,67 +183,6 @@ public final class RetroRPGCS extends GameShell {
             this.gameMgr = new GameLogicManager();
         }
         return this.gameMgr;
-    }
-
-    public MazeManager getMazeManager() {
-        if (this.mazeMgr == null) {
-            this.mazeMgr = new MazeManager();
-        }
-        return this.mazeMgr;
-    }
-
-    public ObjectHelpManager getObjectHelpManager() {
-        return this.oHelpMgr;
-    }
-
-    public AboutDialog getAboutDialog() {
-        return this.about;
-    }
-
-    public static BufferedImageIcon getMicroLogo() {
-        return LogoManager.getMicroLogo();
-    }
-
-    public static Image getIconLogo() {
-        return LogoManager.getIconLogo();
-    }
-
-    public static void playLogoSound() {
-        SoundManager.playSound(SoundConstants.SOUND_LOGO);
-    }
-
-    private static String getVersionString() {
-        final int code = RetroRPGCS.pd.getCodeVersion();
-        String rt;
-        if (code < ProductData.CODE_STABLE) {
-            rt = "-beta" + RetroRPGCS.VERSION_PRERELEASE;
-        } else {
-            rt = "";
-        }
-        return RetroRPGCS.VERSION_MAJOR + "." + RetroRPGCS.VERSION_MINOR + "."
-                + RetroRPGCS.VERSION_BUGFIX + rt;
-    }
-
-    public JFrame getOutputFrame() {
-        try {
-            if (this.getMode() == RetroRPGCS.STATUS_PREFS) {
-                return PreferencesManager.getPrefFrame();
-            } else if (this.getMode() == RetroRPGCS.STATUS_GUI) {
-                return this.getGUIManager().getGUIFrame();
-            } else if (this.getMode() == RetroRPGCS.STATUS_GAME) {
-                return this.getGameManager().getOutputFrame();
-            } else if (this.getMode() == RetroRPGCS.STATUS_BATTLE) {
-                return this.getBattle().getOutputFrame();
-            } else {
-                return null;
-            }
-        } catch (final NullPointerException npe) {
-            return null;
-        }
-    }
-
-    public MazeObjectList getObjects() {
-        return this.objects;
     }
 
     public Shop getGenericShop(final int shopType) {
@@ -274,20 +214,89 @@ public final class RetroRPGCS extends GameShell {
         }
     }
 
-    public Battle getBattle() {
-        if (PreferencesManager.useMapBattleEngine()) {
-            if (PreferencesManager.useTimeBattleEngine()) {
-                return this.mapTimeBattle;
-            } else {
-                return this.mapTurnBattle;
-            }
-        } else {
-            if (PreferencesManager.useTimeBattleEngine()) {
-                return this.windowTimeBattle;
-            } else {
-                return this.windowTurnBattle;
-            }
+    public GUIManager getGUIManager() {
+        return this.guiMgr;
+    }
+
+    public MazeManager getMazeManager() {
+        if (this.mazeMgr == null) {
+            this.mazeMgr = new MazeManager();
         }
+        return this.mazeMgr;
+    }
+
+    @Override
+    public MenuManager getMenus() {
+        return this.menuMgr;
+    }
+
+    public int getMode() {
+        return this.currentMode;
+    }
+
+    public ObjectHelpManager getObjectHelpManager() {
+        return this.oHelpMgr;
+    }
+
+    public MazeObjectList getObjects() {
+        return this.objects;
+    }
+
+    public JFrame getOutputFrame() {
+        try {
+            if (this.getMode() == RetroRPGCS.STATUS_PREFS) {
+                return PreferencesManager.getPrefFrame();
+            } else if (this.getMode() == RetroRPGCS.STATUS_GUI) {
+                return this.getGUIManager().getGUIFrame();
+            } else if (this.getMode() == RetroRPGCS.STATUS_GAME) {
+                return this.getGameManager().getOutputFrame();
+            } else if (this.getMode() == RetroRPGCS.STATUS_BATTLE) {
+                return this.getBattle().getOutputFrame();
+            } else {
+                return null;
+            }
+        } catch (final NullPointerException npe) {
+            return null;
+        }
+    }
+
+    public boolean modeChanged() {
+        return this.formerMode != this.currentMode;
+    }
+
+    // Methods
+    void postConstruct() {
+        // Create product data
+        try {
+            RetroRPGCS.pd = new ProductData(RetroRPGCS.UPDATE_SITE,
+                    RetroRPGCS.NEW_VERSION_SITE, RetroRPGCS.VERSION_MAJOR,
+                    RetroRPGCS.VERSION_MINOR, RetroRPGCS.VERSION_BUGFIX,
+                    RetroRPGCS.VERSION_CODE, RetroRPGCS.VERSION_PRERELEASE);
+        } catch (final MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // Create Managers
+        this.about = new AboutDialog(RetroRPGCS.getVersionString());
+        this.guiMgr = new GUIManager();
+        this.menuMgr = new MenuManager();
+        this.oHelpMgr = new ObjectHelpManager();
+        this.windowTurnBattle = new WindowTurnBattleLogic();
+        this.windowTimeBattle = new WindowTimeBattleLogic();
+        this.mapTurnBattle = new MapTurnBattleLogic();
+        this.mapTimeBattle = new MapTimeBattleLogic();
+        this.weapons = new Shop(ShopTypes.SHOP_TYPE_WEAPONS);
+        this.armor = new Shop(ShopTypes.SHOP_TYPE_ARMOR);
+        this.healer = new Shop(ShopTypes.SHOP_TYPE_HEALER);
+        this.bank = new Shop(ShopTypes.SHOP_TYPE_BANK);
+        this.regenerator = new Shop(ShopTypes.SHOP_TYPE_REGENERATOR);
+        this.spells = new Shop(ShopTypes.SHOP_TYPE_SPELLS);
+        this.items = new Shop(ShopTypes.SHOP_TYPE_ITEMS);
+        this.socks = new Shop(ShopTypes.SHOP_TYPE_SOCKS);
+        this.enhancements = new Shop(ShopTypes.SHOP_TYPE_ENHANCEMENTS);
+        this.faiths = new Shop(ShopTypes.SHOP_TYPE_FAITH_POWERS);
+        // Cache Logo
+        this.guiMgr.updateLogo();
     }
 
     public void resetBattleGUI() {
@@ -297,36 +306,26 @@ public final class RetroRPGCS extends GameShell {
         this.windowTurnBattle.resetGUI();
     }
 
-    public static RetroRPGCS getInstance() {
-        return RetroRPGCS.instance;
+    public void restoreFormerMode() {
+        this.currentMode = this.formerMode;
     }
 
-    public static int getBattleMazeSize() {
-        return RetroRPGCS.BATTLE_MAZE_SIZE;
+    public void saveFormerMode() {
+        this.formerMode = this.currentMode;
     }
 
-    public static void main(final String[] args) {
-        try {
-            // Integrate with host platform
-            // Platform.hookLAF(RetroRPGCS.PROGRAM_NAME);
-            RetroRPGCS.instance = new RetroRPGCS();
-            RetroRPGCS.instance.postConstruct();
-            RetroRPGCS.playLogoSound();
-            RetroRPGCS.instance.getGUIManager().showGUI();
-            // Register platform hooks
-            // Platform.hookAbout(RetroRPGCS.application.getAboutDialog(),
-            // RetroRPGCS.application.getAboutDialog().getClass().getDeclaredMethod("showAboutDialog"));
-            // Platform.hookPreferences(PreferencesManager.class,
-            // PreferencesManager.class.getDeclaredMethod("showPrefs"));
-            // Platform.hookQuit(RetroRPGCS.application.getGUIManager(),
-            // RetroRPGCS.application.getGUIManager().getClass().getDeclaredMethod("quitHandler"));
-            // Platform.hookDockIcon(LogoManager.getLogo());
-            // Set up Common Dialogs
-            CommonDialogs.setDefaultTitle(RetroRPGCS.PROGRAM_NAME);
-            CommonDialogs.setIcon(RetroRPGCS.getMicroLogo());
-        } catch (final Throwable t) {
-            t.printStackTrace();
-            System.exit(2);
+    public void setMode(final int newMode) {
+        this.formerMode = this.currentMode;
+        this.currentMode = newMode;
+    }
+
+    public void showMessage(final String msg) {
+        if (this.currentMode == RetroRPGCS.STATUS_GAME) {
+            this.getGameManager().setStatusMessage(msg);
+        } else if (this.currentMode == RetroRPGCS.STATUS_BATTLE) {
+            this.getBattle().setStatusMessage(msg);
+        } else {
+            CommonDialogs.showDialog(msg);
         }
     }
 }

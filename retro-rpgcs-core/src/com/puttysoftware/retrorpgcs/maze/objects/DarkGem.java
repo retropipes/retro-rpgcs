@@ -14,12 +14,16 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.SoundManager;
 public class DarkGem extends AbstractMPModifier {
     // Constructors
     public DarkGem() {
-        super();
     }
 
     @Override
     public int getBaseID() {
         return ObjectImageConstants.OBJECT_IMAGE_DARK_GEM;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Dark Gems take MP away.";
     }
 
     @Override
@@ -30,11 +34,6 @@ public class DarkGem extends AbstractMPModifier {
     @Override
     public String getPluralName() {
         return "Dark Gems";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Dark Gems take MP away.";
     }
 
     @Override
@@ -51,7 +50,7 @@ public class DarkGem extends AbstractMPModifier {
     public boolean shouldGenerateObject(final Maze maze, final int row,
             final int col, final int floor, final int level, final int layer) {
         // Generate Dark Gems at 30% rate
-        final RandomRange reject = new RandomRange(1, 100);
+        final var reject = new RandomRange(1, 100);
         return reject.generate() < 30;
     }
 }

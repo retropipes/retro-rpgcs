@@ -19,6 +19,11 @@ public class Ice extends AbstractGround {
     }
 
     @Override
+    public String getDescription() {
+        return "Ice is one of the many types of ground - it is frictionless. Anything that crosses it will slide.";
+    }
+
+    @Override
     public String getName() {
         return "Ice";
     }
@@ -40,15 +45,10 @@ public class Ice extends AbstractGround {
     }
 
     @Override
-    public String getDescription() {
-        return "Ice is one of the many types of ground - it is frictionless. Anything that crosses it will slide.";
-    }
-
-    @Override
     public boolean shouldGenerateObject(final Maze maze, final int row,
             final int col, final int floor, final int level, final int layer) {
         // Generate Ice at 40% rate
-        final RandomRange reject = new RandomRange(1, 100);
+        final var reject = new RandomRange(1, 100);
         return reject.generate() < 40;
     }
 }

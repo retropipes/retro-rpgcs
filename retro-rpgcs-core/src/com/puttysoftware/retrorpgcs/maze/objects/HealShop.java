@@ -17,6 +17,11 @@ public class HealShop extends AbstractShop {
     }
 
     @Override
+    public String getDescription() {
+        return "Heal Shops restore health, for a fee.";
+    }
+
+    @Override
     public String getName() {
         return "Heal Shop";
     }
@@ -24,10 +29,5 @@ public class HealShop extends AbstractShop {
     @Override
     public String getPluralName() {
         return "Heal Shops";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Heal Shops restore health, for a fee.";
     }
 }

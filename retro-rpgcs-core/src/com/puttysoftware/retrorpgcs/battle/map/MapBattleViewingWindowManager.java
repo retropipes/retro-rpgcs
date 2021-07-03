@@ -4,10 +4,17 @@ package com.puttysoftware.retrorpgcs.battle.map;
 import com.puttysoftware.retrorpgcs.prefs.PreferencesManager;
 
 public class MapBattleViewingWindowManager {
-    // Fields
-    private int oldLocX, oldLocY, locX, locY;
     private static final int VIEWING_WINDOW_SIZE_MULTIPLIER = 1;
     private static final int VIEWING_WINDOW_SIZE_ADDITION = 0;
+
+    public static int getViewingWindowSize() {
+        return PreferencesManager.getViewingWindowSize()
+                * MapBattleViewingWindowManager.VIEWING_WINDOW_SIZE_MULTIPLIER
+                + MapBattleViewingWindowManager.VIEWING_WINDOW_SIZE_ADDITION;
+    }
+
+    // Fields
+    private int oldLocX, oldLocY, locX, locY;
 
     // Constructors
     public MapBattleViewingWindowManager() {
@@ -15,15 +22,6 @@ public class MapBattleViewingWindowManager {
         this.locY = 0;
         this.oldLocX = 0;
         this.oldLocY = 0;
-    }
-
-    // Methods
-    public int getViewingWindowLocationX() {
-        return this.locX;
-    }
-
-    public int getViewingWindowLocationY() {
-        return this.locY;
     }
 
     public int getLowerRightViewingWindowLocationX() {
@@ -36,14 +34,13 @@ public class MapBattleViewingWindowManager {
                 - 1;
     }
 
-    public void setViewingWindowCenterX(final int val) {
-        this.locX = val
-                - MapBattleViewingWindowManager.getViewingWindowSize() / 2;
+    // Methods
+    public int getViewingWindowLocationX() {
+        return this.locX;
     }
 
-    public void setViewingWindowCenterY(final int val) {
-        this.locY = val
-                - MapBattleViewingWindowManager.getViewingWindowSize() / 2;
+    public int getViewingWindowLocationY() {
+        return this.locY;
     }
 
     public void offsetViewingWindowLocationX(final int val) {
@@ -54,19 +51,23 @@ public class MapBattleViewingWindowManager {
         this.locY += val;
     }
 
-    public void saveViewingWindow() {
-        this.oldLocX = this.locX;
-        this.oldLocY = this.locY;
-    }
-
     public void restoreViewingWindow() {
         this.locX = this.oldLocX;
         this.locY = this.oldLocY;
     }
 
-    public static int getViewingWindowSize() {
-        return PreferencesManager.getViewingWindowSize()
-                * MapBattleViewingWindowManager.VIEWING_WINDOW_SIZE_MULTIPLIER
-                + MapBattleViewingWindowManager.VIEWING_WINDOW_SIZE_ADDITION;
+    public void saveViewingWindow() {
+        this.oldLocX = this.locX;
+        this.oldLocY = this.locY;
+    }
+
+    public void setViewingWindowCenterX(final int val) {
+        this.locX = val
+                - MapBattleViewingWindowManager.getViewingWindowSize() / 2;
+    }
+
+    public void setViewingWindowCenterY(final int val) {
+        this.locY = val
+                - MapBattleViewingWindowManager.getViewingWindowSize() / 2;
     }
 }

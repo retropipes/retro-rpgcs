@@ -6,50 +6,19 @@ import com.puttysoftware.retrorpgcs.maze.Maze;
 import com.puttysoftware.retrorpgcs.maze.objects.BattleCharacter;
 
 public class MapTurnBattleDefinitions {
+    private static final int MAX_BATTLERS = 100;
     // Fields
     private BattleCharacter activeCharacter;
     private final BattleCharacter[] battlers;
     private final MapAIContext[] aiContexts;
     private Maze battleMaze;
     private int battlerCount;
-    private static final int MAX_BATTLERS = 100;
 
     // Constructors
     public MapTurnBattleDefinitions() {
         this.battlers = new BattleCharacter[MapTurnBattleDefinitions.MAX_BATTLERS];
         this.aiContexts = new MapAIContext[MapTurnBattleDefinitions.MAX_BATTLERS];
         this.battlerCount = 0;
-    }
-
-    // Methods
-    public BattleCharacter[] getBattlers() {
-        return this.battlers;
-    }
-
-    public void resetBattlers() {
-        for (final BattleCharacter battler : this.battlers) {
-            if (battler != null) {
-                if (battler.getTemplate().isAlive()) {
-                    battler.activate();
-                    battler.resetAP();
-                    battler.resetAttacks();
-                    battler.resetSpells();
-                    battler.resetLocation();
-                }
-            }
-        }
-    }
-
-    public void roundResetBattlers() {
-        for (final BattleCharacter battler : this.battlers) {
-            if (battler != null) {
-                if (battler.getTemplate().isAlive()) {
-                    battler.resetAP();
-                    battler.resetAttacks();
-                    battler.resetSpells();
-                }
-            }
-        }
     }
 
     public boolean addBattler(final BattleCharacter battler) {
@@ -62,37 +31,16 @@ public class MapTurnBattleDefinitions {
         }
     }
 
-    public MapAIContext[] getBattlerAIContexts() {
-        return this.aiContexts;
-    }
-
-    public BattleCharacter getActiveCharacter() {
-        return this.activeCharacter;
-    }
-
-    public void setActiveCharacter(final BattleCharacter bc) {
-        this.activeCharacter = bc;
-    }
-
-    public Maze getBattleMaze() {
-        return this.battleMaze;
-    }
-
-    public void setBattleMaze(final Maze bMaze) {
-        this.battleMaze = bMaze;
-    }
-
     public int findBattler(final String name) {
         return this.findBattler(name, 0, this.battlers.length);
     }
 
     private int findBattler(final String name, final int start,
             final int limit) {
-        for (int x = start; x < limit; x++) {
-            if (this.battlers[x] != null) {
-                if (this.battlers[x].getName().equals(name)) {
-                    return x;
-                }
+        for (var x = start; x < limit; x++) {
+            if ((this.battlers[x] != null)
+                    && this.battlers[x].getName().equals(name)) {
+                return x;
             }
         }
         return -1;
@@ -104,13 +52,59 @@ public class MapTurnBattleDefinitions {
 
     private int findFirstBattlerOnTeam(final int teamID, final int start,
             final int limit) {
-        for (int x = start; x < limit; x++) {
-            if (this.battlers[x] != null) {
-                if (this.battlers[x].getTeamID() == teamID) {
-                    return x;
-                }
+        for (var x = start; x < limit; x++) {
+            if ((this.battlers[x] != null)
+                    && (this.battlers[x].getTeamID() == teamID)) {
+                return x;
             }
         }
         return -1;
+    }
+
+    public BattleCharacter getActiveCharacter() {
+        return this.activeCharacter;
+    }
+
+    public Maze getBattleMaze() {
+        return this.battleMaze;
+    }
+
+    public MapAIContext[] getBattlerAIContexts() {
+        return this.aiContexts;
+    }
+
+    // Methods
+    public BattleCharacter[] getBattlers() {
+        return this.battlers;
+    }
+
+    public void resetBattlers() {
+        for (final BattleCharacter battler : this.battlers) {
+            if ((battler != null) && battler.getTemplate().isAlive()) {
+                battler.activate();
+                battler.resetAP();
+                battler.resetAttacks();
+                battler.resetSpells();
+                battler.resetLocation();
+            }
+        }
+    }
+
+    public void roundResetBattlers() {
+        for (final BattleCharacter battler : this.battlers) {
+            if ((battler != null) && battler.getTemplate().isAlive()) {
+                battler.resetAP();
+                battler.resetAttacks();
+                battler.resetSpells();
+            }
+        }
+    }
+
+    public void setActiveCharacter(final BattleCharacter bc) {
+        this.activeCharacter = bc;
+    }
+
+    public void setBattleMaze(final Maze bMaze) {
+        this.battleMaze = bMaze;
     }
 }

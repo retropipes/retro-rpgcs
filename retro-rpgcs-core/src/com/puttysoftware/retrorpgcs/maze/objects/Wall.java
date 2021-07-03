@@ -8,7 +8,16 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.ObjectImageConstants;
 public class Wall extends AbstractWall {
     // Constructors
     public Wall() {
-        super();
+    }
+
+    @Override
+    public int getBaseID() {
+        return ObjectImageConstants.OBJECT_IMAGE_WALL;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Walls are impassable - you'll need to go around them.";
     }
 
     @Override
@@ -19,16 +28,6 @@ public class Wall extends AbstractWall {
     @Override
     public String getPluralName() {
         return "Walls";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Walls are impassable - you'll need to go around them.";
-    }
-
-    @Override
-    public int getBaseID() {
-        return ObjectImageConstants.OBJECT_IMAGE_WALL;
     }
 
     @Override

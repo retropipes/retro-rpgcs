@@ -17,6 +17,11 @@ public class Bank extends AbstractShop {
     }
 
     @Override
+    public String getDescription() {
+        return "Banks store money for safe keeping.";
+    }
+
+    @Override
     public String getName() {
         return "Bank";
     }
@@ -24,10 +29,5 @@ public class Bank extends AbstractShop {
     @Override
     public String getPluralName() {
         return "Banks";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Banks store money for safe keeping.";
     }
 }

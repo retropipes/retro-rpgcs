@@ -10,9 +10,12 @@ public class Extension {
     private static final String INTERNAL_DATA_EXTENSION = "dat";
     private static final String MUSIC_EXTENSION = "tttune";
 
-    // Methods
-    public static String getPreferencesExtension() {
-        return Extension.PREFERENCES_EXTENSION;
+    public static String getCharacterExtension() {
+        return Extension.CHARACTER_EXTENSION;
+    }
+
+    public static String getCharacterExtensionWithPeriod() {
+        return "." + Extension.CHARACTER_EXTENSION;
     }
 
     public static String getGameExtension() {
@@ -23,23 +26,20 @@ public class Extension {
         return "." + Extension.GAME_EXTENSION;
     }
 
-    public static String getCharacterExtension() {
-        return Extension.CHARACTER_EXTENSION;
-    }
-
-    public static String getCharacterExtensionWithPeriod() {
-        return "." + Extension.CHARACTER_EXTENSION;
-    }
-
-    public static String getRegistryExtensionWithPeriod() {
-        return "." + Extension.REGISTRY_EXTENSION;
-    }
-
     public static String getInternalDataExtensionWithPeriod() {
         return "." + Extension.INTERNAL_DATA_EXTENSION;
     }
 
     public static String getMusicExtensionWithPeriod() {
         return "." + Extension.MUSIC_EXTENSION;
+    }
+
+    // Methods
+    public static String getPreferencesExtension() {
+        return Extension.PREFERENCES_EXTENSION;
+    }
+
+    public static String getRegistryExtensionWithPeriod() {
+        return "." + Extension.REGISTRY_EXTENSION;
     }
 }

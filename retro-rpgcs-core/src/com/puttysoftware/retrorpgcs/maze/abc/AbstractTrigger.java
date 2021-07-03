@@ -11,7 +11,9 @@ public abstract class AbstractTrigger extends AbstractMazeObject {
     }
 
     @Override
-    public abstract String getName();
+    public int getCustomProperty(final int propID) {
+        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
+    }
 
     @Override
     public int getLayer() {
@@ -19,17 +21,15 @@ public abstract class AbstractTrigger extends AbstractMazeObject {
     }
 
     @Override
-    protected void setTypes() {
-        this.type.set(TypeConstants.TYPE_TRIGGER);
-    }
-
-    @Override
-    public int getCustomProperty(final int propID) {
-        return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
-    }
+    public abstract String getName();
 
     @Override
     public void setCustomProperty(final int propID, final int value) {
         // Do nothing
+    }
+
+    @Override
+    protected void setTypes() {
+        this.type.set(TypeConstants.TYPE_TRIGGER);
     }
 }

@@ -10,15 +10,29 @@ final class SandboxManagerOSX extends SandboxManager {
     private static final String DOCUMENTS_FALLBACK_DIR = "Library/Containers/com.puttysoftware.retrorpgcs/Data/Documents";
     private static final String CACHES_FALLBACK_DIR = "Library/Containers/com.puttysoftware.retrorpgcs/Data/Library/Caches/com.puttysoftware.retrorpgcs";
 
+    private static String getLibraryFallbackDirectory() {
+        return System.getenv(SandboxManagerOSX.FALLBACK_PREFIX) + File.separator
+                + SandboxManagerOSX.LIBRARY_FALLBACK_DIR;
+    }
+
     // Constructor
     SandboxManagerOSX() {
-        super();
+    }
+
+    @Override
+    public String getCachesDirectory() {
+        var cache = System.getProperty("CachesDirectory");
+        if (cache == null) {
+            cache = SandboxManagerOSX.getLibraryFallbackDirectory()
+                    + File.separator + SandboxManagerOSX.CACHES_FALLBACK_DIR;
+        }
+        return cache;
     }
 
     // Methods
     @Override
     public String getDocumentsDirectory() {
-        String docs = System.getProperty("DocumentsDirectory");
+        var docs = System.getProperty("DocumentsDirectory");
         if (docs == null) {
             docs = SandboxManagerOSX.getLibraryFallbackDirectory()
                     + File.separator + SandboxManagerOSX.DOCUMENTS_FALLBACK_DIR;
@@ -27,28 +41,13 @@ final class SandboxManagerOSX extends SandboxManager {
     }
 
     @Override
-    public String getCachesDirectory() {
-        String cache = System.getProperty("CachesDirectory");
-        if (cache == null) {
-            cache = SandboxManagerOSX.getLibraryFallbackDirectory()
-                    + File.separator + SandboxManagerOSX.CACHES_FALLBACK_DIR;
-        }
-        return cache;
-    }
-
-    @Override
     public String getSupportDirectory() {
-        String appsupport = System.getProperty("ApplicationSupportDirectory");
+        var appsupport = System.getProperty("ApplicationSupportDirectory");
         if (appsupport == null) {
             appsupport = SandboxManagerOSX.getLibraryFallbackDirectory()
                     + File.separator
                     + SandboxManagerOSX.APP_SUPPORT_FALLBACK_DIR;
         }
         return appsupport;
-    }
-
-    private static String getLibraryFallbackDirectory() {
-        return System.getenv(SandboxManagerOSX.FALLBACK_PREFIX) + File.separator
-                + SandboxManagerOSX.LIBRARY_FALLBACK_DIR;
     }
 }

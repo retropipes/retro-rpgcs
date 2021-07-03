@@ -20,26 +20,6 @@ public abstract class AbstractCharacter extends AbstractMazeObject {
         this.savedObject = new Empty();
     }
 
-    // Methods
-    @Override
-    public void postMoveAction(final boolean ie, final int dirX,
-            final int dirY) {
-        // Do nothing
-    }
-
-    @Override
-    public abstract String getName();
-
-    @Override
-    public int getLayer() {
-        return MazeConstants.VIRTUAL_LAYER_CHARACTER;
-    }
-
-    @Override
-    protected void setTypes() {
-        this.type.set(TypeConstants.TYPE_CHARACTER);
-    }
-
     @Override
     public int getCustomFormat() {
         return AbstractMazeObject.CUSTOM_FORMAT_MANUAL_OVERRIDE;
@@ -51,14 +31,18 @@ public abstract class AbstractCharacter extends AbstractMazeObject {
     }
 
     @Override
-    public void setCustomProperty(final int propID, final int value) {
-        // Do nothing
+    public int getLayer() {
+        return MazeConstants.VIRTUAL_LAYER_CHARACTER;
     }
 
     @Override
-    protected void writeMazeObjectHook(final XDataWriter writer)
-            throws IOException {
-        this.savedObject.writeMazeObject(writer);
+    public abstract String getName();
+
+    // Methods
+    @Override
+    public void postMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        // Do nothing
     }
 
     @Override
@@ -67,5 +51,21 @@ public abstract class AbstractCharacter extends AbstractMazeObject {
         this.savedObject = RetroRPGCS.getInstance().getObjects()
                 .readMazeObject(reader, formatVersion);
         return this;
+    }
+
+    @Override
+    public void setCustomProperty(final int propID, final int value) {
+        // Do nothing
+    }
+
+    @Override
+    protected void setTypes() {
+        this.type.set(TypeConstants.TYPE_CHARACTER);
+    }
+
+    @Override
+    protected void writeMazeObjectHook(final XDataWriter writer)
+            throws IOException {
+        this.savedObject.writeMazeObject(writer);
     }
 }

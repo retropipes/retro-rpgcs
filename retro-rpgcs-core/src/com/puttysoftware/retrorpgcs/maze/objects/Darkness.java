@@ -8,12 +8,16 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.ObjectImageConstants;
 public class Darkness extends AbstractPassThroughObject {
     // Constructors
     public Darkness() {
-        super();
     }
 
     @Override
     public int getBaseID() {
         return ObjectImageConstants.OBJECT_IMAGE_DARKNESS;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Squares of Darkness are what fills areas that cannot be seen.";
     }
 
     @Override
@@ -24,11 +28,6 @@ public class Darkness extends AbstractPassThroughObject {
     @Override
     public String getPluralName() {
         return "Squares of Darkness";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Squares of Darkness are what fills areas that cannot be seen.";
     }
 
     @Override

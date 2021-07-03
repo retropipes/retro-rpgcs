@@ -22,9 +22,8 @@ public class PersonalityConstants {
             0.71, 0.75, 0.79, 0.83, 0.88, 0.92, 0.96, 1.0, 1.08, 1.17, 1.25,
             1.33, 1.42, 1.5, 1.58, 1.67, 1.75, 1.83, 1.92, 2.0 };
 
-    // Private constructor
-    private PersonalityConstants() {
-        // Do nothing
+    public static double getLookupTableEntry(final int entryNum) {
+        return PersonalityConstants.LOOKUP_TABLE[entryNum + 12];
     }
 
     // Methods
@@ -32,30 +31,22 @@ public class PersonalityConstants {
         return PersonalityConstants.PERSONALITIES_COUNT;
     }
 
-    static String[] getPersonalityNames() {
-        return PersonalityConstants.PERSONALITY_NAMES;
-    }
-
     public static String getPersonalityName(final int p) {
         return PersonalityConstants.PERSONALITY_NAMES[p];
     }
 
-    public static double getLookupTableEntry(final int entryNum) {
-        return PersonalityConstants.LOOKUP_TABLE[entryNum + 12];
-    }
-
-    static boolean personalitiesReady() {
-        return PersonalityConstants.INITED;
+    static String[] getPersonalityNames() {
+        return PersonalityConstants.PERSONALITY_NAMES;
     }
 
     static void initPersonalities() {
         if (!PersonalityConstants.INITED) {
-            try (final ResourceStreamReader rsr = new ResourceStreamReader(
+            try (final var rsr = new ResourceStreamReader(
                     PersonalityDataManager.class.getResourceAsStream(
                             "/com/puttysoftware/retrorpgcs/resources/data/personality/catalog.txt"))) {
                 // Fetch data
-                final ArrayList<String> tempNames = new ArrayList<>();
-                String input = "";
+                final var tempNames = new ArrayList<String>();
+                var input = "";
                 while (input != null) {
                     input = rsr.readString();
                     if (input != null) {
@@ -70,5 +61,14 @@ public class PersonalityConstants {
                 RetroRPGCS.getInstance().handleError(ioe);
             }
         }
+    }
+
+    static boolean personalitiesReady() {
+        return PersonalityConstants.INITED;
+    }
+
+    // Private constructor
+    private PersonalityConstants() {
+        // Do nothing
     }
 }

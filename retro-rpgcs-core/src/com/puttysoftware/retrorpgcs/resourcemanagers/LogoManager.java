@@ -1,9 +1,7 @@
 /* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.resourcemanagers;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -14,11 +12,27 @@ public class LogoManager {
     private static String LOAD_PATH = LogoManager.DEFAULT_LOAD_PATH;
     private static Class<?> LOAD_CLASS = LogoManager.class;
 
+    public static BufferedImageIcon getIconLogo() {
+        return LogoCache.getCachedLogo("logo");
+    }
+
+    public static BufferedImageIcon getLogo() {
+        return LogoCache.getCachedLogo("logo");
+    }
+
+    public static BufferedImageIcon getMicroLogo() {
+        return LogoCache.getCachedLogo("micrologo");
+    }
+
+    public static BufferedImageIcon getMiniatureLogo() {
+        return LogoCache.getCachedLogo("minilogo");
+    }
+
     static BufferedImageIcon getUncachedLogo(final String name) {
         try {
-            final URL url = LogoManager.LOAD_CLASS
+            final var url = LogoManager.LOAD_CLASS
                     .getResource(LogoManager.LOAD_PATH + name + ".png");
-            final BufferedImage image = ImageIO.read(url);
+            final var image = ImageIO.read(url);
             return new BufferedImageIcon(image);
         } catch (final IOException ie) {
             return null;
@@ -27,21 +41,5 @@ public class LogoManager {
         } catch (final IllegalArgumentException ia) {
             return null;
         }
-    }
-
-    public static BufferedImageIcon getLogo() {
-        return LogoCache.getCachedLogo("logo");
-    }
-
-    public static BufferedImageIcon getMiniatureLogo() {
-        return LogoCache.getCachedLogo("minilogo");
-    }
-
-    public static BufferedImageIcon getMicroLogo() {
-        return LogoCache.getCachedLogo("micrologo");
-    }
-
-    public static BufferedImageIcon getIconLogo() {
-        return LogoCache.getCachedLogo("logo");
     }
 }

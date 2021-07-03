@@ -2,21 +2,12 @@
 package com.puttysoftware.retrorpgcs.effects;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import com.puttysoftware.retrorpgcs.creatures.Creature;
 import com.puttysoftware.retrorpgcs.creatures.StatConstants;
 
 public class Effect {
-    // Fields
-    private final String name;
-    private final double[][] initialEffect;
-    private final double[][] effect;
-    private double effectScaleFactor;
-    private int effectScaleStat;
-    private final double[][] effectDecayRate;
-    private int rounds;
-    private final int initialRounds;
-    private final String[] messages;
     private static final double DEFAULT_ADDITION = 0;
     private static final double DEFAULT_MULTIPLIER = 1;
     public static final int EFFECT_ADD = 0;
@@ -30,9 +21,23 @@ public class Effect {
     private static final int MAX_EFFECT_TYPES = 2;
     private static final int MAX_MESSAGES = 3;
 
+    public static String getNullMessage() {
+        return "";
+    }
+
+    // Fields
+    private final String name;
+    private final double[][] initialEffect;
+    private final double[][] effect;
+    private double effectScaleFactor;
+    private int effectScaleStat;
+    private final double[][] effectDecayRate;
+    private int rounds;
+    private final int initialRounds;
+    private final String[] messages;
+
     // Constructors
     public Effect() {
-        super();
         this.name = "Un-named";
         this.messages = new String[Effect.MAX_MESSAGES];
         this.effect = new double[Effect.MAX_EFFECT_TYPES][StatConstants.MAX_STATS];
@@ -66,7 +71,6 @@ public class Effect {
     }
 
     public Effect(final String effectName, final int newRounds) {
-        super();
         this.name = effectName;
         this.messages = new String[Effect.MAX_MESSAGES];
         this.effect = new double[Effect.MAX_EFFECT_TYPES][StatConstants.MAX_STATS];
@@ -99,22 +103,46 @@ public class Effect {
         this.initialRounds = newRounds;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + Arrays.hashCode(this.effect);
-        long temp;
-        result = prime * result + Arrays.hashCode(this.effectDecayRate);
-        temp = Double.doubleToLongBits(this.effectScaleFactor);
-        result = prime * result + (int) (temp ^ temp >>> 32);
-        result = prime * result + this.effectScaleStat;
-        result = prime * result + Arrays.hashCode(this.initialEffect);
-        result = prime * result + this.initialRounds;
-        result = prime * result + Arrays.hashCode(this.messages);
-        result = prime * result
-                + (this.name == null ? 0 : this.name.hashCode());
-        return prime * result + this.rounds;
+    private boolean areRoundsInfinite() {
+        return this.rounds == Effect.ROUNDS_INFINITE;
+    }
+
+    private void decayEffect() {
+        var currVal = 0.0;
+        for (var stat = 0; stat < StatConstants.MAX_STATS; stat++) {
+            currVal = 0.0;
+            for (var type = 0; type < Effect.MAX_EFFECT_TYPES; type++) {
+                currVal += this.getEffect(type, stat);
+            }
+            for (var type = 0; type < Effect.MAX_EFFECT_TYPES; type++) {
+                var keepGoing = true;
+                final var currDecay = this.getDecayRate(type, stat);
+                if (currDecay == 0) {
+                    keepGoing = false;
+                }
+                double modVal;
+                if (type == Effect.EFFECT_ADD) {
+                    modVal = currVal - currDecay;
+                } else if (type == Effect.EFFECT_MULTIPLY) {
+                    modVal = currVal / currDecay;
+                    if (currDecay > 1 && modVal < 1) {
+                        this.setDecayRate(type, stat, 1);
+                        modVal = 1;
+                    }
+                    if (currDecay < 1 && modVal > 1) {
+                        this.setDecayRate(type, stat, 1);
+                        modVal = 1;
+                    }
+                } else {
+                    modVal = currVal;
+                }
+                if (keepGoing) {
+                    final var scst = this.effectScaleStat;
+                    final var factor = this.effectScaleFactor;
+                    this.modifyEffect(type, stat, modVal, factor, scst);
+                }
+            }
+        }
     }
 
     @Override
@@ -122,13 +150,10 @@ public class Effect {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
+        if ((obj == null) || !(obj instanceof Effect)) {
             return false;
         }
-        if (!(obj instanceof Effect)) {
-            return false;
-        }
-        final Effect other = (Effect) obj;
+        final var other = (Effect) obj;
         if (!Arrays.equals(this.effect, other.effect)) {
             return false;
         }
@@ -151,11 +176,7 @@ public class Effect {
         if (!Arrays.equals(this.messages, other.messages)) {
             return false;
         }
-        if (this.name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!this.name.equals(other.name)) {
+        if (!Objects.equals(this.name, other.name)) {
             return false;
         }
         if (this.rounds != other.rounds) {
@@ -168,35 +189,20 @@ public class Effect {
         this.rounds += additionalRounds;
     }
 
-    public String getEffectString() {
-        if (this.name.equals("")) {
-            return "";
-        } else {
-            if (this.areRoundsInfinite()) {
-                return this.name;
-            } else {
-                return this.name + " (" + this.rounds + " Rounds Left)";
-            }
-        }
-    }
-
     public String getCurrentMessage() {
-        String msg = Effect.getNullMessage();
-        if (this.rounds == this.initialRounds - 1) {
-            if (!this.messages[Effect.MESSAGE_INITIAL]
-                    .equals(Effect.getNullMessage())) {
-                msg += this.messages[Effect.MESSAGE_INITIAL] + "\n";
-            }
+        var msg = Effect.getNullMessage();
+        if ((this.rounds == this.initialRounds - 1)
+                && !this.messages[Effect.MESSAGE_INITIAL]
+                        .equals(Effect.getNullMessage())) {
+            msg += this.messages[Effect.MESSAGE_INITIAL] + "\n";
         }
         if (!this.messages[Effect.MESSAGE_SUBSEQUENT]
                 .equals(Effect.getNullMessage())) {
             msg += this.messages[Effect.MESSAGE_SUBSEQUENT] + "\n";
         }
-        if (this.rounds == 0) {
-            if (!this.messages[Effect.MESSAGE_WEAR_OFF]
-                    .equals(Effect.getNullMessage())) {
-                msg += this.messages[Effect.MESSAGE_WEAR_OFF] + "\n";
-            }
+        if ((this.rounds == 0) && !this.messages[Effect.MESSAGE_WEAR_OFF]
+                .equals(Effect.getNullMessage())) {
+            msg += this.messages[Effect.MESSAGE_WEAR_OFF] + "\n";
         }
         // Strip final newline character, if it exists
         if (!msg.equals(Effect.getNullMessage())) {
@@ -205,30 +211,48 @@ public class Effect {
         return msg;
     }
 
-    public void setMessage(final int which, final String newMessage) {
-        this.messages[which] = newMessage;
+    private double getDecayRate(final int type, final int stat) {
+        return this.effectDecayRate[type][stat];
     }
 
-    public static String getNullMessage() {
-        return "";
+    public double getEffect(final int type, final int stat) {
+        return this.effect[type][stat];
+    }
+
+    public String getEffectString() {
+        if (this.name.equals("")) {
+            return "";
+        } else if (this.areRoundsInfinite()) {
+            return this.name;
+        } else {
+            return this.name + " (" + this.rounds + " Rounds Left)";
+        }
     }
 
     public int getInitialRounds() {
         return this.initialRounds;
     }
 
-    public void restoreEffect() {
-        if (!this.areRoundsInfinite()) {
-            this.rounds = this.initialRounds;
-        }
-    }
-
     public String getName() {
         return this.name;
     }
 
-    private boolean areRoundsInfinite() {
-        return this.rounds == Effect.ROUNDS_INFINITE;
+    @Override
+    public int hashCode() {
+        final var prime = 31;
+        var result = 1;
+        result = prime * result + Arrays.hashCode(this.effect);
+        long temp;
+        result = prime * result + Arrays.hashCode(this.effectDecayRate);
+        temp = Double.doubleToLongBits(this.effectScaleFactor);
+        result = prime * result + (int) (temp ^ temp >>> 32);
+        result = prime * result + this.effectScaleStat;
+        result = prime * result + Arrays.hashCode(this.initialEffect);
+        result = prime * result + this.initialRounds;
+        result = prime * result + Arrays.hashCode(this.messages);
+        result = prime * result
+                + (this.name == null ? 0 : this.name.hashCode());
+        return prime * result + this.rounds;
     }
 
     public boolean isActive() {
@@ -237,6 +261,13 @@ public class Effect {
         } else {
             return this.rounds > 0;
         }
+    }
+
+    private void modifyEffect(final int type, final int stat,
+            final double value, final double factor, final int scaleStat) {
+        this.effect[type][stat] = value;
+        this.effectScaleFactor = factor;
+        this.effectScaleStat = scaleStat;
     }
 
     public void resetEffect() {
@@ -248,14 +279,62 @@ public class Effect {
         }
     }
 
+    public void restoreEffect() {
+        if (!this.areRoundsInfinite()) {
+            this.rounds = this.initialRounds;
+        }
+    }
+
+    public void scaleEffect(final int type, final Creature scaleTo) {
+        for (var stat = 0; stat < StatConstants.MAX_STATS; stat++) {
+            final var base = this.effect[type][stat];
+            final var scst = this.effectScaleStat;
+            if (scst != StatConstants.STAT_NONE) {
+                final var factor = this.effectScaleFactor;
+                final var scstVal = scaleTo.getStat(scst);
+                this.effect[type][stat] = scstVal * base * factor;
+            }
+        }
+    }
+
+    public void setDecayRate(final int type, final int stat,
+            final double value) {
+        this.effectDecayRate[type][stat] = value;
+    }
+
+    public void setEffect(final int type, final int stat, final double value) {
+        this.effect[type][stat] = value;
+        this.initialEffect[type][stat] = value;
+    }
+
+    public void setEffect(final int type, final int stat, final double value,
+            final double factor, final int scaleStat) {
+        this.effect[type][stat] = value;
+        this.initialEffect[type][stat] = value;
+        this.effectScaleFactor = factor;
+        this.effectScaleStat = scaleStat;
+    }
+
+    public void setMessage(final int which, final String newMessage) {
+        this.messages[which] = newMessage;
+    }
+
+    public void setScaleFactor(final double factor) {
+        this.effectScaleFactor = factor;
+    }
+
+    public void setScaleStat(final int scaleStat) {
+        this.effectScaleStat = scaleStat;
+    }
+
     public void useEffect(final Creature target) {
-        final double hpAddEffect = this.getEffect(Effect.EFFECT_ADD,
+        final var hpAddEffect = this.getEffect(Effect.EFFECT_ADD,
                 StatConstants.STAT_CURRENT_HP);
-        final double mpAddEffect = this.getEffect(Effect.EFFECT_ADD,
+        final var mpAddEffect = this.getEffect(Effect.EFFECT_ADD,
                 StatConstants.STAT_CURRENT_MP);
-        final double hpMultEffect = this.getEffect(Effect.EFFECT_MULTIPLY,
+        final var hpMultEffect = this.getEffect(Effect.EFFECT_MULTIPLY,
                 StatConstants.STAT_CURRENT_HP);
-        final double mpMultEffect = this.getEffect(Effect.EFFECT_MULTIPLY,
+        final var mpMultEffect = this.getEffect(Effect.EFFECT_MULTIPLY,
                 StatConstants.STAT_CURRENT_MP);
         if (hpAddEffect < 0) {
             if (target.isAlive()) {
@@ -273,7 +352,7 @@ public class Effect {
         }
         if (hpMultEffect < 1) {
             if (target.isAlive()) {
-                final double damage = hpMultEffect;
+                final var damage = hpMultEffect;
                 boolean max;
                 if (this.effectScaleStat == StatConstants.STAT_MAXIMUM_HP) {
                     max = true;
@@ -317,96 +396,5 @@ public class Effect {
             }
         }
         this.decayEffect();
-    }
-
-    public double getEffect(final int type, final int stat) {
-        return this.effect[type][stat];
-    }
-
-    public void scaleEffect(final int type, final Creature scaleTo) {
-        for (int stat = 0; stat < StatConstants.MAX_STATS; stat++) {
-            final double base = this.effect[type][stat];
-            final int scst = this.effectScaleStat;
-            if (scst != StatConstants.STAT_NONE) {
-                final double factor = this.effectScaleFactor;
-                final int scstVal = scaleTo.getStat(scst);
-                this.effect[type][stat] = scstVal * base * factor;
-            }
-        }
-    }
-
-    public void setEffect(final int type, final int stat, final double value) {
-        this.effect[type][stat] = value;
-        this.initialEffect[type][stat] = value;
-    }
-
-    public void setScaleFactor(final double factor) {
-        this.effectScaleFactor = factor;
-    }
-
-    public void setScaleStat(final int scaleStat) {
-        this.effectScaleStat = scaleStat;
-    }
-
-    public void setEffect(final int type, final int stat, final double value,
-            final double factor, final int scaleStat) {
-        this.effect[type][stat] = value;
-        this.initialEffect[type][stat] = value;
-        this.effectScaleFactor = factor;
-        this.effectScaleStat = scaleStat;
-    }
-
-    private void modifyEffect(final int type, final int stat,
-            final double value, final double factor, final int scaleStat) {
-        this.effect[type][stat] = value;
-        this.effectScaleFactor = factor;
-        this.effectScaleStat = scaleStat;
-    }
-
-    private double getDecayRate(final int type, final int stat) {
-        return this.effectDecayRate[type][stat];
-    }
-
-    public void setDecayRate(final int type, final int stat,
-            final double value) {
-        this.effectDecayRate[type][stat] = value;
-    }
-
-    private void decayEffect() {
-        double currVal = 0.0;
-        for (int stat = 0; stat < StatConstants.MAX_STATS; stat++) {
-            currVal = 0.0;
-            for (int type = 0; type < Effect.MAX_EFFECT_TYPES; type++) {
-                currVal += this.getEffect(type, stat);
-            }
-            for (int type = 0; type < Effect.MAX_EFFECT_TYPES; type++) {
-                boolean keepGoing = true;
-                final double currDecay = this.getDecayRate(type, stat);
-                if (currDecay == 0) {
-                    keepGoing = false;
-                }
-                double modVal;
-                if (type == Effect.EFFECT_ADD) {
-                    modVal = currVal - currDecay;
-                } else if (type == Effect.EFFECT_MULTIPLY) {
-                    modVal = currVal / currDecay;
-                    if (currDecay > 1 && modVal < 1) {
-                        this.setDecayRate(type, stat, 1);
-                        modVal = 1;
-                    }
-                    if (currDecay < 1 && modVal > 1) {
-                        this.setDecayRate(type, stat, 1);
-                        modVal = 1;
-                    }
-                } else {
-                    modVal = currVal;
-                }
-                if (keepGoing) {
-                    final int scst = this.effectScaleStat;
-                    final double factor = this.effectScaleFactor;
-                    this.modifyEffect(type, stat, modVal, factor, scst);
-                }
-            }
-        }
     }
 }

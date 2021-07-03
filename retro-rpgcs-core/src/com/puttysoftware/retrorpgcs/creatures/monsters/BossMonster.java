@@ -27,6 +27,46 @@ public class BossMonster extends Creature {
     private static final int STAT_MULT_HARD = 8;
     private static final int STAT_MULT_VERY_HARD = 12;
 
+    private static WindowAI getInitialWindowAI() {
+        return new VeryHardWindowAI();
+    }
+
+    private static int getMinimumStatForDifficulty() {
+        final var difficulty = PreferencesManager.getGameDifficulty();
+        switch (difficulty) {
+        case PreferencesManager.DIFFICULTY_VERY_EASY:
+            return BossMonster.MINIMUM_STAT_VALUE_VERY_EASY;
+        case PreferencesManager.DIFFICULTY_EASY:
+            return BossMonster.MINIMUM_STAT_VALUE_EASY;
+        case PreferencesManager.DIFFICULTY_NORMAL:
+            return BossMonster.MINIMUM_STAT_VALUE_NORMAL;
+        case PreferencesManager.DIFFICULTY_HARD:
+            return BossMonster.MINIMUM_STAT_VALUE_HARD;
+        case PreferencesManager.DIFFICULTY_VERY_HARD:
+            return BossMonster.MINIMUM_STAT_VALUE_VERY_HARD;
+        default:
+            return BossMonster.MINIMUM_STAT_VALUE_NORMAL;
+        }
+    }
+
+    private static int getStatMultiplierForDifficulty() {
+        final var difficulty = PreferencesManager.getGameDifficulty();
+        switch (difficulty) {
+        case PreferencesManager.DIFFICULTY_VERY_EASY:
+            return BossMonster.STAT_MULT_VERY_EASY;
+        case PreferencesManager.DIFFICULTY_EASY:
+            return BossMonster.STAT_MULT_EASY;
+        case PreferencesManager.DIFFICULTY_NORMAL:
+            return BossMonster.STAT_MULT_NORMAL;
+        case PreferencesManager.DIFFICULTY_HARD:
+            return BossMonster.STAT_MULT_HARD;
+        case PreferencesManager.DIFFICULTY_VERY_HARD:
+            return BossMonster.STAT_MULT_VERY_HARD;
+        default:
+            return BossMonster.STAT_MULT_NORMAL;
+        }
+    }
+
     // Constructors
     BossMonster() {
         super(true, 1);
@@ -38,10 +78,85 @@ public class BossMonster extends Creature {
         this.loadCreature();
     }
 
+    @Override
+    public boolean checkLevelUp() {
+        return false;
+    }
+
+    @Override
+    public Faith getFaith() {
+        return FaithManager.getFaith(0);
+    }
+
     // Methods
     @Override
     public String getFightingWhatString() {
         return "You're fighting The Boss";
+    }
+
+    private int getInitialAgility() {
+        final var min = BossMonster.getMinimumStatForDifficulty();
+        final var r = new RandomRange(min,
+                Math.max(
+                        this.getLevel()
+                                * BossMonster.getStatMultiplierForDifficulty(),
+                        min));
+        return r.generate();
+    }
+
+    private int getInitialBlock() {
+        final var min = BossMonster.getMinimumStatForDifficulty();
+        final var r = new RandomRange(min,
+                Math.max(
+                        this.getLevel()
+                                * BossMonster.getStatMultiplierForDifficulty(),
+                        min));
+        return r.generate();
+    }
+
+    @Override
+    protected BufferedImageIcon getInitialImage() {
+        return BossImageManager.getBossImage();
+    }
+
+    private int getInitialIntelligence() {
+        final var min = BossMonster.getMinimumStatForDifficulty();
+        final var r = new RandomRange(min,
+                Math.max(
+                        this.getLevel()
+                                * BossMonster.getStatMultiplierForDifficulty(),
+                        min));
+        return r.generate();
+    }
+
+    private int getInitialLuck() {
+        final var min = BossMonster.getMinimumStatForDifficulty();
+        final var r = new RandomRange(min,
+                Math.max(
+                        this.getLevel()
+                                * BossMonster.getStatMultiplierForDifficulty(),
+                        min));
+        return r.generate();
+    }
+
+    private int getInitialStrength() {
+        final var min = BossMonster.getMinimumStatForDifficulty();
+        final var r = new RandomRange(min,
+                Math.max(
+                        this.getLevel()
+                                * BossMonster.getStatMultiplierForDifficulty(),
+                        min));
+        return r.generate();
+    }
+
+    private int getInitialVitality() {
+        final var min = BossMonster.getMinimumStatForDifficulty();
+        final var r = new RandomRange(min,
+                Math.max(
+                        this.getLevel()
+                                * BossMonster.getStatMultiplierForDifficulty(),
+                        min));
+        return r.generate();
     }
 
     @Override
@@ -50,13 +165,23 @@ public class BossMonster extends Creature {
     }
 
     @Override
-    public Faith getFaith() {
-        return FaithManager.getFaith(0);
-    }
-
-    @Override
-    public boolean checkLevelUp() {
-        return false;
+    public int getSpeed() {
+        final var difficulty = PreferencesManager.getGameDifficulty();
+        final var base = this.getBaseSpeed();
+        switch (difficulty) {
+        case PreferencesManager.DIFFICULTY_VERY_EASY:
+            return (int) (base * Creature.SPEED_ADJUST_SLOWEST);
+        case PreferencesManager.DIFFICULTY_EASY:
+            return (int) (base * Creature.SPEED_ADJUST_SLOW);
+        case PreferencesManager.DIFFICULTY_NORMAL:
+            return (int) (base * Creature.SPEED_ADJUST_NORMAL);
+        case PreferencesManager.DIFFICULTY_HARD:
+            return (int) (base * Creature.SPEED_ADJUST_FAST);
+        case PreferencesManager.DIFFICULTY_VERY_HARD:
+            return (int) (base * Creature.SPEED_ADJUST_FASTEST);
+        default:
+            return (int) (base * Creature.SPEED_ADJUST_NORMAL);
+        }
     }
 
     @Override
@@ -64,34 +189,10 @@ public class BossMonster extends Creature {
         // Do nothing
     }
 
-    @Override
-    protected BufferedImageIcon getInitialImage() {
-        return BossImageManager.getBossImage();
-    }
-
-    @Override
-    public int getSpeed() {
-        final int difficulty = PreferencesManager.getGameDifficulty();
-        final int base = this.getBaseSpeed();
-        if (difficulty == PreferencesManager.DIFFICULTY_VERY_EASY) {
-            return (int) (base * Creature.SPEED_ADJUST_SLOWEST);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_EASY) {
-            return (int) (base * Creature.SPEED_ADJUST_SLOW);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_NORMAL) {
-            return (int) (base * Creature.SPEED_ADJUST_NORMAL);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_HARD) {
-            return (int) (base * Creature.SPEED_ADJUST_FAST);
-        } else if (difficulty == PreferencesManager.DIFFICULTY_VERY_HARD) {
-            return (int) (base * Creature.SPEED_ADJUST_FASTEST);
-        } else {
-            return (int) (base * Creature.SPEED_ADJUST_NORMAL);
-        }
-    }
-
     // Helper Methods
     @Override
     public void loadCreature() {
-        final int newLevel = PartyManager.getParty().getTowerLevel() + 6;
+        final var newLevel = PartyManager.getParty().getTowerLevel() + 6;
         this.setLevel(newLevel);
         this.setVitality(this.getInitialVitality());
         this.setCurrentHP(this.getMaximumHP());
@@ -106,103 +207,5 @@ public class BossMonster extends Creature {
         this.setAttacksPerRound(1);
         this.setSpellsPerRound(1);
         this.image = this.getInitialImage();
-    }
-
-    private int getInitialStrength() {
-        final int min = BossMonster.getMinimumStatForDifficulty();
-        final RandomRange r = new RandomRange(min,
-                Math.max(
-                        this.getLevel()
-                                * BossMonster.getStatMultiplierForDifficulty(),
-                        min));
-        return r.generate();
-    }
-
-    private int getInitialBlock() {
-        final int min = BossMonster.getMinimumStatForDifficulty();
-        final RandomRange r = new RandomRange(min,
-                Math.max(
-                        this.getLevel()
-                                * BossMonster.getStatMultiplierForDifficulty(),
-                        min));
-        return r.generate();
-    }
-
-    private int getInitialAgility() {
-        final int min = BossMonster.getMinimumStatForDifficulty();
-        final RandomRange r = new RandomRange(min,
-                Math.max(
-                        this.getLevel()
-                                * BossMonster.getStatMultiplierForDifficulty(),
-                        min));
-        return r.generate();
-    }
-
-    private int getInitialVitality() {
-        final int min = BossMonster.getMinimumStatForDifficulty();
-        final RandomRange r = new RandomRange(min,
-                Math.max(
-                        this.getLevel()
-                                * BossMonster.getStatMultiplierForDifficulty(),
-                        min));
-        return r.generate();
-    }
-
-    private int getInitialIntelligence() {
-        final int min = BossMonster.getMinimumStatForDifficulty();
-        final RandomRange r = new RandomRange(min,
-                Math.max(
-                        this.getLevel()
-                                * BossMonster.getStatMultiplierForDifficulty(),
-                        min));
-        return r.generate();
-    }
-
-    private int getInitialLuck() {
-        final int min = BossMonster.getMinimumStatForDifficulty();
-        final RandomRange r = new RandomRange(min,
-                Math.max(
-                        this.getLevel()
-                                * BossMonster.getStatMultiplierForDifficulty(),
-                        min));
-        return r.generate();
-    }
-
-    private static WindowAI getInitialWindowAI() {
-        return new VeryHardWindowAI();
-    }
-
-    private static int getStatMultiplierForDifficulty() {
-        final int difficulty = PreferencesManager.getGameDifficulty();
-        if (difficulty == PreferencesManager.DIFFICULTY_VERY_EASY) {
-            return BossMonster.STAT_MULT_VERY_EASY;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_EASY) {
-            return BossMonster.STAT_MULT_EASY;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_NORMAL) {
-            return BossMonster.STAT_MULT_NORMAL;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_HARD) {
-            return BossMonster.STAT_MULT_HARD;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_VERY_HARD) {
-            return BossMonster.STAT_MULT_VERY_HARD;
-        } else {
-            return BossMonster.STAT_MULT_NORMAL;
-        }
-    }
-
-    private static int getMinimumStatForDifficulty() {
-        final int difficulty = PreferencesManager.getGameDifficulty();
-        if (difficulty == PreferencesManager.DIFFICULTY_VERY_EASY) {
-            return BossMonster.MINIMUM_STAT_VALUE_VERY_EASY;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_EASY) {
-            return BossMonster.MINIMUM_STAT_VALUE_EASY;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_NORMAL) {
-            return BossMonster.MINIMUM_STAT_VALUE_NORMAL;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_HARD) {
-            return BossMonster.MINIMUM_STAT_VALUE_HARD;
-        } else if (difficulty == PreferencesManager.DIFFICULTY_VERY_HARD) {
-            return BossMonster.MINIMUM_STAT_VALUE_VERY_HARD;
-        } else {
-            return BossMonster.MINIMUM_STAT_VALUE_NORMAL;
-        }
     }
 }

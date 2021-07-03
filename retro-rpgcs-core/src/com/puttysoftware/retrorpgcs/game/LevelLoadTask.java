@@ -7,7 +7,6 @@ import javax.swing.WindowConstants;
 
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
-import com.puttysoftware.retrorpgcs.maze.Maze;
 import com.puttysoftware.retrorpgcs.maze.abc.AbstractMazeObject;
 import com.puttysoftware.retrorpgcs.maze.utilities.ImageColorConstants;
 import com.puttysoftware.retrorpgcs.resourcemanagers.LogoManager;
@@ -23,7 +22,7 @@ public class LevelLoadTask extends Thread {
         this.setName("Level Loader");
         this.loadFrame = new JFrame("Loading...");
         this.loadFrame.setIconImage(LogoManager.getIconLogo());
-        final JProgressBar loadBar = new JProgressBar();
+        final var loadBar = new JProgressBar();
         loadBar.setIndeterminate(true);
         this.loadFrame.getContentPane().add(loadBar);
         this.loadFrame.setResizable(false);
@@ -37,8 +36,8 @@ public class LevelLoadTask extends Thread {
     public void run() {
         try {
             this.loadFrame.setVisible(true);
-            final RetroRPGCS app = RetroRPGCS.getInstance();
-            final Maze gameMaze = app.getMazeManager().getMaze();
+            final var app = RetroRPGCS.getInstance();
+            final var gameMaze = app.getMazeManager().getMaze();
             app.getGameManager().disableEvents();
             gameMaze.switchLevelOffset(this.level);
             gameMaze.offsetPlayerLocationW(this.level);

@@ -16,27 +16,9 @@ public abstract class AbstractTrap extends AbstractMazeObject {
         this.base = baseName;
     }
 
-    // Scriptability
-    @Override
-    public abstract void postMoveAction(final boolean ie, final int dirX,
-            final int dirY);
-
     @Override
     public int getBaseID() {
         return this.base;
-    }
-
-    @Override
-    public abstract String getName();
-
-    @Override
-    public int getLayer() {
-        return MazeConstants.LAYER_OBJECT;
-    }
-
-    @Override
-    protected void setTypes() {
-        this.type.set(TypeConstants.TYPE_TRAP);
     }
 
     @Override
@@ -45,15 +27,33 @@ public abstract class AbstractTrap extends AbstractMazeObject {
     }
 
     @Override
+    public int getLayer() {
+        return MazeConstants.LAYER_OBJECT;
+    }
+
+    @Override
+    public abstract String getName();
+
+    // Scriptability
+    @Override
+    public abstract void postMoveAction(final boolean ie, final int dirX,
+            final int dirY);
+
+    @Override
     public void setCustomProperty(final int propID, final int value) {
         // Do nothing
+    }
+
+    @Override
+    protected void setTypes() {
+        this.type.set(TypeConstants.TYPE_TRAP);
     }
 
     @Override
     public boolean shouldGenerateObject(final Maze maze, final int row,
             final int col, final int floor, final int level, final int layer) {
         // Generate all traps at 25% rate
-        final RandomRange reject = new RandomRange(1, 100);
+        final var reject = new RandomRange(1, 100);
         return reject.generate() < 25;
     }
 }

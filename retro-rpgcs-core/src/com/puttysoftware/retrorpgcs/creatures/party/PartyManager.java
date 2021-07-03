@@ -6,17 +6,12 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
-import com.puttysoftware.retrorpgcs.creatures.castes.Caste;
 import com.puttysoftware.retrorpgcs.creatures.castes.CasteManager;
 import com.puttysoftware.retrorpgcs.creatures.characterfiles.CharacterLoader;
 import com.puttysoftware.retrorpgcs.creatures.characterfiles.CharacterRegistration;
-import com.puttysoftware.retrorpgcs.creatures.faiths.Faith;
 import com.puttysoftware.retrorpgcs.creatures.faiths.FaithManager;
-import com.puttysoftware.retrorpgcs.creatures.genders.Gender;
 import com.puttysoftware.retrorpgcs.creatures.genders.GenderManager;
-import com.puttysoftware.retrorpgcs.creatures.personalities.Personality;
 import com.puttysoftware.retrorpgcs.creatures.personalities.PersonalityManager;
-import com.puttysoftware.retrorpgcs.creatures.races.Race;
 import com.puttysoftware.retrorpgcs.creatures.races.RaceManager;
 import com.puttysoftware.xio.XDataReader;
 import com.puttysoftware.xio.XDataWriter;
@@ -29,18 +24,63 @@ public class PartyManager {
     private final static String[] buttonNames = new String[] { "Done", "Create",
             "Pick" };
 
-    // Constructors
-    private PartyManager() {
-        // Do nothing
+    public static void addGoldToBank(final int newGold) {
+        PartyManager.bank += newGold;
+    }
+
+    private static String[] buildNameList(final PartyMember[] members) {
+        final var tempNames = new String[1];
+        var nnc = 0;
+        for (var x = 0; x < tempNames.length; x++) {
+            if (members != null) {
+                tempNames[x] = members[x].getName();
+                nnc++;
+            }
+        }
+        final var names = new String[nnc];
+        nnc = 0;
+        for (final String tempName : tempNames) {
+            if (tempName != null) {
+                names[nnc] = tempName;
+                nnc++;
+            }
+        }
+        return names;
+    }
+
+    private static PartyMember createNewPC(final JFrame owner) {
+        final var name = CommonDialogs.showTextInputDialog("Character Name",
+                "Create Character");
+        if (name != null) {
+            final var race = RaceManager.selectRace(owner);
+            if (race != null) {
+                final var caste = CasteManager.selectCaste(owner);
+                if (caste != null) {
+                    final var faith = FaithManager.selectFaith(owner);
+                    if (faith != null) {
+                        final var personality = PersonalityManager
+                                .selectPersonality(owner);
+                        if (personality != null) {
+                            final var gender = GenderManager.selectGender();
+                            if (gender != null) {
+                                return new PartyMember(race, caste, faith,
+                                        personality, gender, name);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     // Methods
     public static boolean createParty(final JFrame owner) {
         PartyManager.party = new Party();
-        int mem = 0;
-        final PartyMember[] pickMembers = CharacterLoader
+        var mem = 0;
+        final var pickMembers = CharacterLoader
                 .loadAllRegisteredCharacters();
-        for (int x = 0; x < PartyManager.PARTY_SIZE; x++) {
+        for (var x = 0; x < PartyManager.PARTY_SIZE; x++) {
             PartyMember pc = null;
             if (pickMembers == null) {
                 // No characters registered - must create one
@@ -50,7 +90,7 @@ public class PartyManager {
                     CharacterLoader.saveCharacter(pc);
                 }
             } else {
-                final int response = CommonDialogs.showCustomDialog(
+                final var response = CommonDialogs.showCustomDialog(
                         "Pick, Create, or Done?", "Create Party",
                         PartyManager.buttonNames, PartyManager.buttonNames[2]);
                 if (response == 2) {
@@ -76,36 +116,55 @@ public class PartyManager {
         return true;
     }
 
+    public static int getGoldInBank() {
+        return PartyManager.bank;
+    }
+
+    public static PartyMember getNewPCInstance(final int r, final int c,
+            final int f, final int p, final int g, final String n) {
+        final var race = RaceManager.getRace(r);
+        final var caste = CasteManager.getCaste(c);
+        final var faith = FaithManager.getFaith(f);
+        final var personality = PersonalityManager.getPersonality(p);
+        final var gender = GenderManager.getGender(g);
+        return new PartyMember(race, caste, faith, personality, gender, n);
+    }
+
     public static Party getParty() {
         return PartyManager.party;
     }
 
-    public static void addGoldToBank(final int newGold) {
-        PartyManager.bank += newGold;
+    public static void loadGameHook(final XDataReader partyFile)
+            throws IOException {
+        final var containsPCData = partyFile.readBoolean();
+        if (containsPCData) {
+            final var gib = partyFile.readInt();
+            PartyManager.setGoldInBank(gib);
+            PartyManager.party = Party.read(partyFile);
+        }
     }
 
-    public static int getGoldInBank() {
-        return PartyManager.bank;
+    private static PartyMember pickOnePartyMemberCreate(
+            final PartyMember[] members) {
+        final var pickNames = PartyManager.buildNameList(members);
+        final var response = CommonDialogs.showInputDialog(
+                "Pick 1 Party Member", "Create Party", pickNames, pickNames[0]);
+        if (response != null) {
+            for (final PartyMember member : members) {
+                if (member.getName().equals(response)) {
+                    return member;
+                }
+            }
+            return null;
+        } else {
+            return null;
+        }
     }
 
     public static void removeGoldFromBank(final int cost) {
         PartyManager.bank -= cost;
         if (PartyManager.bank < 0) {
             PartyManager.bank = 0;
-        }
-    }
-
-    private static void setGoldInBank(final int newGold) {
-        PartyManager.bank = newGold;
-    }
-
-    public static void loadGameHook(final XDataReader partyFile)
-            throws IOException {
-        final boolean containsPCData = partyFile.readBoolean();
-        if (containsPCData) {
-            final int gib = partyFile.readInt();
-            PartyManager.setGoldInBank(gib);
-            PartyManager.party = Party.read(partyFile);
         }
     }
 
@@ -120,46 +179,8 @@ public class PartyManager {
         }
     }
 
-    public static PartyMember getNewPCInstance(final int r, final int c,
-            final int f, final int p, final int g, final String n) {
-        final Race race = RaceManager.getRace(r);
-        final Caste caste = CasteManager.getCaste(c);
-        final Faith faith = FaithManager.getFaith(f);
-        final Personality personality = PersonalityManager.getPersonality(p);
-        final Gender gender = GenderManager.getGender(g);
-        return new PartyMember(race, caste, faith, personality, gender, n);
-    }
-
-    public static void updatePostKill() {
-        final PartyMember leader = PartyManager.getParty().getLeader();
-        leader.initPostKill(leader.getRace(), leader.getCaste(),
-                leader.getFaith(), leader.getPersonality(), leader.getGender());
-    }
-
-    private static PartyMember createNewPC(final JFrame owner) {
-        final String name = CommonDialogs.showTextInputDialog("Character Name",
-                "Create Character");
-        if (name != null) {
-            final Race race = RaceManager.selectRace(owner);
-            if (race != null) {
-                final Caste caste = CasteManager.selectCaste(owner);
-                if (caste != null) {
-                    final Faith faith = FaithManager.selectFaith(owner);
-                    if (faith != null) {
-                        final Personality personality = PersonalityManager
-                                .selectPersonality(owner);
-                        if (personality != null) {
-                            final Gender gender = GenderManager.selectGender();
-                            if (gender != null) {
-                                return new PartyMember(race, caste, faith,
-                                        personality, gender, name);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+    private static void setGoldInBank(final int newGold) {
+        PartyManager.bank = newGold;
     }
 
     public static String showCreationDialog(final JFrame owner,
@@ -169,40 +190,14 @@ public class PartyManager {
                 input, input[0], descriptions[0], descriptions);
     }
 
-    private static String[] buildNameList(final PartyMember[] members) {
-        final String[] tempNames = new String[1];
-        int nnc = 0;
-        for (int x = 0; x < tempNames.length; x++) {
-            if (members != null) {
-                tempNames[x] = members[x].getName();
-                nnc++;
-            }
-        }
-        final String[] names = new String[nnc];
-        nnc = 0;
-        for (final String tempName : tempNames) {
-            if (tempName != null) {
-                names[nnc] = tempName;
-                nnc++;
-            }
-        }
-        return names;
+    public static void updatePostKill() {
+        final var leader = PartyManager.getParty().getLeader();
+        leader.initPostKill(leader.getRace(), leader.getCaste(),
+                leader.getFaith(), leader.getPersonality(), leader.getGender());
     }
 
-    private static PartyMember pickOnePartyMemberCreate(
-            final PartyMember[] members) {
-        final String[] pickNames = PartyManager.buildNameList(members);
-        final String response = CommonDialogs.showInputDialog(
-                "Pick 1 Party Member", "Create Party", pickNames, pickNames[0]);
-        if (response != null) {
-            for (final PartyMember member : members) {
-                if (member.getName().equals(response)) {
-                    return member;
-                }
-            }
-            return null;
-        } else {
-            return null;
-        }
+    // Constructors
+    private PartyManager() {
+        // Do nothing
     }
 }

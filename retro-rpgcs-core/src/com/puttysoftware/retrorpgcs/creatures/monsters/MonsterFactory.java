@@ -6,10 +6,6 @@ import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
 import com.puttysoftware.retrorpgcs.maze.Maze;
 
 public class MonsterFactory {
-    private MonsterFactory() {
-        // Do nothing
-    }
-
     public static Creature getNewMonsterInstance() {
         if (PartyManager.getParty().getTowerLevel() == Maze.getMaxLevels()
                 - 1) {
@@ -17,5 +13,9 @@ public class MonsterFactory {
         } else {
             return new Monster();
         }
+    }
+
+    private MonsterFactory() {
+        // Do nothing
     }
 }

@@ -14,6 +14,11 @@ public class HealTrap extends AbstractTrap {
     }
 
     @Override
+    public String getDescription() {
+        return "Heal Traps heal you when stepped on.";
+    }
+
+    @Override
     public String getName() {
         return "Heal Trap";
     }
@@ -26,16 +31,11 @@ public class HealTrap extends AbstractTrap {
     @Override
     public void postMoveAction(final boolean ie, final int dirX,
             final int dirY) {
-        int healing = PartyManager.getParty().getLeader().getMaximumHP() / 10;
+        var healing = PartyManager.getParty().getLeader().getMaximumHP() / 10;
         if (healing < 1) {
             healing = 1;
         }
         PartyManager.getParty().getLeader().heal(healing);
         SoundManager.playSound(SoundConstants.SOUND_HEAL);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Heal Traps heal you when stepped on.";
     }
 }

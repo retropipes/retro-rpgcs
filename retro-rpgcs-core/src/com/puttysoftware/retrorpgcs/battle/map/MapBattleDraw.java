@@ -14,10 +14,9 @@ public class MapBattleDraw extends JPanel {
     private final DrawGrid drawGrid;
 
     public MapBattleDraw(final DrawGrid grid) {
-        super();
         this.drawGrid = grid;
-        final int vSize = MapBattleViewingWindowManager.getViewingWindowSize();
-        final int gSize = BattleImageManager.getGraphicSize();
+        final var vSize = MapBattleViewingWindowManager.getViewingWindowSize();
+        final var gSize = BattleImageManager.getGraphicSize();
         this.setPreferredSize(new Dimension(vSize * gSize, vSize * gSize));
     }
 
@@ -25,11 +24,11 @@ public class MapBattleDraw extends JPanel {
     public void paintComponent(final Graphics g) {
         super.paintComponent(g);
         if (this.drawGrid != null) {
-            final int gSize = BattleImageManager.getGraphicSize();
-            final int vSize = MapBattleViewingWindowManager
+            final var gSize = BattleImageManager.getGraphicSize();
+            final var vSize = MapBattleViewingWindowManager
                     .getViewingWindowSize();
-            for (int x = 0; x < vSize; x++) {
-                for (int y = 0; y < vSize; y++) {
+            for (var x = 0; x < vSize; x++) {
+                for (var y = 0; y < vSize; y++) {
                     g.drawImage(this.drawGrid.getImageCell(y, x), x * gSize,
                             y * gSize, gSize, gSize, null);
                 }

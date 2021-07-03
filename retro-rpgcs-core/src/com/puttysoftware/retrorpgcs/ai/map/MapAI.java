@@ -1,22 +1,24 @@
 /* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.ai.map;
 
+import java.util.Objects;
+
 import com.puttysoftware.retrorpgcs.items.combat.CombatItem;
 import com.puttysoftware.retrorpgcs.spells.Spell;
 
 public abstract class MapAI {
-    // Fields
-    protected Spell spell;
-    private final CombatItem item;
-    protected int moveX;
-    protected int moveY;
-    protected boolean lastResult;
     public static final int ACTION_MOVE = 0;
     public static final int ACTION_CAST_SPELL = 1;
     public static final int ACTION_STEAL = 2;
     public static final int ACTION_DRAIN = 3;
     public static final int ACTION_USE_ITEM = 4;
     static final int ACTION_END_TURN = 5;
+    // Fields
+    protected Spell spell;
+    private final CombatItem item;
+    protected int moveX;
+    protected int moveY;
+    protected boolean lastResult;
 
     // Constructor
     protected MapAI() {
@@ -27,63 +29,16 @@ public abstract class MapAI {
         this.lastResult = true;
     }
 
-    // Methods
-    public abstract int getNextAction(MapAIContext ac);
-
-    public void newRoundHook() {
-        // Do nothing
-    }
-
-    public final int getMoveX() {
-        return this.moveX;
-    }
-
-    public final int getMoveY() {
-        return this.moveY;
-    }
-
-    public final Spell getSpellToCast() {
-        return this.spell;
-    }
-
-    public final CombatItem getItemToUse() {
-        return this.item;
-    }
-
-    public final void setLastResult(final boolean res) {
-        this.lastResult = res;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + (this.item == null ? 0 : this.item.hashCode());
-        result = prime * result + (this.lastResult ? 1231 : 1237);
-        result = prime * result + this.moveX;
-        result = prime * result + this.moveY;
-        return prime * result
-                + (this.spell == null ? 0 : this.spell.hashCode());
-    }
-
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
+        if ((obj == null) || !(obj instanceof MapAI)) {
             return false;
         }
-        if (!(obj instanceof MapAI)) {
-            return false;
-        }
-        final MapAI other = (MapAI) obj;
-        if (this.item == null) {
-            if (other.item != null) {
-                return false;
-            }
-        } else if (!this.item.equals(other.item)) {
+        final var other = (MapAI) obj;
+        if (!Objects.equals(this.item, other.item)) {
             return false;
         }
         if (this.lastResult != other.lastResult) {
@@ -95,13 +50,41 @@ public abstract class MapAI {
         if (this.moveY != other.moveY) {
             return false;
         }
-        if (this.spell == null) {
-            if (other.spell != null) {
-                return false;
-            }
-        } else if (!this.spell.equals(other.spell)) {
+        if (!Objects.equals(this.spell, other.spell)) {
             return false;
         }
         return true;
+    }
+
+    public final CombatItem getItemToUse() {
+        return this.item;
+    }
+
+    public final int getMoveX() {
+        return this.moveX;
+    }
+
+    public final int getMoveY() {
+        return this.moveY;
+    }
+
+    // Methods
+    public abstract int getNextAction(MapAIContext ac);
+
+    public final Spell getSpellToCast() {
+        return this.spell;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.item, this.lastResult, this.moveX, this.moveY, this.spell);
+    }
+
+    public void newRoundHook() {
+        // Do nothing
+    }
+
+    public final void setLastResult(final boolean res) {
+        this.lastResult = res;
     }
 }

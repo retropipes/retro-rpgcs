@@ -19,11 +19,6 @@ final class GameErrorHandler implements ErrorHandler {
         this.logger = new ErrorLogger(GameErrorHandler.LOG_NAME);
     }
 
-    @Override
-    public void uncaughtException(final Thread inT, final Throwable inE) {
-        this.handle(inE);
-    }
-
     void handle(final Throwable inE) {
         if (inE instanceof RuntimeException) {
             try {
@@ -40,30 +35,6 @@ final class GameErrorHandler implements ErrorHandler {
                 this.logErrorDirectly(inE);
             }
         }
-    }
-
-    void silentlyLog(final Throwable inE) {
-        this.logger.logWarning(inE);
-    }
-
-    private void logError(final Throwable t) {
-        CommonDialogs.showErrorDialog(GameErrorHandler.ERROR_MESSAGE,
-                GameErrorHandler.ERROR_TITLE);
-        this.logger.logError(t);
-    }
-
-    private void logErrorDirectly(final Throwable t) {
-        this.logger.logError(t);
-    }
-
-    private void logWarning(final Throwable t) {
-        CommonDialogs.showErrorDialog(GameErrorHandler.WARNING_MESSAGE,
-                GameErrorHandler.WARNING_TITLE);
-        this.logger.logWarning(t);
-    }
-
-    private void logWarningDirectly(final Throwable t) {
-        this.logger.logWarning(t);
     }
 
     void handleWithMessage(final Throwable inE, final String msg) {
@@ -84,13 +55,42 @@ final class GameErrorHandler implements ErrorHandler {
         }
     }
 
+    private void logError(final Throwable t) {
+        CommonDialogs.showErrorDialog(GameErrorHandler.ERROR_MESSAGE,
+                GameErrorHandler.ERROR_TITLE);
+        this.logger.logError(t);
+    }
+
+    private void logErrorDirectly(final Throwable t) {
+        this.logger.logError(t);
+    }
+
     private void logErrorWithMessage(final Throwable t, final String msg) {
         CommonDialogs.showErrorDialog(msg, GameErrorHandler.ERROR_TITLE);
         this.logger.logError(t);
     }
 
+    private void logWarning(final Throwable t) {
+        CommonDialogs.showErrorDialog(GameErrorHandler.WARNING_MESSAGE,
+                GameErrorHandler.WARNING_TITLE);
+        this.logger.logWarning(t);
+    }
+
+    private void logWarningDirectly(final Throwable t) {
+        this.logger.logWarning(t);
+    }
+
     private void logWarningWithMessage(final Throwable t, final String msg) {
         CommonDialogs.showErrorDialog(msg, GameErrorHandler.WARNING_TITLE);
         this.logger.logWarning(t);
+    }
+
+    void silentlyLog(final Throwable inE) {
+        this.logger.logWarning(inE);
+    }
+
+    @Override
+    public void uncaughtException(final Thread inT, final Throwable inE) {
+        this.handle(inE);
     }
 }

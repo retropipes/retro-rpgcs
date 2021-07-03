@@ -17,6 +17,11 @@ public class SpellShop extends AbstractShop {
     }
 
     @Override
+    public String getDescription() {
+        return "Spell Shops teach spells, for a fee.";
+    }
+
+    @Override
     public String getName() {
         return "Spell Shop";
     }
@@ -24,10 +29,5 @@ public class SpellShop extends AbstractShop {
     @Override
     public String getPluralName() {
         return "Spell Shops";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Spell Shops teach spells, for a fee.";
     }
 }

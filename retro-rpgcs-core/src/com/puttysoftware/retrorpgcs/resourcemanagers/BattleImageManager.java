@@ -1,9 +1,7 @@
 /* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.resourcemanagers;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -13,6 +11,10 @@ public class BattleImageManager {
     private static final String DEFAULT_LOAD_PATH = "/com/puttysoftware/retrorpgcs/resources/graphics/objects/";
     private static String LOAD_PATH = BattleImageManager.DEFAULT_LOAD_PATH;
     private static Class<?> LOAD_CLASS = BattleImageManager.class;
+
+    public static int getGraphicSize() {
+        return 64;
+    }
 
     /**
      *
@@ -24,8 +26,8 @@ public class BattleImageManager {
     public static BufferedImageIcon getImage(final String name,
             final int baseID, final int transformColor) {
         // Get it from the cache
-        final String baseName = ObjectImageConstants.getObjectImageName(baseID);
-        final BufferedImageIcon bii = BattleImageCache.getCachedImage(name,
+        final var baseName = ObjectImageConstants.getObjectImageName(baseID);
+        final var bii = BattleImageCache.getCachedImage(name,
                 baseName);
         return ImageTransformer.templateTransformImage(bii, transformColor,
                 BattleImageManager.getGraphicSize());
@@ -33,10 +35,10 @@ public class BattleImageManager {
 
     static BufferedImageIcon getUncachedImage(final String name) {
         try {
-            final String normalName = ImageTransformer.normalizeName(name);
-            final URL url = BattleImageManager.LOAD_CLASS.getResource(
+            final var normalName = ImageTransformer.normalizeName(name);
+            final var url = BattleImageManager.LOAD_CLASS.getResource(
                     BattleImageManager.LOAD_PATH + normalName + ".png");
-            final BufferedImage image = ImageIO.read(url);
+            final var image = ImageIO.read(url);
             return new BufferedImageIcon(image);
         } catch (final IOException ie) {
             return null;
@@ -45,9 +47,5 @@ public class BattleImageManager {
         } catch (final IllegalArgumentException ia) {
             return null;
         }
-    }
-
-    public static int getGraphicSize() {
-        return 64;
     }
 }

@@ -2,11 +2,30 @@
 package com.puttysoftware.retrorpgcs.items;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import com.puttysoftware.xio.XDataReader;
 import com.puttysoftware.xio.XDataWriter;
 
 public class Item {
+    protected static Item readItem(final XDataReader dr) throws IOException {
+        final var itemName = dr.readString();
+        if (itemName.equals("null")) {
+            // Abort
+            return null;
+        }
+        final var itemInitialUses = dr.readInt();
+        final var itemWeightPerUse = dr.readInt();
+        final var i = new Item(itemName, itemInitialUses, itemWeightPerUse);
+        i.uses = dr.readInt();
+        i.buyPrice = dr.readInt();
+        i.sellPrice = dr.readInt();
+        i.weight = dr.readInt();
+        i.potency = dr.readInt();
+        i.combatUsable = dr.readBoolean();
+        return i;
+    }
+
     // Properties
     private String name;
     private final int initialUses;
@@ -20,7 +39,6 @@ public class Item {
 
     // Constructors
     public Item() {
-        super();
         this.name = "Un-named Item";
         this.initialUses = 0;
         this.uses = 0;
@@ -34,7 +52,6 @@ public class Item {
 
     public Item(final String itemName, final int itemInitialUses,
             final int itemWeightPerUse) {
-        super();
         this.name = itemName;
         this.initialUses = itemInitialUses;
         this.uses = itemInitialUses;
@@ -47,7 +64,6 @@ public class Item {
     }
 
     protected Item(final String iName, final Item i) {
-        super();
         this.name = iName;
         this.initialUses = i.initialUses;
         this.uses = i.uses;
@@ -59,39 +75,15 @@ public class Item {
         this.combatUsable = false;
     }
 
-    // Methods
-    @Override
-    public String toString() {
-        return this.name;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.buyPrice;
-        result = prime * result + (this.combatUsable ? 1231 : 1237);
-        result = prime * result + this.initialUses;
-        result = prime * result
-                + (this.name == null ? 0 : this.name.hashCode());
-        result = prime * result + this.potency;
-        result = prime * result + this.sellPrice;
-        result = prime * result + this.weight;
-        return prime * result + this.weightPerUse;
-    }
-
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
+        if ((obj == null) || (this.getClass() != obj.getClass())) {
             return false;
         }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        final Item other = (Item) obj;
+        final var other = (Item) obj;
         if (this.buyPrice != other.buyPrice) {
             return false;
         }
@@ -101,11 +93,7 @@ public class Item {
         if (this.initialUses != other.initialUses) {
             return false;
         }
-        if (this.name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!this.name.equals(other.name)) {
+        if (!Objects.equals(this.name, other.name)) {
             return false;
         }
         if (this.potency != other.potency) {
@@ -123,44 +111,12 @@ public class Item {
         return true;
     }
 
-    public final void setName(final String newName) {
-        this.name = newName;
-    }
-
-    public final void setPotency(final int newPotency) {
-        this.potency = newPotency;
-    }
-
-    public final void setBuyPrice(final int newBuyPrice) {
-        this.buyPrice = newBuyPrice;
-    }
-
-    public final void setSellPrice(final int newSellPrice) {
-        this.sellPrice = newSellPrice;
-    }
-
-    public final void setCombatUsable(final boolean isCombatUsable) {
-        this.combatUsable = isCombatUsable;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public final int getBuyPrice() {
-        return this.buyPrice;
-    }
-
-    public final int getPotency() {
-        return this.potency;
-    }
-
     private final int getBaseWeight() {
         return this.weight;
     }
 
-    public final int getWeightPerUse() {
-        return this.weightPerUse;
+    public final int getBuyPrice() {
+        return this.buyPrice;
     }
 
     public final int getEffectiveWeight() {
@@ -171,12 +127,60 @@ public class Item {
         return this.initialUses;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public final int getPotency() {
+        return this.potency;
+    }
+
     private final int getUses() {
         return this.uses;
     }
 
+    public final int getWeightPerUse() {
+        return this.weightPerUse;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.buyPrice, this.combatUsable, this.initialUses, this.name, this.potency,
+                this.sellPrice, this.weight, this.weightPerUse);
+    }
+
+    public final boolean isCombatUsable() {
+        return this.isUsable() && this.combatUsable;
+    }
+
     private final boolean isUsable() {
         return this.uses > 0;
+    }
+
+    public final void setBuyPrice(final int newBuyPrice) {
+        this.buyPrice = newBuyPrice;
+    }
+
+    public final void setCombatUsable(final boolean isCombatUsable) {
+        this.combatUsable = isCombatUsable;
+    }
+
+    public final void setName(final String newName) {
+        this.name = newName;
+    }
+
+    public final void setPotency(final int newPotency) {
+        this.potency = newPotency;
+    }
+
+    public final void setSellPrice(final int newSellPrice) {
+        this.sellPrice = newSellPrice;
+    }
+
+    // Methods
+    @Override
+    public String toString() {
+        return this.name;
     }
 
     public final boolean use() {
@@ -186,28 +190,6 @@ public class Item {
         } else {
             return false;
         }
-    }
-
-    public final boolean isCombatUsable() {
-        return this.isUsable() && this.combatUsable;
-    }
-
-    protected static Item readItem(final XDataReader dr) throws IOException {
-        final String itemName = dr.readString();
-        if (itemName.equals("null")) {
-            // Abort
-            return null;
-        }
-        final int itemInitialUses = dr.readInt();
-        final int itemWeightPerUse = dr.readInt();
-        final Item i = new Item(itemName, itemInitialUses, itemWeightPerUse);
-        i.uses = dr.readInt();
-        i.buyPrice = dr.readInt();
-        i.sellPrice = dr.readInt();
-        i.weight = dr.readInt();
-        i.potency = dr.readInt();
-        i.combatUsable = dr.readBoolean();
-        return i;
     }
 
     final void writeItem(final XDataWriter dw) throws IOException {

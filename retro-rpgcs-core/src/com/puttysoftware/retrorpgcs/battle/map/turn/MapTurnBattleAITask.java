@@ -15,26 +15,8 @@ public class MapTurnBattleAITask extends Thread {
         this.b = battle;
     }
 
-    @Override
-    public void run() {
-        try {
-            this.aiWait();
-            while (true) {
-                this.b.executeNextAIAction();
-                if (this.b.getLastAIActionResult()) {
-                    // Delay, for animation purposes
-                    try {
-                        final int battleSpeed = PreferencesManager
-                                .getBattleSpeed();
-                        Thread.sleep(battleSpeed);
-                    } catch (final InterruptedException i) {
-                        // Ignore
-                    }
-                }
-            }
-        } catch (final Throwable t) {
-            RetroRPGCS.getInstance().handleError(t);
-        }
+    public synchronized void aiRun() {
+        this.notify();
     }
 
     public synchronized void aiWait() {
@@ -45,7 +27,25 @@ public class MapTurnBattleAITask extends Thread {
         }
     }
 
-    public synchronized void aiRun() {
-        this.notify();
+    @Override
+    public void run() {
+        try {
+            this.aiWait();
+            while (true) {
+                this.b.executeNextAIAction();
+                if (this.b.getLastAIActionResult()) {
+                    // Delay, for animation purposes
+                    try {
+                        final var battleSpeed = PreferencesManager
+                                .getBattleSpeed();
+                        Thread.sleep(battleSpeed);
+                    } catch (final InterruptedException i) {
+                        // Ignore
+                    }
+                }
+            }
+        } catch (final Throwable t) {
+            RetroRPGCS.getInstance().handleError(t);
+        }
     }
 }

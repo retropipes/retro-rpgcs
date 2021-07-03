@@ -14,7 +14,7 @@ public class NamesDataManager {
     private static final String DIR = "Names";
 
     public static String[] getNamesData() {
-        final File overrideData = NamesDataManager.getNamesOverrideFile();
+        final var overrideData = NamesDataManager.getNamesOverrideFile();
         if (overrideData.exists()) {
             return NamesDataManager.getNamesOverrideData();
         } else {
@@ -23,27 +23,27 @@ public class NamesDataManager {
     }
 
     private static String[] getNamesDefaultData() {
-        try (ResourceStreamReader rsr = new ResourceStreamReader(
+        try (var rsr = new ResourceStreamReader(
                 NamesDataManager.class.getResourceAsStream(
                         "/com/puttysoftware/retrorpgcs/resources/data/names/names.txt"))) {
             // Load default
-            final ArrayList<String> data = new ArrayList<>();
+            final var data = new ArrayList<String>();
             // Ignore first line
-            String raw = rsr.readString();
+            var raw = rsr.readString();
             while (raw != null) {
                 raw = rsr.readString();
                 data.add(raw);
             }
-            final Object[] arr = data.toArray();
-            final String[] tempres = new String[arr.length];
-            int count = 0;
-            for (int x = 0; x < arr.length; x++) {
+            final var arr = data.toArray();
+            final var tempres = new String[arr.length];
+            var count = 0;
+            for (var x = 0; x < arr.length; x++) {
                 if (arr[x] != null) {
                     tempres[x] = arr[x].toString();
                     count++;
                 }
             }
-            final String[] res = new String[count];
+            final var res = new String[count];
             count = 0;
             for (final String tempre : tempres) {
                 if (tempre != null) {
@@ -58,36 +58,44 @@ public class NamesDataManager {
         }
     }
 
+    private static String getNamesDirectory() {
+        return NamesDataManager.DIR;
+    }
+
+    private static String getNamesDirPrefix() {
+        return RetroRPGCS.getSupportDirectory();
+    }
+
     private static String[] getNamesOverrideData() {
         try {
-            final File overrideData = NamesDataManager.getNamesOverrideFile();
+            final var overrideData = NamesDataManager.getNamesOverrideFile();
             // Version check
             if (overrideData.exists() && !NamesDataManager
                     .isNamesFileCorrectVersion(overrideData)) {
-                final boolean success = overrideData.delete();
+                final var success = overrideData.delete();
                 if (!success) {
                     throw new IOException("Deleting override failed!");
                 }
             }
-            try (FileInputStream fis = new FileInputStream(overrideData);
-                    ResourceStreamReader rsr = new ResourceStreamReader(fis)) {
-                final ArrayList<String> data = new ArrayList<>();
+            try (var fis = new FileInputStream(overrideData);
+                    var rsr = new ResourceStreamReader(fis)) {
+                final var data = new ArrayList<String>();
                 // Ignore first line
-                String raw = rsr.readString();
+                var raw = rsr.readString();
                 while (raw != null) {
                     raw = rsr.readString();
                     data.add(raw);
                 }
-                final Object[] arr = data.toArray();
-                final String[] tempres = new String[arr.length];
-                int count = 0;
-                for (int x = 0; x < arr.length; x++) {
+                final var arr = data.toArray();
+                final var tempres = new String[arr.length];
+                var count = 0;
+                for (var x = 0; x < arr.length; x++) {
                     if (arr[x] != null) {
                         tempres[x] = arr[x].toString();
                         count++;
                     }
                 }
-                final String[] res = new String[count];
+                final var res = new String[count];
                 count = 0;
                 for (final String tempre : tempres) {
                     if (tempre != null) {
@@ -103,16 +111,8 @@ public class NamesDataManager {
         }
     }
 
-    private static String getNamesDirPrefix() {
-        return RetroRPGCS.getSupportDirectory();
-    }
-
-    private static String getNamesDirectory() {
-        return NamesDataManager.DIR;
-    }
-
     public static File getNamesOverrideFile() {
-        final StringBuilder b = new StringBuilder();
+        final var b = new StringBuilder();
         b.append(NamesDataManager.getNamesDirPrefix());
         b.append(File.pathSeparator);
         b.append(NamesDataManager.getNamesDirectory());
@@ -122,9 +122,9 @@ public class NamesDataManager {
     }
 
     private static boolean isNamesFileCorrectVersion(final File f) {
-        try (FileInputStream fis = new FileInputStream(f);
-                ResourceStreamReader rsr = new ResourceStreamReader(fis)) {
-            final int version = rsr.readInt();
+        try (var fis = new FileInputStream(f);
+                var rsr = new ResourceStreamReader(fis)) {
+            final var version = rsr.readInt();
             return version == NamesConstants.NAMES_VERSION;
         } catch (final IOException e) {
             return false;

@@ -13,31 +13,10 @@ public class WeaponConstants {
             "Two-Handed Weapons" };
     private static String[] HAND_CHOICES = null;
 
-    // Private Constructor
-    private WeaponConstants() {
-        // Do nothing
-    }
-
-    // Methods
-    public static String[] getWeaponChoices() {
-        return WeaponConstants.WEAPON_CHOICES;
-    }
-
-    public static synchronized String[] getHandChoices() {
-        if (WeaponConstants.HAND_CHOICES == null) {
-            final String[] temp = EquipmentSlotConstants.getSlotNames();
-            final String[] temp2 = new String[2];
-            temp2[0] = temp[EquipmentSlotConstants.SLOT_MAINHAND];
-            temp2[1] = temp[EquipmentSlotConstants.SLOT_OFFHAND];
-            WeaponConstants.HAND_CHOICES = temp2;
-        }
-        return WeaponConstants.HAND_CHOICES;
-    }
-
     public static synchronized String[] get1HWeapons() {
         if (WeaponConstants.WEAPON_1H == null) {
-            final String[] temp = new String[CasteConstants.CASTES_COUNT];
-            for (int x = 0; x < temp.length; x++) {
+            final var temp = new String[CasteConstants.CASTES_COUNT];
+            for (var x = 0; x < temp.length; x++) {
                 temp[x] = NamesManager.getName(
                         NamesConstants.SECTION_EQUIP_WEAPONS_1H,
                         NamesConstants.SECTION_ARRAY_WEAPONS_1H[x]);
@@ -49,8 +28,8 @@ public class WeaponConstants {
 
     public static synchronized String[] get2HWeapons() {
         if (WeaponConstants.WEAPON_2H == null) {
-            final String[] temp = new String[CasteConstants.CASTES_COUNT];
-            for (int x = 0; x < temp.length; x++) {
+            final var temp = new String[CasteConstants.CASTES_COUNT];
+            for (var x = 0; x < temp.length; x++) {
                 temp[x] = NamesManager.getName(
                         NamesConstants.SECTION_EQUIP_WEAPONS_2H,
                         NamesConstants.SECTION_ARRAY_WEAPONS_2H[x]);
@@ -58,5 +37,26 @@ public class WeaponConstants {
             WeaponConstants.WEAPON_2H = temp;
         }
         return WeaponConstants.WEAPON_2H;
+    }
+
+    public static synchronized String[] getHandChoices() {
+        if (WeaponConstants.HAND_CHOICES == null) {
+            final var temp = EquipmentSlotConstants.getSlotNames();
+            final var temp2 = new String[2];
+            temp2[0] = temp[EquipmentSlotConstants.SLOT_MAINHAND];
+            temp2[1] = temp[EquipmentSlotConstants.SLOT_OFFHAND];
+            WeaponConstants.HAND_CHOICES = temp2;
+        }
+        return WeaponConstants.HAND_CHOICES;
+    }
+
+    // Methods
+    public static String[] getWeaponChoices() {
+        return WeaponConstants.WEAPON_CHOICES;
+    }
+
+    // Private Constructor
+    private WeaponConstants() {
+        // Do nothing
     }
 }

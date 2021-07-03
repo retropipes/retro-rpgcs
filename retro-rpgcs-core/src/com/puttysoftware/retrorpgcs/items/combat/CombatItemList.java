@@ -23,8 +23,8 @@ public class CombatItemList {
     }
 
     public String[] getAllNames() {
-        final String[] allNames = new String[this.allItems.length];
-        for (int x = 0; x < this.allItems.length; x++) {
+        final var allNames = new String[this.allItems.length];
+        for (var x = 0; x < this.allItems.length; x++) {
             allNames[x] = this.allItems[x].getName();
         }
         return allNames;

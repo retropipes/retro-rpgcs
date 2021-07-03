@@ -1,17 +1,14 @@
 /* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.ai.map;
 
-import java.awt.Point;
-
 public class AutoMapAI extends MapAI {
     // Constructor
     public AutoMapAI() {
-        super();
     }
 
     @Override
     public int getNextAction(final MapAIContext ac) {
-        final Point there = ac.isEnemyNearby();
+        final var there = ac.isEnemyNearby();
         if (there != null) {
             // Something hostile is nearby, so attack it
             this.moveX = there.x;

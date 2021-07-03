@@ -23,6 +23,101 @@ import com.puttysoftware.retrorpgcs.maze.MazeManager;
 import com.puttysoftware.retrorpgcs.prefs.PreferencesManager;
 
 public class MenuManager extends MenuManagerShell {
+    private class EventHandler implements ActionListener {
+        public EventHandler() {
+            // Do nothing
+        }
+
+        // Handle menus
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            try {
+                final var cmd = e.getActionCommand();
+                final var app = RetroRPGCS.getInstance();
+                var loaded = false;
+                if (cmd.equals("Open Game...")) {
+                    loaded = app.getMazeManager().loadGame();
+                    app.getMazeManager().setLoaded(loaded);
+                } else if (cmd.equals("Close")) {
+                    // Close the window
+                    if (app.getMode() == RetroRPGCS.STATUS_GAME) {
+                        var saved = true;
+                        var status = 0;
+                        if (app.getMazeManager().getDirty()) {
+                            app.getMazeManager();
+                            status = MazeManager.showSaveDialog();
+                            if (status == JOptionPane.YES_OPTION) {
+                                app.getMazeManager();
+                                saved = MazeManager.saveGame();
+                            } else if (status == JOptionPane.CANCEL_OPTION) {
+                                saved = false;
+                            } else {
+                                app.getMazeManager().setDirty(false);
+                            }
+                        }
+                        if (saved) {
+                            app.getGameManager().exitGame();
+                        }
+                    }
+                } else if (cmd.equals("Save Game...")) {
+                    if (app.getMazeManager().getLoaded()) {
+                        app.getMazeManager();
+                        MazeManager.saveGame();
+                    } else {
+                        CommonDialogs.showDialog("No Maze Opened");
+                    }
+                } else if (cmd.equals("Exit")) {
+                    // Exit program
+                    if (app.getGUIManager().quitHandler()) {
+                        System.exit(0);
+                    }
+                } else if (cmd.equals("Preferences...")) {
+                    // Show preferences dialog
+                    PreferencesManager.showPrefs();
+                } else if (cmd.equals("New Game")) {
+                    // Start a new game
+                    final var proceed = app.getGameManager().newGame();
+                    if (proceed) {
+                        new GenerateTask(true).start();
+                    }
+                } else if (cmd.equals("Register Character...")) {
+                    // Register Character
+                    CharacterRegistration.registerCharacter();
+                } else if (cmd.equals("Unregister Character...")) {
+                    // Unregister Character
+                    CharacterRegistration.unregisterCharacter();
+                } else if (cmd.equals("Remove Character...")) {
+                    // Confirm
+                    final var confirm = CommonDialogs.showConfirmDialog(
+                            "WARNING: This will DELETE the character from disk,\n"
+                                    + "and CANNOT be undone! Proceed anyway?",
+                            "Remove Character");
+                    if (confirm == CommonDialogs.YES_OPTION) {
+                        // Remove Character
+                        CharacterRegistration.removeCharacter();
+                    }
+                } else if (cmd.equals("Show Equipment...")) {
+                    InventoryViewer.showEquipmentDialog();
+                } else if (cmd.equals("Show Inventory...")) {
+                    InventoryViewer.showItemInventoryDialog();
+                } else if (cmd.equals("Edit Note...")) {
+                    // Edit Note
+                    NoteManager.editNote();
+                } else if (cmd.equals("View Statistics...")) {
+                    // View Statistics
+                    StatisticsViewer.viewStatistics();
+                } else if (cmd.equals("About RetroRPGCS...")) {
+                    app.getAboutDialog().showAboutDialog();
+                } else if (cmd.equals("RetroRPGCS Object Help")) {
+                    app.getObjectHelpManager().showHelp();
+                }
+                MenuManager.this.checkFlags();
+            } catch (final Throwable t) {
+                RetroRPGCS.getInstance().handleError(t);
+            }
+        }
+    }
+
     // Fields
     JMenuBar mainMenuBar;
     private JMenuItem fileOpenGame, fileClose, fileSaveGame, filePreferences,
@@ -42,63 +137,8 @@ public class MenuManager extends MenuManagerShell {
         this.populateMenus();
     }
 
-    // Methods
-    public JMenuBar getMainMenuBar() {
-        return this.mainMenuBar;
-    }
-
-    public void setGameMenus() {
-        this.fileOpenGame.setEnabled(false);
-        this.fileExit.setEnabled(true);
-        this.filePreferences.setEnabled(true);
-        this.gameNewGame.setEnabled(false);
-        this.enableGameMenus();
-        this.checkFlags();
-    }
-
-    public void setPrefMenus() {
-        this.fileOpenGame.setEnabled(false);
-        this.fileClose.setEnabled(false);
-        this.fileExit.setEnabled(true);
-        this.filePreferences.setEnabled(false);
-        this.gameNewGame.setEnabled(false);
-        this.disableGameMenus();
-    }
-
-    public void setHelpMenus() {
-        this.fileOpenGame.setEnabled(false);
-        this.fileClose.setEnabled(false);
-        this.fileExit.setEnabled(true);
-        this.filePreferences.setEnabled(false);
-        this.gameNewGame.setEnabled(false);
-        this.disableGameMenus();
-    }
-
-    public void setMainMenus() {
-        this.fileOpenGame.setEnabled(true);
-        this.fileExit.setEnabled(true);
-        this.filePreferences.setEnabled(true);
-        this.gameNewGame.setEnabled(true);
-        this.disableGameMenus();
-        this.checkFlags();
-    }
-
-    private void enableGameMenus() {
-        this.gameEquipment.setEnabled(true);
-        this.gameInventory.setEnabled(true);
-        this.gameEditNote.setEnabled(true);
-        this.gameViewStats.setEnabled(true);
-    }
-
-    private void disableGameMenus() {
-        this.gameEquipment.setEnabled(false);
-        this.gameInventory.setEnabled(false);
-        this.gameEditNote.setEnabled(false);
-        this.gameViewStats.setEnabled(false);
-    }
-
     public void checkFlags() {
-        final RetroRPGCS app = RetroRPGCS.getInstance();
+        final var app = RetroRPGCS.getInstance();
         if (app.getMazeManager().getDirty()) {
             this.setMenusDirtyOn();
         } else {
@@ -109,27 +149,6 @@ public class MenuManager extends MenuManagerShell {
         } else {
             this.setMenusLoadedOff();
         }
-    }
-
-    private void setMenusDirtyOn() {
-        this.fileSaveGame.setEnabled(true);
-    }
-
-    private void setMenusDirtyOff() {
-        this.fileSaveGame.setEnabled(false);
-    }
-
-    private void setMenusLoadedOn() {
-        final RetroRPGCS app = RetroRPGCS.getInstance();
-        if (app.getMode() == RetroRPGCS.STATUS_GUI) {
-            this.fileClose.setEnabled(false);
-        } else {
-            this.fileClose.setEnabled(true);
-        }
-    }
-
-    private void setMenusLoadedOff() {
-        this.fileClose.setEnabled(false);
     }
 
     private void createAccelerators() {
@@ -149,9 +168,9 @@ public class MenuManager extends MenuManagerShell {
 
     private void createMenus() {
         this.mainMenuBar = new JMenuBar();
-        final JMenu fileMenu = new JMenu("File");
-        final JMenu gameMenu = new JMenu("Game");
-        final JMenu helpMenu = new JMenu("Help");
+        final var fileMenu = new JMenu("File");
+        final var gameMenu = new JMenu("Game");
+        final var helpMenu = new JMenu("Help");
         this.fileOpenGame = new JMenuItem("Open Game...");
         this.fileOpenGame.setAccelerator(this.fileOpenGameAccel);
         this.fileClose = new JMenuItem("Close");
@@ -211,6 +230,50 @@ public class MenuManager extends MenuManagerShell {
         this.mainMenuBar.add(helpMenu);
     }
 
+    private void disableGameMenus() {
+        this.gameEquipment.setEnabled(false);
+        this.gameInventory.setEnabled(false);
+        this.gameEditNote.setEnabled(false);
+        this.gameViewStats.setEnabled(false);
+    }
+
+    private void enableGameMenus() {
+        this.gameEquipment.setEnabled(true);
+        this.gameInventory.setEnabled(true);
+        this.gameEditNote.setEnabled(true);
+        this.gameViewStats.setEnabled(true);
+    }
+
+    // Methods
+    public JMenuBar getMainMenuBar() {
+        return this.mainMenuBar;
+    }
+
+    @Override
+    public void populateMenus() {
+        this.createAccelerators();
+        this.createMenus();
+        this.setInitialMenuState();
+    }
+
+    public void setGameMenus() {
+        this.fileOpenGame.setEnabled(false);
+        this.fileExit.setEnabled(true);
+        this.filePreferences.setEnabled(true);
+        this.gameNewGame.setEnabled(false);
+        this.enableGameMenus();
+        this.checkFlags();
+    }
+
+    public void setHelpMenus() {
+        this.fileOpenGame.setEnabled(false);
+        this.fileClose.setEnabled(false);
+        this.fileExit.setEnabled(true);
+        this.filePreferences.setEnabled(false);
+        this.gameNewGame.setEnabled(false);
+        this.disableGameMenus();
+    }
+
     private void setInitialMenuState() {
         this.fileOpenGame.setEnabled(true);
         this.fileClose.setEnabled(false);
@@ -226,110 +289,47 @@ public class MenuManager extends MenuManagerShell {
         this.helpObjectHelp.setEnabled(true);
     }
 
-    private class EventHandler implements ActionListener {
-        public EventHandler() {
-            // Do nothing
-        }
+    public void setMainMenus() {
+        this.fileOpenGame.setEnabled(true);
+        this.fileExit.setEnabled(true);
+        this.filePreferences.setEnabled(true);
+        this.gameNewGame.setEnabled(true);
+        this.disableGameMenus();
+        this.checkFlags();
+    }
 
-        // Handle menus
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            try {
-                final String cmd = e.getActionCommand();
-                final RetroRPGCS app = RetroRPGCS.getInstance();
-                boolean loaded = false;
-                if (cmd.equals("Open Game...")) {
-                    loaded = app.getMazeManager().loadGame();
-                    app.getMazeManager().setLoaded(loaded);
-                } else if (cmd.equals("Close")) {
-                    // Close the window
-                    if (app.getMode() == RetroRPGCS.STATUS_GAME) {
-                        boolean saved = true;
-                        int status = 0;
-                        if (app.getMazeManager().getDirty()) {
-                            app.getMazeManager();
-                            status = MazeManager.showSaveDialog();
-                            if (status == JOptionPane.YES_OPTION) {
-                                app.getMazeManager();
-                                saved = MazeManager.saveGame();
-                            } else if (status == JOptionPane.CANCEL_OPTION) {
-                                saved = false;
-                            } else {
-                                app.getMazeManager().setDirty(false);
-                            }
-                        }
-                        if (saved) {
-                            app.getGameManager().exitGame();
-                        }
-                    }
-                } else if (cmd.equals("Save Game...")) {
-                    if (app.getMazeManager().getLoaded()) {
-                        app.getMazeManager();
-                        MazeManager.saveGame();
-                    } else {
-                        CommonDialogs.showDialog("No Maze Opened");
-                    }
-                } else if (cmd.equals("Exit")) {
-                    // Exit program
-                    if (app.getGUIManager().quitHandler()) {
-                        System.exit(0);
-                    }
-                } else if (cmd.equals("Preferences...")) {
-                    // Show preferences dialog
-                    PreferencesManager.showPrefs();
-                } else if (cmd.equals("New Game")) {
-                    // Start a new game
-                    final boolean proceed = app.getGameManager().newGame();
-                    if (proceed) {
-                        new GenerateTask(true).start();
-                    }
-                } else if (cmd.equals("Register Character...")) {
-                    // Register Character
-                    CharacterRegistration.registerCharacter();
-                } else if (cmd.equals("Unregister Character...")) {
-                    // Unregister Character
-                    CharacterRegistration.unregisterCharacter();
-                } else if (cmd.equals("Remove Character...")) {
-                    // Confirm
-                    final int confirm = CommonDialogs.showConfirmDialog(
-                            "WARNING: This will DELETE the character from disk,\n"
-                                    + "and CANNOT be undone! Proceed anyway?",
-                            "Remove Character");
-                    if (confirm == CommonDialogs.YES_OPTION) {
-                        // Remove Character
-                        CharacterRegistration.removeCharacter();
-                    }
-                } else if (cmd.equals("Show Equipment...")) {
-                    InventoryViewer.showEquipmentDialog();
-                } else if (cmd.equals("Show Inventory...")) {
-                    InventoryViewer.showItemInventoryDialog();
-                } else if (cmd.equals("Edit Note...")) {
-                    // Edit Note
-                    NoteManager.editNote();
-                } else if (cmd.equals("View Statistics...")) {
-                    // View Statistics
-                    StatisticsViewer.viewStatistics();
-                } else if (cmd.equals("About RetroRPGCS...")) {
-                    app.getAboutDialog().showAboutDialog();
-                } else if (cmd.equals("RetroRPGCS Object Help")) {
-                    app.getObjectHelpManager().showHelp();
-                }
-                MenuManager.this.checkFlags();
-            } catch (final Throwable t) {
-                RetroRPGCS.getInstance().handleError(t);
-            }
+    private void setMenusDirtyOff() {
+        this.fileSaveGame.setEnabled(false);
+    }
+
+    private void setMenusDirtyOn() {
+        this.fileSaveGame.setEnabled(true);
+    }
+
+    private void setMenusLoadedOff() {
+        this.fileClose.setEnabled(false);
+    }
+
+    private void setMenusLoadedOn() {
+        final var app = RetroRPGCS.getInstance();
+        if (app.getMode() == RetroRPGCS.STATUS_GUI) {
+            this.fileClose.setEnabled(false);
+        } else {
+            this.fileClose.setEnabled(true);
         }
     }
 
-    @Override
-    public void populateMenus() {
-        this.createAccelerators();
-        this.createMenus();
-        this.setInitialMenuState();
+    public void setPrefMenus() {
+        this.fileOpenGame.setEnabled(false);
+        this.fileClose.setEnabled(false);
+        this.fileExit.setEnabled(true);
+        this.filePreferences.setEnabled(false);
+        this.gameNewGame.setEnabled(false);
+        this.disableGameMenus();
     }
 
     @Override
-    public void updateMenuItemState(boolean loaded, boolean dirty) {
+    public void updateMenuItemState(final boolean loaded, final boolean dirty) {
         this.checkFlags();
     }
 }

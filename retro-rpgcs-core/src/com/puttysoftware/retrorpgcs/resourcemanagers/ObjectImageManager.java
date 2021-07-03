@@ -1,9 +1,7 @@
 /* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.resourcemanagers;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -24,8 +22,8 @@ public class ObjectImageManager {
     public static BufferedImageIcon getImage(final String name,
             final int baseID, final int transformColor) {
         // Get it from the cache
-        final String baseName = ObjectImageConstants.getObjectImageName(baseID);
-        final BufferedImageIcon bii = ObjectImageCache.getCachedImage(name,
+        final var baseName = ObjectImageConstants.getObjectImageName(baseID);
+        final var bii = ObjectImageCache.getCachedImage(name,
                 baseName);
         return ImageTransformer.templateTransformImage(bii, transformColor,
                 ImageTransformer.getGraphicSize());
@@ -33,10 +31,10 @@ public class ObjectImageManager {
 
     static BufferedImageIcon getUncachedImage(final String name) {
         try {
-            final String normalName = ImageTransformer.normalizeName(name);
-            final URL url = ObjectImageManager.LOAD_CLASS.getResource(
+            final var normalName = ImageTransformer.normalizeName(name);
+            final var url = ObjectImageManager.LOAD_CLASS.getResource(
                     ObjectImageManager.LOAD_PATH + normalName + ".png");
-            final BufferedImage image = ImageIO.read(url);
+            final var image = ImageIO.read(url);
             return new BufferedImageIcon(image);
         } catch (final IOException ie) {
             return null;

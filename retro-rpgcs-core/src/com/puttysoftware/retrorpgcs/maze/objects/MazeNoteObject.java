@@ -7,12 +7,16 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.ObjectImageConstants;
 public class MazeNoteObject extends AbstractMarker {
     // Constructors
     public MazeNoteObject() {
-        super();
     }
 
     @Override
     public int getBaseID() {
         return ObjectImageConstants.OBJECT_IMAGE_NOTE;
+    }
+
+    @Override
+    public String getDescription() {
+        return "";
     }
 
     @Override
@@ -23,10 +27,5 @@ public class MazeNoteObject extends AbstractMarker {
     @Override
     public String getPluralName() {
         return "Maze Notes";
-    }
-
-    @Override
-    public String getDescription() {
-        return "";
     }
 }

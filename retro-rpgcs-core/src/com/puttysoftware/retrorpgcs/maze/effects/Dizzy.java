@@ -5,9 +5,6 @@ import com.puttysoftware.randomrange.RandomRange;
 import com.puttysoftware.retrorpgcs.maze.utilities.DirectionConstants;
 
 public class Dizzy extends MazeEffect {
-    // Fields
-    private int state;
-    private final RandomRange r;
     private static final int DIZZY_STATE_UDRL = 1;
     private static final int DIZZY_STATE_ULDR = 2;
     private static final int DIZZY_STATE_ULRD = 3;
@@ -33,6 +30,9 @@ public class Dizzy extends MazeEffect {
     private static final int DIZZY_STATE_RULD = 23;
     private static final int MIN_DIZZY_STATE = 1;
     private static final int MAX_DIZZY_STATE = 23;
+    // Fields
+    private int state;
+    private final RandomRange r;
 
     // Constructor
     public Dizzy(final int newRounds) {
@@ -41,28 +41,25 @@ public class Dizzy extends MazeEffect {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        return result = prime * result + this.state;
-    }
-
-    @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
-        if (!super.equals(obj)) {
+        if (!super.equals(obj) || !(obj instanceof Dizzy)) {
             return false;
         }
-        if (!(obj instanceof Dizzy)) {
-            return false;
-        }
-        final Dizzy other = (Dizzy) obj;
+        final var other = (Dizzy) obj;
         if (this.state != other.state) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final var prime = 31;
+        var result = super.hashCode();
+        return result = prime * result + this.state;
     }
 
     @Override

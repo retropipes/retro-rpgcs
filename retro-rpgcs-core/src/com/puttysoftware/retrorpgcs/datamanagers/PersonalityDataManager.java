@@ -10,21 +10,21 @@ import com.puttysoftware.retrorpgcs.maze.Extension;
 
 public class PersonalityDataManager {
     public static double[] getPersonalityData(final int p) {
-        final String name = PersonalityConstants.getPersonalityName(p)
+        final var name = PersonalityConstants.getPersonalityName(p)
                 .toLowerCase();
-        try (final ResourceStreamReader rsr = new ResourceStreamReader(
+        try (final var rsr = new ResourceStreamReader(
                 PersonalityDataManager.class.getResourceAsStream(
                         "/com/puttysoftware/retrorpgcs/resources/data/personality/"
                                 + name + Extension
                                         .getInternalDataExtensionWithPeriod()))) {
             // Fetch data
-            final int[] rawData = new int[PersonalityConstants.PERSONALITY_ATTRIBUTES_COUNT];
-            for (int x = 0; x < rawData.length; x++) {
+            final var rawData = new int[PersonalityConstants.PERSONALITY_ATTRIBUTES_COUNT];
+            for (var x = 0; x < rawData.length; x++) {
                 rawData[x] = rsr.readInt();
             }
             // Parse raw data
-            final double[] finalData = new double[rawData.length];
-            for (int x = 0; x < rawData.length; x++) {
+            final var finalData = new double[rawData.length];
+            for (var x = 0; x < rawData.length; x++) {
                 if (x == PersonalityConstants.PERSONALITY_ATTRIBUTE_LEVEL_UP_SPEED) {
                     finalData[x] = PersonalityConstants
                             .getLookupTableEntry(-rawData[x]);

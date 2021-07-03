@@ -19,7 +19,7 @@ class LowLevelAMODataStore extends ObjectStorage {
         return (AbstractMazeObject) super.getCell(loc);
     }
 
-    public void setMazeCell(AbstractMazeObject obj, final int... loc) {
+    public void setMazeCell(final AbstractMazeObject obj, final int... loc) {
         super.setCell(obj, loc);
     }
 }

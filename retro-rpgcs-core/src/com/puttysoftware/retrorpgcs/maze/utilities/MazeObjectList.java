@@ -4,6 +4,7 @@ package com.puttysoftware.retrorpgcs.maze.utilities;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.puttysoftware.images.BufferedImageIcon;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
@@ -72,30 +73,22 @@ public class MazeObjectList {
                 new Amulet() };
         this.allObjectList = new ArrayList<>();
         // Add all predefined objects to the list
-        for (final AbstractMazeObject allObject : allObjects) {
-            this.allObjectList.add(allObject);
-        }
-    }
-
-    // Methods
-    public AbstractMazeObject[] getAllObjects() {
-        return this.allObjectList
-                .toArray(new AbstractMazeObject[this.allObjectList.size()]);
+        Collections.addAll(this.allObjectList, allObjects);
     }
 
     public String[] getAllDescriptions() {
-        final AbstractMazeObject[] objects = this.getAllObjects();
-        final String[] allDescriptions = new String[objects.length];
-        for (int x = 0; x < objects.length; x++) {
+        final var objects = this.getAllObjects();
+        final var allDescriptions = new String[objects.length];
+        for (var x = 0; x < objects.length; x++) {
             allDescriptions[x] = objects[x].getDescription();
         }
         return allDescriptions;
     }
 
     public BufferedImageIcon[] getAllEditorAppearances() {
-        final AbstractMazeObject[] objects = this.getAllObjects();
-        final BufferedImageIcon[] allEditorAppearances = new BufferedImageIcon[objects.length];
-        for (int x = 0; x < allEditorAppearances.length; x++) {
+        final var objects = this.getAllObjects();
+        final var allEditorAppearances = new BufferedImageIcon[objects.length];
+        for (var x = 0; x < allEditorAppearances.length; x++) {
             allEditorAppearances[x] = ImageTransformer.getTransformedImage(
                     ObjectImageManager.getImage(objects[x].getName(),
                             objects[x].getBaseID(),
@@ -105,11 +98,17 @@ public class MazeObjectList {
         return allEditorAppearances;
     }
 
+    // Methods
+    public AbstractMazeObject[] getAllObjects() {
+        return this.allObjectList
+                .toArray(new AbstractMazeObject[this.allObjectList.size()]);
+    }
+
     public final AbstractMazeObject[] getAllRequired(final int layer) {
-        final AbstractMazeObject[] objects = this.getAllObjects();
-        final AbstractMazeObject[] tempAllRequired = new AbstractMazeObject[objects.length];
+        final var objects = this.getAllObjects();
+        final var tempAllRequired = new AbstractMazeObject[objects.length];
         int x;
-        int count = 0;
+        var count = 0;
         for (x = 0; x < objects.length; x++) {
             if (objects[x].getLayer() == layer && objects[x].isRequired()) {
                 tempAllRequired[count] = objects[x];
@@ -119,7 +118,7 @@ public class MazeObjectList {
         if (count == 0) {
             return null;
         } else {
-            final AbstractMazeObject[] allRequired = new AbstractMazeObject[count];
+            final var allRequired = new AbstractMazeObject[count];
             for (x = 0; x < count; x++) {
                 allRequired[x] = tempAllRequired[x];
             }
@@ -129,10 +128,10 @@ public class MazeObjectList {
 
     public final AbstractMazeObject[] getAllWithoutPrerequisiteAndNotRequired(
             final int layer) {
-        final AbstractMazeObject[] objects = this.getAllObjects();
-        final AbstractMazeObject[] tempAllWithoutPrereq = new AbstractMazeObject[objects.length];
+        final var objects = this.getAllObjects();
+        final var tempAllWithoutPrereq = new AbstractMazeObject[objects.length];
         int x;
-        int count = 0;
+        var count = 0;
         for (x = 0; x < objects.length; x++) {
             if (objects[x].getLayer() == layer && !objects[x].isRequired()) {
                 tempAllWithoutPrereq[count] = objects[x];
@@ -142,7 +141,7 @@ public class MazeObjectList {
         if (count == 0) {
             return null;
         } else {
-            final AbstractMazeObject[] allWithoutPrereq = new AbstractMazeObject[count];
+            final var allWithoutPrereq = new AbstractMazeObject[count];
             for (x = 0; x < count; x++) {
                 allWithoutPrereq[x] = tempAllWithoutPrereq[x];
             }
@@ -151,7 +150,7 @@ public class MazeObjectList {
     }
 
     public final AbstractMazeObject getNewInstanceByName(final String name) {
-        final AbstractMazeObject[] objects = this.getAllObjects();
+        final var objects = this.getAllObjects();
         AbstractMazeObject instance = null;
         int x;
         for (x = 0; x < objects.length; x++) {
@@ -175,9 +174,9 @@ public class MazeObjectList {
 
     public AbstractMazeObject readMazeObject(final XDataReader reader,
             final int formatVersion) throws IOException {
-        final AbstractMazeObject[] objects = this.getAllObjects();
+        final var objects = this.getAllObjects();
         AbstractMazeObject o = null;
-        String UID = "";
+        var UID = "";
         if (formatVersion == FormatConstants.MAZE_FORMAT_LATEST) {
             UID = reader.readString();
         }
@@ -202,7 +201,7 @@ public class MazeObjectList {
 
     public AbstractMazeObject readSavedMazeObject(final XDataReader reader,
             final String UID, final int formatVersion) throws IOException {
-        final AbstractMazeObject[] objects = this.getAllObjects();
+        final var objects = this.getAllObjects();
         AbstractMazeObject o = null;
         for (final AbstractMazeObject object : objects) {
             try {

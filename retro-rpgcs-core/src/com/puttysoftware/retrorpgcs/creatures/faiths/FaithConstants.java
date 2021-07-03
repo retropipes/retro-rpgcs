@@ -20,9 +20,36 @@ public class FaithConstants {
     private static boolean INITED = false;
     private static final double[] LOOKUP_TABLE = { 0.0, 0.5, 1.0, 2.0 };
 
-    // Private constructor
-    private FaithConstants() {
-        // Do nothing
+    static boolean faithsReady() {
+        return FaithConstants.INITED;
+    }
+
+    public static Color getFaithColor(final int f) {
+        if (!FaithConstants.INITED) {
+            FaithConstants.initFaiths();
+        }
+        return FaithConstants.FAITH_COLORS[f];
+    }
+
+    public static String getFaithName(final int f) {
+        if (!FaithConstants.INITED) {
+            FaithConstants.initFaiths();
+        }
+        return FaithConstants.FAITH_DISPLAY_NAMES[f];
+    }
+
+    static String[] getFaithNames() {
+        if (!FaithConstants.INITED) {
+            FaithConstants.initFaiths();
+        }
+        return FaithConstants.FAITH_NAMES;
+    }
+
+    public static String getFaithPowerName(final int f, final int p) {
+        return NamesManager.getName(
+                NamesConstants.SECTION_FAITH_POWERS_PREFIX
+                        + FaithConstants.FAITH_NAMES[f],
+                NamesConstants.SECTION_ARRAY_FAITH_POWERS[p]);
     }
 
     // Methods
@@ -33,51 +60,19 @@ public class FaithConstants {
         return FaithConstants.FAITHS_COUNT;
     }
 
-    static String[] getFaithNames() {
-        if (!FaithConstants.INITED) {
-            FaithConstants.initFaiths();
-        }
-        return FaithConstants.FAITH_NAMES;
-    }
-
-    public static String getFaithName(final int f) {
-        if (!FaithConstants.INITED) {
-            FaithConstants.initFaiths();
-        }
-        return FaithConstants.FAITH_DISPLAY_NAMES[f];
-    }
-
-    public static String getFaithPowerName(final int f, final int p) {
-        return NamesManager.getName(
-                NamesConstants.SECTION_FAITH_POWERS_PREFIX
-                        + FaithConstants.FAITH_NAMES[f],
-                NamesConstants.SECTION_ARRAY_FAITH_POWERS[p]);
-    }
-
-    public static Color getFaithColor(final int f) {
-        if (!FaithConstants.INITED) {
-            FaithConstants.initFaiths();
-        }
-        return FaithConstants.FAITH_COLORS[f];
-    }
-
     public static double getLookupTableEntry(final int entryNum) {
         return FaithConstants.LOOKUP_TABLE[entryNum];
-    }
-
-    static boolean faithsReady() {
-        return FaithConstants.INITED;
     }
 
     static synchronized void initFaiths() {
         if (!FaithConstants.INITED) {
             try {
                 // Fetch data
-                final ArrayList<String> tempNames = new ArrayList<>();
-                try (final ResourceStreamReader rsr1 = new ResourceStreamReader(
+                final var tempNames = new ArrayList<String>();
+                try (final var rsr1 = new ResourceStreamReader(
                         FaithDataManager.class.getResourceAsStream(
                                 "/com/puttysoftware/retrorpgcs/resources/data/faith/catalog.txt"))) {
-                    String input1 = "";
+                    var input1 = "";
                     while (input1 != null) {
                         input1 = rsr1.readString();
                         if (input1 != null) {
@@ -88,11 +83,11 @@ public class FaithConstants {
                 FaithConstants.FAITH_NAMES = tempNames
                         .toArray(new String[tempNames.size()]);
                 FaithConstants.FAITHS_COUNT = FaithConstants.FAITH_NAMES.length;
-                final ArrayList<String> tempColors = new ArrayList<>();
-                try (final ResourceStreamReader rsr2 = new ResourceStreamReader(
+                final var tempColors = new ArrayList<String>();
+                try (final var rsr2 = new ResourceStreamReader(
                         FaithDataManager.class.getResourceAsStream(
                                 "/com/puttysoftware/retrorpgcs/resources/data/faith/colors.txt"))) {
-                    String input2 = "";
+                    var input2 = "";
                     while (input2 != null) {
                         input2 = rsr2.readString();
                         if (input2 != null) {
@@ -100,13 +95,13 @@ public class FaithConstants {
                         }
                     }
                 }
-                final String[] tempColors2 = tempColors
+                final var tempColors2 = tempColors
                         .toArray(new String[tempColors.size()]);
                 FaithConstants.FAITH_COLORS = new Color[tempColors2.length];
-                final int[][] tempColors3 = new int[tempColors2.length][3];
-                for (int x = 0; x < tempColors2.length; x++) {
-                    final String[] tempColorSplit = tempColors2[x].split(",");
-                    for (int y = 0; y < 3; y++) {
+                final var tempColors3 = new int[tempColors2.length][3];
+                for (var x = 0; x < tempColors2.length; x++) {
+                    final var tempColorSplit = tempColors2[x].split(",");
+                    for (var y = 0; y < 3; y++) {
                         tempColors3[x][y] = Integer.parseInt(tempColorSplit[y]);
                     }
                     FaithConstants.FAITH_COLORS[x] = new Color(
@@ -114,8 +109,8 @@ public class FaithConstants {
                             tempColors3[x][2]);
                 }
                 if (FaithConstants.FAITH_DISPLAY_NAMES == null) {
-                    final String[] temp = new String[FaithConstants.FAITHS_COUNT];
-                    for (int x = 0; x < temp.length; x++) {
+                    final var temp = new String[FaithConstants.FAITHS_COUNT];
+                    for (var x = 0; x < temp.length; x++) {
                         temp[x] = NamesManager.getName(
                                 NamesConstants.SECTION_FAITHS,
                                 NamesConstants.SECTION_ARRAY_FAITHS[x]);
@@ -127,5 +122,10 @@ public class FaithConstants {
                 RetroRPGCS.getInstance().handleError(ioe);
             }
         }
+    }
+
+    // Private constructor
+    private FaithConstants() {
+        // Do nothing
     }
 }

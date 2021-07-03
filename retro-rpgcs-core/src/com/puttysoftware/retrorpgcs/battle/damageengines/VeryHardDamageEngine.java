@@ -5,7 +5,6 @@ import com.puttysoftware.randomrange.RandomRange;
 import com.puttysoftware.retrorpgcs.creatures.Creature;
 import com.puttysoftware.retrorpgcs.creatures.StatConstants;
 import com.puttysoftware.retrorpgcs.creatures.faiths.FaithConstants;
-import com.puttysoftware.retrorpgcs.items.Equipment;
 import com.puttysoftware.retrorpgcs.items.EquipmentCategoryConstants;
 import com.puttysoftware.retrorpgcs.items.EquipmentSlotConstants;
 
@@ -29,10 +28,10 @@ class VeryHardDamageEngine extends AbstractDamageEngine {
     @Override
     public int computeDamage(final Creature enemy, final Creature acting) {
         // Compute Damage
-        final double attack = acting.getEffectedAttack();
-        final double defense = enemy
+        final var attack = acting.getEffectedAttack();
+        final var defense = enemy
                 .getEffectedStat(StatConstants.STAT_DEFENSE);
-        final int power = acting.getItems().getTotalPower();
+        final var power = acting.getItems().getTotalPower();
         this.didFumble();
         if (this.fumble) {
             // Fumble!
@@ -46,8 +45,8 @@ class VeryHardDamageEngine extends AbstractDamageEngine {
             } else {
                 rawDamage = attack - defense;
             }
-            final int rHit = CommonDamageEngineParts.chance();
-            int aHit = acting.getHit();
+            final var rHit = CommonDamageEngineParts.chance();
+            var aHit = acting.getHit();
             if (this.crit || this.pierce) {
                 // Critical hits and piercing hits
                 // always connect
@@ -60,8 +59,8 @@ class VeryHardDamageEngine extends AbstractDamageEngine {
                 this.crit = false;
                 return 0;
             } else {
-                final int rEvade = CommonDamageEngineParts.chance();
-                final int aEvade = enemy.getEvade();
+                final var rEvade = CommonDamageEngineParts.chance();
+                final var aEvade = enemy.getEvade();
                 if (rEvade < aEvade) {
                     // Enemy dodged
                     this.missed = false;
@@ -82,96 +81,66 @@ class VeryHardDamageEngine extends AbstractDamageEngine {
                                 VeryHardDamageEngine.MULTIPLIER_MIN,
                                 VeryHardDamageEngine.MULTIPLIER_MAX);
                     }
-                    final int multiplier = rDamage.generate();
+                    final var multiplier = rDamage.generate();
                     // Weapon Faith Power Boost
-                    double faithMultiplier = CommonDamageEngineParts.FAITH_MULT_START;
-                    final int fc = FaithConstants.getFaithsCount();
-                    final Equipment mainHand = acting.getItems()
+                    var faithMultiplier = CommonDamageEngineParts.FAITH_MULT_START;
+                    final var fc = FaithConstants.getFaithsCount();
+                    final var mainHand = acting.getItems()
                             .getEquipmentInSlot(
                                     EquipmentSlotConstants.SLOT_MAINHAND);
-                    final Equipment offHand = acting.getItems()
+                    final var offHand = acting.getItems()
                             .getEquipmentInSlot(
                                     EquipmentSlotConstants.SLOT_OFFHAND);
                     if (mainHand != null && mainHand.equals(offHand)) {
-                        for (int z = 0; z < fc; z++) {
-                            final int fpl = mainHand.getFaithPowerLevel(z);
+                        for (var z = 0; z < fc; z++) {
+                            final var fpl = mainHand.getFaithPowerLevel(z);
                             faithMultiplier += VeryHardDamageEngine.FAITH_INCREMENT_2H
                                     * fpl;
                         }
                     } else {
                         if (mainHand != null) {
-                            for (int z = 0; z < fc; z++) {
-                                final int fpl = mainHand.getFaithPowerLevel(z);
+                            for (var z = 0; z < fc; z++) {
+                                final var fpl = mainHand.getFaithPowerLevel(z);
                                 faithMultiplier += VeryHardDamageEngine.FAITH_INCREMENT
                                         * fpl;
                             }
                         }
                         if (offHand != null && offHand
                                 .getEquipCategory() == EquipmentCategoryConstants.EQUIPMENT_CATEGORY_ONE_HANDED_WEAPON) {
-                            for (int z = 0; z < fc; z++) {
-                                final int fpl = offHand.getFaithPowerLevel(z);
+                            for (var z = 0; z < fc; z++) {
+                                final var fpl = offHand.getFaithPowerLevel(z);
                                 faithMultiplier += VeryHardDamageEngine.FAITH_INCREMENT
                                         * fpl;
                             }
                         }
                     }
                     // Armor Faith Power Boost
-                    double faithDR = CommonDamageEngineParts.FAITH_MULT_START;
-                    final Equipment armor = acting.getItems()
+                    var faithDR = CommonDamageEngineParts.FAITH_MULT_START;
+                    final var armor = acting.getItems()
                             .getEquipmentInSlot(
                                     EquipmentSlotConstants.SLOT_BODY);
                     if (armor != null) {
-                        for (int z = 0; z < fc; z++) {
-                            final int fpl = armor.getFaithPowerLevel(z);
+                        for (var z = 0; z < fc; z++) {
+                            final var fpl = armor.getFaithPowerLevel(z);
                             faithDR -= fpl
                                     * VeryHardDamageEngine.FAITH_DR_INCREMENT;
                         }
                     }
                     if (offHand != null && offHand
                             .getEquipCategory() == EquipmentCategoryConstants.EQUIPMENT_CATEGORY_ARMOR) {
-                        for (int z = 0; z < fc; z++) {
-                            final int fpl = offHand.getFaithPowerLevel(z);
+                        for (var z = 0; z < fc; z++) {
+                            final var fpl = offHand.getFaithPowerLevel(z);
                             faithDR -= fpl
                                     * VeryHardDamageEngine.FAITH_DR_INCREMENT;
                         }
                     }
-                    final int unadjustedDamage = (int) (rawDamage * multiplier
+                    final var unadjustedDamage = (int) (rawDamage * multiplier
                             * faithMultiplier
                             / CommonDamageEngineParts.MULTIPLIER_DIVIDE);
                     return (int) (unadjustedDamage * faithDR);
                 }
             }
         }
-    }
-
-    @Override
-    public boolean enemyDodged() {
-        return this.dodged;
-    }
-
-    @Override
-    public boolean weaponMissed() {
-        return this.missed;
-    }
-
-    @Override
-    public boolean weaponCrit() {
-        return this.crit;
-    }
-
-    @Override
-    public boolean weaponPierce() {
-        return this.pierce;
-    }
-
-    @Override
-    public boolean weaponFumble() {
-        return this.fumble;
-    }
-
-    private void didPierce() {
-        this.pierce = CommonDamageEngineParts
-                .didSpecial(VeryHardDamageEngine.PIERCE_CHANCE);
     }
 
     private void didCrit() {
@@ -182,5 +151,35 @@ class VeryHardDamageEngine extends AbstractDamageEngine {
     private void didFumble() {
         this.fumble = CommonDamageEngineParts
                 .didSpecial(VeryHardDamageEngine.FUMBLE_CHANCE);
+    }
+
+    private void didPierce() {
+        this.pierce = CommonDamageEngineParts
+                .didSpecial(VeryHardDamageEngine.PIERCE_CHANCE);
+    }
+
+    @Override
+    public boolean enemyDodged() {
+        return this.dodged;
+    }
+
+    @Override
+    public boolean weaponCrit() {
+        return this.crit;
+    }
+
+    @Override
+    public boolean weaponFumble() {
+        return this.fumble;
+    }
+
+    @Override
+    public boolean weaponMissed() {
+        return this.missed;
+    }
+
+    @Override
+    public boolean weaponPierce() {
+        return this.pierce;
     }
 }

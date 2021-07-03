@@ -4,6 +4,10 @@ package com.puttysoftware.retrorpgcs.creatures.castes;
 import com.puttysoftware.retrorpgcs.descriptionmanagers.CasteDescriptionManager;
 
 public class Caste {
+    static String casteIDtoName(final int casteID) {
+        return CasteConstants.CASTE_NAMES[casteID];
+    }
+
     private final int casteID;
     private final String desc;
 
@@ -12,15 +16,11 @@ public class Caste {
         this.casteID = cid;
     }
 
-    public String getDescription() {
-        return this.desc;
-    }
-
     public final int getCasteID() {
         return this.casteID;
     }
 
-    static String casteIDtoName(final int casteID) {
-        return CasteConstants.CASTE_NAMES[casteID];
+    public String getDescription() {
+        return this.desc;
     }
 }

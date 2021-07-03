@@ -9,12 +9,12 @@ import com.puttysoftware.retrorpgcs.RetroRPGCS;
 
 public class GraphicsDataManager {
     public static String[] getObjectGraphicsData() {
-        try (final ResourceStreamReader rsr = new ResourceStreamReader(
+        try (final var rsr = new ResourceStreamReader(
                 GraphicsDataManager.class.getResourceAsStream(
                         "/com/puttysoftware/retrorpgcs/resources/data/graphics/objects.txt"))) {
             // Fetch data
-            final ArrayList<String> rawData = new ArrayList<>();
-            String line = "";
+            final var rawData = new ArrayList<String>();
+            var line = "";
             while (line != null) {
                 line = rsr.readString();
                 if (line != null) {
@@ -29,12 +29,12 @@ public class GraphicsDataManager {
     }
 
     public static String[] getStatGraphicsData() {
-        try (final ResourceStreamReader rsr = new ResourceStreamReader(
+        try (final var rsr = new ResourceStreamReader(
                 GraphicsDataManager.class.getResourceAsStream(
                         "/com/puttysoftware/retrorpgcs/resources/data/graphics/stats.txt"))) {
             // Fetch data
-            final ArrayList<String> rawData = new ArrayList<>();
-            String line = "";
+            final var rawData = new ArrayList<String>();
+            var line = "";
             while (line != null) {
                 line = rsr.readString();
                 if (line != null) {

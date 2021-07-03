@@ -17,6 +17,11 @@ public class Regenerator extends AbstractShop {
     }
 
     @Override
+    public String getDescription() {
+        return "Regenerators restore magic, for a fee.";
+    }
+
+    @Override
     public String getName() {
         return "Regenerator";
     }
@@ -24,10 +29,5 @@ public class Regenerator extends AbstractShop {
     @Override
     public String getPluralName() {
         return "Regenerators";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Regenerators restore magic, for a fee.";
     }
 }

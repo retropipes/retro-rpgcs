@@ -23,14 +23,25 @@ public abstract class AbstractTeleport extends AbstractMazeObject {
     }
 
     @Override
+    public AbstractTeleport clone() {
+        final var copy = (AbstractTeleport) super.clone();
+        copy.destCol = this.destCol;
+        copy.destFloor = this.destFloor;
+        copy.destRow = this.destRow;
+        return copy;
+    }
+
+    @Override
+    public boolean defersSetProperties() {
+        return true;
+    }
+
+    @Override
     public boolean equals(final Object obj) {
-        if (obj == null) {
+        if ((obj == null) || (this.getClass() != obj.getClass())) {
             return false;
         }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        final AbstractTeleport other = (AbstractTeleport) obj;
+        final var other = (AbstractTeleport) obj;
         if (this.destRow != other.destRow) {
             return false;
         }
@@ -44,61 +55,8 @@ public abstract class AbstractTeleport extends AbstractMazeObject {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + this.destRow;
-        hash = 67 * hash + this.destCol;
-        return 67 * hash + this.destFloor;
-    }
-
-    @Override
-    public AbstractTeleport clone() {
-        final AbstractTeleport copy = (AbstractTeleport) super.clone();
-        copy.destCol = this.destCol;
-        copy.destFloor = this.destFloor;
-        copy.destRow = this.destRow;
-        return copy;
-    }
-
-    // Accessor methods
-    public int getDestinationRow() {
-        return this.destRow;
-    }
-
-    public int getDestinationColumn() {
-        return this.destCol;
-    }
-
-    public int getDestinationFloor() {
-        return this.destFloor;
-    }
-
-    // Scriptability
-    @Override
-    public void postMoveAction(final boolean ie, final int dirX,
-            final int dirY) {
-        final RetroRPGCS app = RetroRPGCS.getInstance();
-        app.getGameManager().updatePositionAbsolute(this.getDestinationRow(),
-                this.getDestinationColumn(), this.getDestinationFloor());
-        SoundManager.playSound(SoundConstants.SOUND_TELEPORT);
-    }
-
-    @Override
-    public abstract String getName();
-
-    @Override
-    public int getLayer() {
-        return MazeConstants.LAYER_OBJECT;
-    }
-
-    @Override
-    protected void setTypes() {
-        this.type.set(TypeConstants.TYPE_TELEPORT);
-    }
-
-    @Override
-    public boolean defersSetProperties() {
-        return true;
+    public int getCustomFormat() {
+        return 3;
     }
 
     @Override
@@ -113,6 +71,45 @@ public abstract class AbstractTeleport extends AbstractMazeObject {
         default:
             return AbstractMazeObject.DEFAULT_CUSTOM_VALUE;
         }
+    }
+
+    public int getDestinationColumn() {
+        return this.destCol;
+    }
+
+    public int getDestinationFloor() {
+        return this.destFloor;
+    }
+
+    // Accessor methods
+    public int getDestinationRow() {
+        return this.destRow;
+    }
+
+    @Override
+    public int getLayer() {
+        return MazeConstants.LAYER_OBJECT;
+    }
+
+    @Override
+    public abstract String getName();
+
+    @Override
+    public int hashCode() {
+        var hash = 7;
+        hash = 67 * hash + this.destRow;
+        hash = 67 * hash + this.destCol;
+        return 67 * hash + this.destFloor;
+    }
+
+    // Scriptability
+    @Override
+    public void postMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        final var app = RetroRPGCS.getInstance();
+        app.getGameManager().updatePositionAbsolute(this.getDestinationRow(),
+                this.getDestinationColumn(), this.getDestinationFloor());
+        SoundManager.playSound(SoundConstants.SOUND_TELEPORT);
     }
 
     @Override
@@ -133,7 +130,7 @@ public abstract class AbstractTeleport extends AbstractMazeObject {
     }
 
     @Override
-    public int getCustomFormat() {
-        return 3;
+    protected void setTypes() {
+        this.type.set(TypeConstants.TYPE_TELEPORT);
     }
 }

@@ -7,14 +7,14 @@ class MapTimeBattleSpeed {
     // Constants
     private static int SPEED_FACTOR = 20;
 
-    // Constructor
-    private MapTimeBattleSpeed() {
-        // Do nothing
-    }
-
     // Method
     static int getSpeed() {
         return PreferencesManager.getBattleSpeed()
                 / MapTimeBattleSpeed.SPEED_FACTOR;
+    }
+
+    // Constructor
+    private MapTimeBattleSpeed() {
+        // Do nothing
     }
 }

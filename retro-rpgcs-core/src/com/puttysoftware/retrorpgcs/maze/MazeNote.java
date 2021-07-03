@@ -7,6 +7,12 @@ import com.puttysoftware.xio.XDataReader;
 import com.puttysoftware.xio.XDataWriter;
 
 public class MazeNote {
+    static MazeNote readNote(final XDataReader reader) throws IOException {
+        final var mn = new MazeNote();
+        mn.contents = reader.readString();
+        return mn;
+    }
+
     // Fields
     private String contents;
 
@@ -26,12 +32,6 @@ public class MazeNote {
 
     public void setContents(final String newContents) {
         this.contents = newContents;
-    }
-
-    static MazeNote readNote(final XDataReader reader) throws IOException {
-        final MazeNote mn = new MazeNote();
-        mn.contents = reader.readString();
-        return mn;
     }
 
     void writeNote(final XDataWriter writer) throws IOException {

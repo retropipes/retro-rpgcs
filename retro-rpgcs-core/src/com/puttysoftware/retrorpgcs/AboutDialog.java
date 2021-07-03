@@ -18,6 +18,26 @@ import javax.swing.WindowConstants;
 import com.puttysoftware.retrorpgcs.resourcemanagers.LogoManager;
 
 public class AboutDialog {
+    private class EventHandler implements ActionListener {
+        EventHandler() {
+            // Do nothing
+        }
+
+        // Handle buttons
+        @Override
+        public void actionPerformed(final ActionEvent e) {
+            try {
+                final var ad = AboutDialog.this;
+                final var cmd = e.getActionCommand();
+                if (cmd.equals("OK")) {
+                    ad.hideAboutDialog();
+                }
+            } catch (final Exception ex) {
+                RetroRPGCS.getInstance().handleError(ex);
+            }
+        }
+    }
+
     // Fields
     private JFrame aboutFrame;
 
@@ -26,26 +46,21 @@ public class AboutDialog {
         this.setUpGUI(ver);
     }
 
-    // Methods
-    public void showAboutDialog() {
-        this.aboutFrame.setVisible(true);
-    }
-
     void hideAboutDialog() {
         this.aboutFrame.setVisible(false);
     }
 
     private void setUpGUI(final String ver) {
-        final EventHandler handler = new EventHandler();
+        final var handler = new EventHandler();
         this.aboutFrame = new JFrame("About RetroRPGCS");
         final Image iconlogo = LogoManager.getIconLogo();
         this.aboutFrame.setIconImage(iconlogo);
-        final Container aboutPane = new Container();
-        final Container textPane = new Container();
-        final Container buttonPane = new Container();
-        final Container logoPane = new Container();
-        final JButton aboutOK = new JButton("OK");
-        final JLabel miniLabel = new JLabel("", LogoManager.getMiniatureLogo(),
+        final var aboutPane = new Container();
+        final var textPane = new Container();
+        final var buttonPane = new Container();
+        final var logoPane = new Container();
+        final var aboutOK = new JButton("OK");
+        final var miniLabel = new JLabel("", LogoManager.getMiniatureLogo(),
                 SwingConstants.LEFT);
         miniLabel.setLabelFor(null);
         aboutOK.setDefaultCapable(true);
@@ -72,23 +87,8 @@ public class AboutDialog {
         this.aboutFrame.pack();
     }
 
-    private class EventHandler implements ActionListener {
-        EventHandler() {
-            // Do nothing
-        }
-
-        // Handle buttons
-        @Override
-        public void actionPerformed(final ActionEvent e) {
-            try {
-                final AboutDialog ad = AboutDialog.this;
-                final String cmd = e.getActionCommand();
-                if (cmd.equals("OK")) {
-                    ad.hideAboutDialog();
-                }
-            } catch (final Exception ex) {
-                RetroRPGCS.getInstance().handleError(ex);
-            }
-        }
+    // Methods
+    public void showAboutDialog() {
+        this.aboutFrame.setVisible(true);
     }
 }

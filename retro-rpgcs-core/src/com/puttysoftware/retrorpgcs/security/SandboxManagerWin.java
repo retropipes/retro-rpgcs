@@ -10,9 +10,19 @@ final class SandboxManagerWin extends SandboxManager {
     private static final String DOCUMENTS_FALLBACK_DIR = "Documents";
     private static final String CACHES_FALLBACK_DIR = "Caches";
 
+    private static String getLibraryFallbackDirectory() {
+        return System.getenv(SandboxManagerWin.FALLBACK_PREFIX) + File.separator
+                + SandboxManagerWin.LIBRARY_FALLBACK_DIR;
+    }
+
     // Constructor
     SandboxManagerWin() {
-        super();
+    }
+
+    @Override
+    public String getCachesDirectory() {
+        return SandboxManagerWin.getLibraryFallbackDirectory() + File.separator
+                + SandboxManagerWin.CACHES_FALLBACK_DIR;
     }
 
     // Methods
@@ -23,19 +33,8 @@ final class SandboxManagerWin extends SandboxManager {
     }
 
     @Override
-    public String getCachesDirectory() {
-        return SandboxManagerWin.getLibraryFallbackDirectory() + File.separator
-                + SandboxManagerWin.CACHES_FALLBACK_DIR;
-    }
-
-    @Override
     public String getSupportDirectory() {
         return SandboxManagerWin.getLibraryFallbackDirectory() + File.separator
                 + SandboxManagerWin.APP_SUPPORT_FALLBACK_DIR;
-    }
-
-    private static String getLibraryFallbackDirectory() {
-        return System.getenv(SandboxManagerWin.FALLBACK_PREFIX) + File.separator
-                + SandboxManagerWin.LIBRARY_FALLBACK_DIR;
     }
 }

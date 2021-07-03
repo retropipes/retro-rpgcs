@@ -7,10 +7,7 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import com.puttysoftware.images.BufferedImageIcon;
-import com.puttysoftware.retrorpgcs.creatures.party.Party;
 import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
-import com.puttysoftware.retrorpgcs.creatures.party.PartyMember;
 import com.puttysoftware.retrorpgcs.resourcemanagers.StatImageConstants;
 import com.puttysoftware.retrorpgcs.resourcemanagers.StatImageManager;
 
@@ -35,22 +32,6 @@ class StatGUI {
         return this.statsPane;
     }
 
-    void updateStats() {
-        final Party party = PartyManager.getParty();
-        if (party != null) {
-            final PartyMember pc = party.getLeader();
-            if (pc != null) {
-                this.hpLabel.setText(pc.getHPString());
-                this.mpLabel.setText(pc.getMPString());
-                this.goldLabel.setText(Integer.toString(pc.getGold()));
-                this.attackLabel.setText(Integer.toString(pc.getAttack()));
-                this.defenseLabel.setText(Integer.toString(pc.getDefense()));
-                this.xpLabel.setText(pc.getXPString());
-                this.levelLabel.setText(party.getTowerLevelString());
-            }
-        }
-    }
-
     private void setUpGUI() {
         this.statsPane = new Container();
         this.statsPane.setLayout(new GridLayout(7, 1));
@@ -71,26 +52,42 @@ class StatGUI {
     }
 
     void updateImages() {
-        final BufferedImageIcon hpImage = StatImageManager
+        final var hpImage = StatImageManager
                 .getImage(StatImageConstants.STAT_IMAGE_HEALTH);
         this.hpLabel.setIcon(hpImage);
-        final BufferedImageIcon mpImage = StatImageManager
+        final var mpImage = StatImageManager
                 .getImage(StatImageConstants.STAT_IMAGE_MAGIC);
         this.mpLabel.setIcon(mpImage);
-        final BufferedImageIcon goldImage = StatImageManager
+        final var goldImage = StatImageManager
                 .getImage(StatImageConstants.STAT_IMAGE_GOLD);
         this.goldLabel.setIcon(goldImage);
-        final BufferedImageIcon attackImage = StatImageManager
+        final var attackImage = StatImageManager
                 .getImage(StatImageConstants.STAT_IMAGE_ATTACK);
         this.attackLabel.setIcon(attackImage);
-        final BufferedImageIcon defenseImage = StatImageManager
+        final var defenseImage = StatImageManager
                 .getImage(StatImageConstants.STAT_IMAGE_DEFENSE);
         this.defenseLabel.setIcon(defenseImage);
-        final BufferedImageIcon xpImage = StatImageManager
+        final var xpImage = StatImageManager
                 .getImage(StatImageConstants.STAT_IMAGE_XP);
         this.xpLabel.setIcon(xpImage);
-        final BufferedImageIcon levelImage = StatImageManager
+        final var levelImage = StatImageManager
                 .getImage(StatImageConstants.STAT_IMAGE_LEVEL);
         this.levelLabel.setIcon(levelImage);
+    }
+
+    void updateStats() {
+        final var party = PartyManager.getParty();
+        if (party != null) {
+            final var pc = party.getLeader();
+            if (pc != null) {
+                this.hpLabel.setText(pc.getHPString());
+                this.mpLabel.setText(pc.getMPString());
+                this.goldLabel.setText(Integer.toString(pc.getGold()));
+                this.attackLabel.setText(Integer.toString(pc.getAttack()));
+                this.defenseLabel.setText(Integer.toString(pc.getDefense()));
+                this.xpLabel.setText(pc.getXPString());
+                this.levelLabel.setText(party.getTowerLevelString());
+            }
+        }
     }
 }
