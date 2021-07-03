@@ -9,21 +9,22 @@ import com.puttysoftware.retrorpgcs.RetroRPGCS;
 
 public class SoundDataManager {
     public static String[] getSoundData() {
-	try (final ResourceStreamReader rsr = new ResourceStreamReader(SoundDataManager.class
-		.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/data/sound/sounds.txt"))) {
-	    // Fetch data
-	    final ArrayList<String> rawData = new ArrayList<>();
-	    String line = "";
-	    while (line != null) {
-		line = rsr.readString();
-		if (line != null) {
-		    rawData.add(line);
-		}
-	    }
-	    return rawData.toArray(new String[rawData.size()]);
-	} catch (final IOException e) {
-	    RetroRPGCS.getInstance().handleError(e);
-	    return null;
-	}
+        try (final ResourceStreamReader rsr = new ResourceStreamReader(
+                SoundDataManager.class.getResourceAsStream(
+                        "/com/puttysoftware/retrorpgcs/resources/data/sound/sounds.txt"))) {
+            // Fetch data
+            final ArrayList<String> rawData = new ArrayList<>();
+            String line = "";
+            while (line != null) {
+                line = rsr.readString();
+                if (line != null) {
+                    rawData.add(line);
+                }
+            }
+            return rawData.toArray(new String[rawData.size()]);
+        } catch (final IOException e) {
+            RetroRPGCS.getInstance().handleError(e);
+            return null;
+        }
     }
 }

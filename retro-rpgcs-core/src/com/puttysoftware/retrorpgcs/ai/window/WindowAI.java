@@ -18,10 +18,10 @@ public abstract class WindowAI {
     public abstract int getNextAction(Creature c);
 
     public void newRoundHook() {
-	// Do nothing
+        // Do nothing
     }
 
     public final Spell getSpellToCast() {
-	return this.spell;
+        return this.spell;
     }
 }

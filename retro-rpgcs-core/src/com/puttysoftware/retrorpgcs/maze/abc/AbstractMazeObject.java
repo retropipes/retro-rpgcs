@@ -37,153 +37,156 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
 
     // Constructors
     public AbstractMazeObject(final boolean isSolid, final boolean sightBlock) {
-	this.solid = isSolid;
-	this.friction = true;
-	this.blocksLOS = sightBlock;
-	this.type = new BitSet(TypeConstants.TYPES_COUNT);
-	this.timerValue = 0;
-	this.initialTimerValue = 0;
-	this.timerActive = false;
-	this.setTypes();
+        this.solid = isSolid;
+        this.friction = true;
+        this.blocksLOS = sightBlock;
+        this.type = new BitSet(TypeConstants.TYPES_COUNT);
+        this.timerValue = 0;
+        this.initialTimerValue = 0;
+        this.timerActive = false;
+        this.setTypes();
     }
 
-    public AbstractMazeObject(final boolean isSolid, final boolean hasFriction, final boolean sightBlock) {
-	this.solid = isSolid;
-	this.friction = hasFriction;
-	this.blocksLOS = sightBlock;
-	this.type = new BitSet(TypeConstants.TYPES_COUNT);
-	this.timerValue = 0;
-	this.initialTimerValue = 0;
-	this.timerActive = false;
-	this.setTypes();
+    public AbstractMazeObject(final boolean isSolid, final boolean hasFriction,
+            final boolean sightBlock) {
+        this.solid = isSolid;
+        this.friction = hasFriction;
+        this.blocksLOS = sightBlock;
+        this.type = new BitSet(TypeConstants.TYPES_COUNT);
+        this.timerValue = 0;
+        this.initialTimerValue = 0;
+        this.timerActive = false;
+        this.setTypes();
     }
 
     public AbstractMazeObject() {
-	this.solid = false;
-	this.friction = true;
-	this.blocksLOS = false;
-	this.type = new BitSet(TypeConstants.TYPES_COUNT);
-	this.timerValue = 0;
-	this.initialTimerValue = 0;
-	this.timerActive = false;
-	this.setTypes();
+        this.solid = false;
+        this.friction = true;
+        this.blocksLOS = false;
+        this.type = new BitSet(TypeConstants.TYPES_COUNT);
+        this.timerValue = 0;
+        this.initialTimerValue = 0;
+        this.timerActive = false;
+        this.setTypes();
     }
 
     // Methods
     @Override
     public AbstractMazeObject clone() {
-	try {
-	    final AbstractMazeObject copy = this.getClass().getConstructor().newInstance();
-	    copy.solid = this.solid;
-	    copy.friction = this.friction;
-	    copy.type = (BitSet) this.type.clone();
-	    copy.timerValue = this.timerValue;
-	    copy.initialTimerValue = this.initialTimerValue;
-	    copy.timerActive = this.timerActive;
-	    copy.type = (BitSet) this.type.clone();
-	    return copy;
-	} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-		| NoSuchMethodException | SecurityException e) {
-	    RetroRPGCS.getInstance().handleError(e);
-	    return null;
-	}
+        try {
+            final AbstractMazeObject copy = this.getClass().getConstructor()
+                    .newInstance();
+            copy.solid = this.solid;
+            copy.friction = this.friction;
+            copy.type = (BitSet) this.type.clone();
+            copy.timerValue = this.timerValue;
+            copy.initialTimerValue = this.initialTimerValue;
+            copy.timerActive = this.timerActive;
+            copy.type = (BitSet) this.type.clone();
+            return copy;
+        } catch (InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            RetroRPGCS.getInstance().handleError(e);
+            return null;
+        }
     }
 
     @Override
     public int hashCode() {
-	final int prime = 31;
-	int result = 1;
-	result = prime * result + (this.friction ? 1231 : 1237);
-	result = prime * result + (this.solid ? 1231 : 1237);
-	result = prime * result + this.timerValue;
-	result = prime * result + this.initialTimerValue;
-	result = prime * result + (this.timerActive ? 1231 : 1237);
-	return prime * result + (this.type == null ? 0 : this.type.hashCode());
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (this.friction ? 1231 : 1237);
+        result = prime * result + (this.solid ? 1231 : 1237);
+        result = prime * result + this.timerValue;
+        result = prime * result + this.initialTimerValue;
+        result = prime * result + (this.timerActive ? 1231 : 1237);
+        return prime * result + (this.type == null ? 0 : this.type.hashCode());
     }
 
     @Override
     public boolean equals(final Object obj) {
-	if (this == obj) {
-	    return true;
-	}
-	if (obj == null) {
-	    return false;
-	}
-	if (!(obj instanceof AbstractMazeObject)) {
-	    return false;
-	}
-	final AbstractMazeObject other = (AbstractMazeObject) obj;
-	if (this.friction != other.friction) {
-	    return false;
-	}
-	if (this.solid != other.solid) {
-	    return false;
-	}
-	if (this.type == null) {
-	    if (other.type != null) {
-		return false;
-	    }
-	} else if (!this.type.equals(other.type)) {
-	    return false;
-	}
-	if (this.timerActive != other.timerActive) {
-	    return false;
-	}
-	if (this.timerValue != other.timerValue) {
-	    return false;
-	}
-	if (this.initialTimerValue != other.initialTimerValue) {
-	    return false;
-	}
-	return true;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof AbstractMazeObject)) {
+            return false;
+        }
+        final AbstractMazeObject other = (AbstractMazeObject) obj;
+        if (this.friction != other.friction) {
+            return false;
+        }
+        if (this.solid != other.solid) {
+            return false;
+        }
+        if (this.type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!this.type.equals(other.type)) {
+            return false;
+        }
+        if (this.timerActive != other.timerActive) {
+            return false;
+        }
+        if (this.timerValue != other.timerValue) {
+            return false;
+        }
+        if (this.initialTimerValue != other.initialTimerValue) {
+            return false;
+        }
+        return true;
     }
 
     public AbstractMazeObject getSavedObject() {
-	if (this.saved == null) {
-	    throw new NullPointerException("Saved object == NULL!");
-	}
-	return this.saved;
+        if (this.saved == null) {
+            throw new NullPointerException("Saved object == NULL!");
+        }
+        return this.saved;
     }
 
     public void setSavedObject(final AbstractMazeObject newSaved) {
-	if (newSaved == null) {
-	    throw new IllegalArgumentException("New saved object == NULL!");
-	}
-	this.saved = newSaved;
+        if (newSaved == null) {
+            throw new IllegalArgumentException("New saved object == NULL!");
+        }
+        this.saved = newSaved;
     }
 
     public boolean isSolid() {
-	return this.solid;
+        return this.solid;
     }
 
     public boolean isSolidInBattle() {
-	if (this.enabledInBattle()) {
-	    return this.isSolid();
-	} else {
-	    return false;
-	}
+        if (this.enabledInBattle()) {
+            return this.isSolid();
+        } else {
+            return false;
+        }
     }
 
     public boolean isSightBlocking() {
-	return this.blocksLOS;
+        return this.blocksLOS;
     }
 
     public boolean isOfType(final int testType) {
-	return this.type.get(testType);
+        return this.type.get(testType);
     }
 
     protected abstract void setTypes();
 
     public boolean hasFriction() {
-	return this.friction;
+        return this.friction;
     }
 
     public static int getTemplateColor() {
-	return AbstractMazeObject.templateColor;
+        return AbstractMazeObject.templateColor;
     }
 
     public static void setTemplateColor(final int newTC) {
-	AbstractMazeObject.templateColor = newTC;
+        AbstractMazeObject.templateColor = newTC;
     }
 
     // Scripting
@@ -195,11 +198,13 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
      * @param inv
      * @return
      */
-    public boolean preMoveAction(final boolean ie, final int dirX, final int dirY) {
-	return true;
+    public boolean preMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        return true;
     }
 
-    public abstract void postMoveAction(final boolean ie, final int dirX, final int dirY);
+    public abstract void postMoveAction(final boolean ie, final int dirX,
+            final int dirY);
 
     /**
      *
@@ -208,9 +213,10 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
      * @param dirY
      * @param inv
      */
-    public void moveFailedAction(final boolean ie, final int dirX, final int dirY) {
-	SoundManager.playSound(SoundConstants.SOUND_WALK_FAILED);
-	RetroRPGCS.getInstance().showMessage("Can't go that way");
+    public void moveFailedAction(final boolean ie, final int dirX,
+            final int dirY) {
+        SoundManager.playSound(SoundConstants.SOUND_WALK_FAILED);
+        RetroRPGCS.getInstance().showMessage("Can't go that way");
     }
 
     /**
@@ -220,11 +226,11 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
      * @param z
      */
     public void editorGenerateHook(final int x, final int y, final int z) {
-	// Do nothing
+        // Do nothing
     }
 
     public boolean arrowHitBattleCheck() {
-	return !this.isSolid();
+        return !this.isSolid();
     }
 
     /**
@@ -234,25 +240,26 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
      * @param z
      * @return
      */
-    public AbstractMazeObject gameRenderHook(final int x, final int y, final int z) {
-	return this;
+    public AbstractMazeObject gameRenderHook(final int x, final int y,
+            final int z) {
+        return this;
     }
 
     public BufferedImageIcon battleRenderHook() {
-	return BattleImageManager.getImage(this.getName(), this.getBattleBaseID(),
-		AbstractMazeObject.getTemplateColor());
+        return BattleImageManager.getImage(this.getName(),
+                this.getBattleBaseID(), AbstractMazeObject.getTemplateColor());
     }
 
     public boolean defersSetProperties() {
-	return false;
+        return false;
     }
 
     public boolean overridesDefaultPostMove() {
-	return false;
+        return false;
     }
 
     public String getGameName() {
-	return this.getName();
+        return this.getName();
     }
 
     /**
@@ -261,25 +268,26 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
      * @param y
      * @param z
      */
-    public void determineCurrentAppearance(final int x, final int y, final int z) {
-	// Do nothing
+    public void determineCurrentAppearance(final int x, final int y,
+            final int z) {
+        // Do nothing
     }
 
     public final void activateTimer(final int ticks) {
-	this.timerActive = true;
-	this.timerValue = ticks;
-	this.initialTimerValue = ticks;
+        this.timerActive = true;
+        this.timerValue = ticks;
+        this.initialTimerValue = ticks;
     }
 
     public final void tickTimer(final int dirX, final int dirY) {
-	if (this.timerActive) {
-	    this.timerValue--;
-	    if (this.timerValue == 0) {
-		this.timerActive = false;
-		this.initialTimerValue = 0;
-		this.timerExpiredAction(dirX, dirY);
-	    }
-	}
+        if (this.timerActive) {
+            this.timerValue--;
+            if (this.timerValue == 0) {
+                this.timerActive = false;
+                this.initialTimerValue = 0;
+                this.timerExpiredAction(dirX, dirY);
+            }
+        }
     }
 
     /**
@@ -288,7 +296,7 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
      * @param dirY
      */
     public void timerExpiredAction(final int dirX, final int dirY) {
-	// Do nothing
+        // Do nothing
     }
 
     abstract public String getName();
@@ -296,23 +304,23 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
     public abstract int getBaseID();
 
     public int getGameBaseID() {
-	return this.getBaseID();
+        return this.getBaseID();
     }
 
     public int getBattleBaseID() {
-	if (this.enabledInBattle()) {
-	    return this.getGameBaseID();
-	} else {
-	    return ObjectImageConstants.OBJECT_IMAGE_NONE;
-	}
+        if (this.enabledInBattle()) {
+            return this.getGameBaseID();
+        } else {
+            return ObjectImageConstants.OBJECT_IMAGE_NONE;
+        }
     }
 
     public boolean enabledInBattle() {
-	return true;
+        return true;
     }
 
     public final String getIdentifier() {
-	return this.getName();
+        return this.getName();
     }
 
     abstract public String getPluralName();
@@ -326,100 +334,104 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
     abstract public void setCustomProperty(int propID, int value);
 
     public int getCustomFormat() {
-	return 0;
+        return 0;
     }
 
     @Override
-    public boolean shouldGenerateObject(final Maze maze, final int row, final int col, final int floor, final int level,
-	    final int layer) {
-	if (layer == MazeConstants.LAYER_OBJECT) {
-	    // Handle object layer
-	    if (!this.isOfType(TypeConstants.TYPE_PASS_THROUGH)) {
-		// Limit generation of other objects to 20%, unless required
-		if (this.isRequired()) {
-		    return true;
-		} else {
-		    final RandomRange r = new RandomRange(1, 100);
-		    if (r.generate() <= 20) {
-			return true;
-		    } else {
-			return false;
-		    }
-		}
-	    } else {
-		// Generate pass-through objects at 100%
-		return true;
-	    }
-	} else {
-	    // Handle ground layer
-	    if (this.isOfType(TypeConstants.TYPE_FIELD)) {
-		// Limit generation of fields to 20%
-		final RandomRange r = new RandomRange(1, 100);
-		if (r.generate() <= 20) {
-		    return true;
-		} else {
-		    return false;
-		}
-	    } else {
-		// Generate other ground at 100%
-		return true;
-	    }
-	}
+    public boolean shouldGenerateObject(final Maze maze, final int row,
+            final int col, final int floor, final int level, final int layer) {
+        if (layer == MazeConstants.LAYER_OBJECT) {
+            // Handle object layer
+            if (!this.isOfType(TypeConstants.TYPE_PASS_THROUGH)) {
+                // Limit generation of other objects to 20%, unless required
+                if (this.isRequired()) {
+                    return true;
+                } else {
+                    final RandomRange r = new RandomRange(1, 100);
+                    if (r.generate() <= 20) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            } else {
+                // Generate pass-through objects at 100%
+                return true;
+            }
+        } else {
+            // Handle ground layer
+            if (this.isOfType(TypeConstants.TYPE_FIELD)) {
+                // Limit generation of fields to 20%
+                final RandomRange r = new RandomRange(1, 100);
+                if (r.generate() <= 20) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                // Generate other ground at 100%
+                return true;
+            }
+        }
     }
 
     @Override
     public int getMinimumRequiredQuantity(final Maze maze) {
-	return RandomGenerationRule.NO_LIMIT;
+        return RandomGenerationRule.NO_LIMIT;
     }
 
     @Override
     public int getMaximumRequiredQuantity(final Maze maze) {
-	return RandomGenerationRule.NO_LIMIT;
+        return RandomGenerationRule.NO_LIMIT;
     }
 
     @Override
     public boolean isRequired() {
-	return false;
+        return false;
     }
 
-    public final void writeMazeObject(final XDataWriter writer) throws IOException {
-	writer.writeString(this.getIdentifier());
-	if (this.saved == null) {
-	    writer.writeString("NULL");
-	} else {
-	    this.saved.writeMazeObject(writer);
-	}
-	final int cc = this.getCustomFormat();
-	if (cc == AbstractMazeObject.CUSTOM_FORMAT_MANUAL_OVERRIDE) {
-	    this.writeMazeObjectHook(writer);
-	} else {
-	    for (int x = 0; x < cc; x++) {
-		final int cx = this.getCustomProperty(x + 1);
-		writer.writeInt(cx);
-	    }
-	}
+    public final void writeMazeObject(final XDataWriter writer)
+            throws IOException {
+        writer.writeString(this.getIdentifier());
+        if (this.saved == null) {
+            writer.writeString("NULL");
+        } else {
+            this.saved.writeMazeObject(writer);
+        }
+        final int cc = this.getCustomFormat();
+        if (cc == AbstractMazeObject.CUSTOM_FORMAT_MANUAL_OVERRIDE) {
+            this.writeMazeObjectHook(writer);
+        } else {
+            for (int x = 0; x < cc; x++) {
+                final int cx = this.getCustomProperty(x + 1);
+                writer.writeInt(cx);
+            }
+        }
     }
 
-    public final AbstractMazeObject readMazeObjectV1(final XDataReader reader, final String ident) throws IOException {
-	if (ident.equals(this.getIdentifier())) {
-	    final String savedIdent = reader.readString();
-	    if (!savedIdent.equals("NULL")) {
-		this.saved = RetroRPGCS.getInstance().getObjects().readSavedMazeObject(reader, savedIdent,
-			FormatConstants.MAZE_FORMAT_LATEST);
-	    }
-	    final int cc = this.getCustomFormat();
-	    if (cc == AbstractMazeObject.CUSTOM_FORMAT_MANUAL_OVERRIDE) {
-		return this.readMazeObjectHook(reader, FormatConstants.MAZE_FORMAT_LATEST);
-	    } else {
-		for (int x = 0; x < cc; x++) {
-		    final int cx = reader.readInt();
-		    this.setCustomProperty(x + 1, cx);
-		}
-	    }
-	    return this;
-	} else {
-	    return null;
-	}
+    public final AbstractMazeObject readMazeObjectV1(final XDataReader reader,
+            final String ident) throws IOException {
+        if (ident.equals(this.getIdentifier())) {
+            final String savedIdent = reader.readString();
+            if (!savedIdent.equals("NULL")) {
+                this.saved = RetroRPGCS.getInstance().getObjects()
+                        .readSavedMazeObject(reader, savedIdent,
+                                FormatConstants.MAZE_FORMAT_LATEST);
+            }
+            final int cc = this.getCustomFormat();
+            if (cc == AbstractMazeObject.CUSTOM_FORMAT_MANUAL_OVERRIDE) {
+                return this.readMazeObjectHook(reader,
+                        FormatConstants.MAZE_FORMAT_LATEST);
+            } else {
+                for (int x = 0; x < cc; x++) {
+                    final int cx = reader.readInt();
+                    this.setCustomProperty(x + 1, cx);
+                }
+            }
+            return this;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -427,8 +439,9 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
      * @param writer
      * @throws IOException
      */
-    protected void writeMazeObjectHook(final XDataWriter writer) throws IOException {
-	// Do nothing - but let subclasses override
+    protected void writeMazeObjectHook(final XDataWriter writer)
+            throws IOException {
+        // Do nothing - but let subclasses override
     }
 
     /**
@@ -438,13 +451,13 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
      * @return
      * @throws IOException
      */
-    protected AbstractMazeObject readMazeObjectHook(final XDataReader reader, final int formatVersion)
-	    throws IOException {
-	// Dummy implementation, subclasses can override
-	return this;
+    protected AbstractMazeObject readMazeObjectHook(final XDataReader reader,
+            final int formatVersion) throws IOException {
+        // Dummy implementation, subclasses can override
+        return this;
     }
 
     public boolean isMoving() {
-	return false;
+        return false;
     }
 }

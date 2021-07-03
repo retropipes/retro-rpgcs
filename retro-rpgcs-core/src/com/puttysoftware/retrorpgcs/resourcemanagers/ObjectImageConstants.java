@@ -54,13 +54,14 @@ public class ObjectImageConstants {
     public static final int OBJECT_IMAGE_ARROW_SOUTHWEST = 48;
     public static final int OBJECT_IMAGE_ARROW_WEST = 49;
     public static final int OBJECT_IMAGE_ARROW_NORTHWEST = 50;
-    private static final String[] OBJECT_IMAGE_NAMES = GraphicsDataManager.getObjectGraphicsData();
+    private static final String[] OBJECT_IMAGE_NAMES = GraphicsDataManager
+            .getObjectGraphicsData();
 
     static String getObjectImageName(final int ID) {
-	if (ID == ObjectImageConstants.OBJECT_IMAGE_NONE) {
-	    return "";
-	} else {
-	    return ObjectImageConstants.OBJECT_IMAGE_NAMES[ID];
-	}
+        if (ID == ObjectImageConstants.OBJECT_IMAGE_NONE) {
+            return "";
+        } else {
+            return ObjectImageConstants.OBJECT_IMAGE_NAMES[ID];
+        }
     }
 }

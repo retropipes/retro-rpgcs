@@ -207,7 +207,7 @@ public final class Monster extends Creature {
     private static Element getInitialElement() {
         return new Element(FaithManager.getRandomFaith());
     }
-    
+
     @Override
     public String getName() {
         return this.element.getName() + " " + this.type;
@@ -257,8 +257,8 @@ public final class Monster extends Creature {
     }
 
     private int getToughness() {
-        return this.getStrength() + this.getBlock() + this.getAgility() + this.getVitality() + this.getIntelligence()
-                + this.getLuck();
+        return this.getStrength() + this.getBlock() + this.getAgility()
+                + this.getVitality() + this.getIntelligence() + this.getLuck();
     }
 
     final String getType() {
@@ -290,7 +290,8 @@ public final class Monster extends Creature {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + (this.element == null ? 0 : this.element.hashCode());
+        result = prime * result
+                + (this.element == null ? 0 : this.element.hashCode());
         return prime * result + (this.type == null ? 0 : this.type.hashCode());
     }
 
@@ -324,6 +325,7 @@ public final class Monster extends Creature {
     }
 
     protected final int getBattlesToNextLevel() {
-        return Monster.BATTLES_START + (this.getLevel() + 1) * Monster.BATTLES_SCALE_FACTOR;
+        return Monster.BATTLES_START
+                + (this.getLevel() + 1) * Monster.BATTLES_SCALE_FACTOR;
     }
 }

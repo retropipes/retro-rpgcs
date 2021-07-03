@@ -16,9 +16,10 @@ public class StatImageConstants {
     public static final int STAT_IMAGE_TEAM = 14;
     public static final int STAT_IMAGE_XP = 16;
     public static final int STAT_IMAGE_LEVEL = 17;
-    private static final String[] STAT_IMAGE_NAMES = GraphicsDataManager.getStatGraphicsData();
+    private static final String[] STAT_IMAGE_NAMES = GraphicsDataManager
+            .getStatGraphicsData();
 
     static String getStatImageName(final int ID) {
-	return StatImageConstants.STAT_IMAGE_NAMES[ID];
+        return StatImageConstants.STAT_IMAGE_NAMES[ID];
     }
 }

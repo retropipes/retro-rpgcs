@@ -10,7 +10,7 @@ import com.puttysoftware.retrorpgcs.maze.objects.BattleCharacter;
 public abstract class Battle {
     // Constructors
     protected Battle() {
-	// Do nothing
+        // Do nothing
     }
 
     // Generic Methods
@@ -63,7 +63,8 @@ public abstract class Battle {
 
     public abstract void arrowDone(BattleCharacter hit);
 
-    public abstract void redrawOneBattleSquare(int x, int y, AbstractMazeObject obj3);
+    public abstract void redrawOneBattleSquare(int x, int y,
+            AbstractMazeObject obj3);
 
     public abstract boolean isWaitingForAI();
 }

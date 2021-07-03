@@ -6,6 +6,6 @@ import com.puttysoftware.retrorpgcs.creatures.castes.CasteConstants;
 
 public class Debuffer extends Caste {
     public Debuffer() {
-	super(CasteConstants.CASTE_DEBUFFER);
+        super(CasteConstants.CASTE_DEBUFFER);
     }
 }

@@ -11,40 +11,41 @@ public class MapTurnBattleAITask extends Thread {
 
     // Constructors
     public MapTurnBattleAITask(final Battle battle) {
-	this.setName("Map AI Runner");
-	this.b = battle;
+        this.setName("Map AI Runner");
+        this.b = battle;
     }
 
     @Override
     public void run() {
-	try {
-	    this.aiWait();
-	    while (true) {
-		this.b.executeNextAIAction();
-		if (this.b.getLastAIActionResult()) {
-		    // Delay, for animation purposes
-		    try {
-			final int battleSpeed = PreferencesManager.getBattleSpeed();
-			Thread.sleep(battleSpeed);
-		    } catch (final InterruptedException i) {
-			// Ignore
-		    }
-		}
-	    }
-	} catch (final Throwable t) {
-	    RetroRPGCS.getInstance().handleError(t);
-	}
+        try {
+            this.aiWait();
+            while (true) {
+                this.b.executeNextAIAction();
+                if (this.b.getLastAIActionResult()) {
+                    // Delay, for animation purposes
+                    try {
+                        final int battleSpeed = PreferencesManager
+                                .getBattleSpeed();
+                        Thread.sleep(battleSpeed);
+                    } catch (final InterruptedException i) {
+                        // Ignore
+                    }
+                }
+            }
+        } catch (final Throwable t) {
+            RetroRPGCS.getInstance().handleError(t);
+        }
     }
 
     public synchronized void aiWait() {
-	try {
-	    this.wait();
-	} catch (final InterruptedException e) {
-	    // Ignore
-	}
+        try {
+            this.wait();
+        } catch (final InterruptedException e) {
+            // Ignore
+        }
     }
 
     public synchronized void aiRun() {
-	this.notify();
+        this.notify();
     }
 }

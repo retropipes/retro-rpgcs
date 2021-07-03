@@ -12,42 +12,43 @@ import com.puttysoftware.retrorpgcs.resourcemanagers.SoundManager;
 public class Button extends AbstractTrigger {
     // Constructors
     public Button() {
-	super();
+        super();
     }
 
     @Override
     public int getBaseID() {
-	return ObjectImageConstants.OBJECT_IMAGE_BUTTON;
+        return ObjectImageConstants.OBJECT_IMAGE_BUTTON;
     }
 
     @Override
     public String getName() {
-	return "Button";
+        return "Button";
     }
 
     @Override
     public String getPluralName() {
-	return "Buttons";
+        return "Buttons";
     }
 
     @Override
     public String getDescription() {
-	return "Buttons toggle Walls On and Walls Off.";
+        return "Buttons toggle Walls On and Walls Off.";
     }
 
     @Override
-    public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
-	SoundManager.playSound(SoundConstants.SOUND_BUTTON);
-	final RetroRPGCS app = RetroRPGCS.getInstance();
-	app.getMazeManager().getMaze().fullScanButton(this.getLayer());
-	app.getGameManager().redrawMaze();
+    public void postMoveAction(final boolean ie, final int dirX,
+            final int dirY) {
+        SoundManager.playSound(SoundConstants.SOUND_BUTTON);
+        final RetroRPGCS app = RetroRPGCS.getInstance();
+        app.getMazeManager().getMaze().fullScanButton(this.getLayer());
+        app.getGameManager().redrawMaze();
     }
 
     @Override
-    public boolean shouldGenerateObject(final Maze maze, final int row, final int col, final int floor, final int level,
-	    final int layer) {
-	// Generate Buttons at 50% rate
-	final RandomRange reject = new RandomRange(1, 100);
-	return reject.generate() < 50;
+    public boolean shouldGenerateObject(final Maze maze, final int row,
+            final int col, final int floor, final int level, final int layer) {
+        // Generate Buttons at 50% rate
+        final RandomRange reject = new RandomRange(1, 100);
+        return reject.generate() < 50;
     }
 }

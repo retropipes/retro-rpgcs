@@ -15,23 +15,24 @@ public class StatImageManager {
     private static Class<?> LOAD_CLASS = StatImageManager.class;
 
     public static BufferedImageIcon getImage(final int imageID) {
-	// Get it from the cache
-	final String name = StatImageConstants.getStatImageName(imageID);
-	return StatImageCache.getCachedImage(name);
+        // Get it from the cache
+        final String name = StatImageConstants.getStatImageName(imageID);
+        return StatImageCache.getCachedImage(name);
     }
 
     static BufferedImageIcon getUncachedImage(final String name) {
-	try {
-	    final String normalName = ImageTransformer.normalizeName(name);
-	    final URL url = StatImageManager.LOAD_CLASS.getResource(StatImageManager.LOAD_PATH + normalName + ".png");
-	    final BufferedImage image = ImageIO.read(url);
-	    return new BufferedImageIcon(image);
-	} catch (final IOException ie) {
-	    return null;
-	} catch (final NullPointerException np) {
-	    return null;
-	} catch (final IllegalArgumentException ia) {
-	    return null;
-	}
+        try {
+            final String normalName = ImageTransformer.normalizeName(name);
+            final URL url = StatImageManager.LOAD_CLASS.getResource(
+                    StatImageManager.LOAD_PATH + normalName + ".png");
+            final BufferedImage image = ImageIO.read(url);
+            return new BufferedImageIcon(image);
+        } catch (final IOException ie) {
+            return null;
+        } catch (final NullPointerException np) {
+            return null;
+        } catch (final IllegalArgumentException ia) {
+            return null;
+        }
     }
 }

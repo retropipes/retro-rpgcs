@@ -7,14 +7,15 @@ import com.puttysoftware.retrorpgcs.maze.Maze;
 
 public class MonsterFactory {
     private MonsterFactory() {
-	// Do nothing
+        // Do nothing
     }
 
     public static Creature getNewMonsterInstance() {
-	if (PartyManager.getParty().getTowerLevel() == Maze.getMaxLevels() - 1) {
-	    return new BossMonster();
-	} else {
-	    return new Monster();
-	}
+        if (PartyManager.getParty().getTowerLevel() == Maze.getMaxLevels()
+                - 1) {
+            return new BossMonster();
+        } else {
+            return new Monster();
+        }
     }
 }
