@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
 import com.puttysoftware.fileutils.ZipUtilities;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.maze.Extension;
 import com.puttysoftware.retrorpgcs.maze.Maze;
@@ -29,7 +28,7 @@ public class GameSaveTask extends Thread {
 	boolean success = true;
 	final String sg = "Game";
 	try {
-	    final Application app = RetroRPGCS.getApplication();
+	    final RetroRPGCS app = RetroRPGCS.getInstance();
 	    // filename check
 	    final boolean hasExtension = GameSaveTask.hasExtension(this.filename);
 	    if (!hasExtension) {
@@ -55,9 +54,9 @@ public class GameSaveTask extends Thread {
 		    + " failed, probably due to illegal characters in the file name.");
 	    success = false;
 	} catch (final Exception ex) {
-	    RetroRPGCS.getErrorLogger().logError(ex);
+	    RetroRPGCS.getInstance().handleError(ex);
 	}
-	RetroRPGCS.getApplication().getMazeManager().handleDeferredSuccess(success, false, null);
+	RetroRPGCS.getInstance().getMazeManager().handleDeferredSuccess(success, false, null);
     }
 
     private static boolean hasExtension(final String s) {

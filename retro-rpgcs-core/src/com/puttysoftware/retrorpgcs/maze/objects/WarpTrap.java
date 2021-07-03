@@ -2,7 +2,6 @@
 package com.puttysoftware.retrorpgcs.maze.objects;
 
 import com.puttysoftware.randomrange.RandomRange;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.maze.abc.AbstractTrap;
 import com.puttysoftware.retrorpgcs.resourcemanagers.ObjectImageConstants;
@@ -28,7 +27,7 @@ public class WarpTrap extends AbstractTrap {
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
 	RandomRange rr, rc, rf;
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	int maxRow, maxCol, maxFloor, rRow, rCol, rFloor;
 	maxRow = app.getMazeManager().getMaze().getRows() - 1;
 	rr = new RandomRange(0, maxRow);

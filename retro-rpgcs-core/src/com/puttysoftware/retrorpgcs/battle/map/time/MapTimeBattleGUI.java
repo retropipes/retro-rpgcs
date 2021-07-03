@@ -22,8 +22,8 @@ import javax.swing.WindowConstants;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
 import com.puttysoftware.images.BufferedImageIcon;
-import com.puttysoftware.retrorpgcs.DrawGrid;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
+import com.puttysoftware.retrorpgcs.DrawGrid;
 import com.puttysoftware.retrorpgcs.ai.map.MapAI;
 import com.puttysoftware.retrorpgcs.battle.Battle;
 import com.puttysoftware.retrorpgcs.battle.map.MapBattleDraw;
@@ -120,7 +120,7 @@ class MapTimeBattleGUI {
 
     void showBattle() {
 	this.battleFrame.setVisible(true);
-	this.battleFrame.setJMenuBar(RetroRPGCS.getApplication().getMenus().getMainMenuBar());
+	this.battleFrame.setJMenuBar(RetroRPGCS.getInstance().getMenus().getMainMenuBar());
     }
 
     void hideBattle() {
@@ -300,7 +300,7 @@ class MapTimeBattleGUI {
 	public void actionPerformed(final ActionEvent e) {
 	    try {
 		final String cmd = e.getActionCommand();
-		final Battle b = RetroRPGCS.getApplication().getBattle();
+		final Battle b = RetroRPGCS.getInstance().getBattle();
 		// Do Player Actions
 		if (cmd.equals("Cast Spell") || cmd.equals("c")) {
 		    // Cast Spell
@@ -316,7 +316,7 @@ class MapTimeBattleGUI {
 		    b.doPlayerActions(MapAI.ACTION_USE_ITEM);
 		}
 	    } catch (final Throwable t) {
-		RetroRPGCS.getErrorLogger().logError(t);
+		RetroRPGCS.getInstance().handleError(t);
 	    }
 	}
 
@@ -358,7 +358,7 @@ class MapTimeBattleGUI {
 			return;
 		    }
 		}
-		final Battle bl = RetroRPGCS.getApplication().getBattle();
+		final Battle bl = RetroRPGCS.getInstance().getBattle();
 		final MapTimeBattleGUI bg = MapTimeBattleGUI.this;
 		if (bg.eventHandlersOn) {
 		    final int keyCode = e.getKeyCode();
@@ -414,7 +414,7 @@ class MapTimeBattleGUI {
 		    bg.resetPlayerActionBar();
 		}
 	    } catch (final Exception ex) {
-		RetroRPGCS.getErrorLogger().logError(ex);
+		RetroRPGCS.getInstance().handleError(ex);
 	    }
 	}
 
@@ -429,7 +429,7 @@ class MapTimeBattleGUI {
 			return;
 		    }
 		}
-		final Battle bl = RetroRPGCS.getApplication().getBattle();
+		final Battle bl = RetroRPGCS.getInstance().getBattle();
 		final MapTimeBattleGUI bg = MapTimeBattleGUI.this;
 		if (bg.eventHandlersOn) {
 		    final int keyCode = e.getKeyCode();
@@ -485,7 +485,7 @@ class MapTimeBattleGUI {
 		    bg.resetPlayerActionBar();
 		}
 	    } catch (final Exception ex) {
-		RetroRPGCS.getErrorLogger().logError(ex);
+		RetroRPGCS.getInstance().handleError(ex);
 	    }
 	}
     }

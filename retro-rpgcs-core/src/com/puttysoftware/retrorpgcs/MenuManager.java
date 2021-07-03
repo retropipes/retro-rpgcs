@@ -98,7 +98,7 @@ public class MenuManager extends MenuManagerShell {
     }
 
     public void checkFlags() {
-        final Application app = RetroRPGCS.getApplication();
+        final RetroRPGCS app = RetroRPGCS.getInstance();
         if (app.getMazeManager().getDirty()) {
             this.setMenusDirtyOn();
         } else {
@@ -120,8 +120,8 @@ public class MenuManager extends MenuManagerShell {
     }
 
     private void setMenusLoadedOn() {
-        final Application app = RetroRPGCS.getApplication();
-        if (app.getMode() == Application.STATUS_GUI) {
+        final RetroRPGCS app = RetroRPGCS.getInstance();
+        if (app.getMode() == RetroRPGCS.STATUS_GUI) {
             this.fileClose.setEnabled(false);
         } else {
             this.fileClose.setEnabled(true);
@@ -236,14 +236,14 @@ public class MenuManager extends MenuManagerShell {
         public void actionPerformed(final ActionEvent e) {
             try {
                 final String cmd = e.getActionCommand();
-                final Application app = RetroRPGCS.getApplication();
+                final RetroRPGCS app = RetroRPGCS.getInstance();
                 boolean loaded = false;
                 if (cmd.equals("Open Game...")) {
                     loaded = app.getMazeManager().loadGame();
                     app.getMazeManager().setLoaded(loaded);
                 } else if (cmd.equals("Close")) {
                     // Close the window
-                    if (app.getMode() == Application.STATUS_GAME) {
+                    if (app.getMode() == RetroRPGCS.STATUS_GAME) {
                         boolean saved = true;
                         int status = 0;
                         if (app.getMazeManager().getDirty()) {
@@ -316,7 +316,7 @@ public class MenuManager extends MenuManagerShell {
                 }
                 MenuManager.this.checkFlags();
             } catch (final Throwable t) {
-                RetroRPGCS.getErrorLogger().logError(t);
+                RetroRPGCS.getInstance().handleError(t);
             }
         }
     }

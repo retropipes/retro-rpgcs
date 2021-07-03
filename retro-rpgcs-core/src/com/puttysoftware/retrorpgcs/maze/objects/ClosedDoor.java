@@ -38,7 +38,7 @@ public class ClosedDoor extends AbstractTrigger {
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
 	SoundManager.playSound(SoundConstants.SOUND_PICK_LOCK);
-	final GameLogicManager glm = RetroRPGCS.getApplication().getGameManager();
+	final GameLogicManager glm = RetroRPGCS.getInstance().getGameManager();
 	GameLogicManager.morph(new OpenDoor());
 	glm.redrawMaze();
     }

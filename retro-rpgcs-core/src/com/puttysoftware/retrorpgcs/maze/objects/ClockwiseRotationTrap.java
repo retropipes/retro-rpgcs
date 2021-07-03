@@ -27,8 +27,8 @@ public class ClockwiseRotationTrap extends AbstractTrap {
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
 	SoundManager.playSound(SoundConstants.SOUND_CHANGE);
-	RetroRPGCS.getApplication().showMessage("Your controls are rotated!");
-	RetroRPGCS.getApplication().getGameManager().activateEffect(MazeEffectConstants.EFFECT_ROTATED_CLOCKWISE);
+	RetroRPGCS.getInstance().showMessage("Your controls are rotated!");
+	RetroRPGCS.getInstance().getGameManager().activateEffect(MazeEffectConstants.EFFECT_ROTATED_CLOCKWISE);
     }
 
     @Override

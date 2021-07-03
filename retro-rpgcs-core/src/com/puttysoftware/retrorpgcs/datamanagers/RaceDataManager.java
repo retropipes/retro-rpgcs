@@ -21,7 +21,7 @@ public class RaceDataManager {
 	    }
 	    return rawData;
 	} catch (final IOException e) {
-	    RetroRPGCS.getErrorLogger().logError(e);
+	    RetroRPGCS.getInstance().handleError(e);
 	    return null;
 	}
     }

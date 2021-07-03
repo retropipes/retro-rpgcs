@@ -61,11 +61,11 @@ public class MazeEffectManager {
 		// Update effect grid
 		this.updateGridEntry(x);
 		if (!this.activeEffects[x].isActive()) {
-		    RetroRPGCS.getApplication().showMessage("You feel normal again.");
+		    RetroRPGCS.getInstance().showMessage("You feel normal again.");
 		    // Clear effect grid
 		    this.clearGridEntry(x);
 		    // Pack
-		    RetroRPGCS.getApplication().getGameManager().getOutputFrame().pack();
+		    RetroRPGCS.getInstance().getGameManager().getOutputFrame().pack();
 		}
 	    }
 	}
@@ -87,7 +87,7 @@ public class MazeEffectManager {
 	    this.addGridEntry(effectID);
 	}
 	// Keep effect message
-	RetroRPGCS.getApplication().getGameManager().keepNextMessage();
+	RetroRPGCS.getInstance().getGameManager().keepNextMessage();
     }
 
     public void deactivateEffect(final int effectID) {

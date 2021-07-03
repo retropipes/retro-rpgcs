@@ -219,7 +219,7 @@ public class PartyMember extends Creature {
 	this.setGold(PartyMember.START_GOLD);
 	this.setExperience(0L);
 	this.getItems().resetInventory();
-	RetroRPGCS.getApplication().getGameManager().deactivateAllEffects();
+	RetroRPGCS.getInstance().getGameManager().deactivateAllEffects();
 	final PolyTable nextLevelEquation = new PolyTable(3, 1, 0, true);
 	final double value = PartyMember.BASE_COEFF
 		* this.personality.getAttribute(PersonalityConstants.PERSONALITY_ATTRIBUTE_LEVEL_UP_SPEED);

@@ -20,7 +20,7 @@ public abstract class AbstractWall extends AbstractMazeObject {
 
     @Override
     public void moveFailedAction(final boolean ie, final int dirX, final int dirY) {
-	RetroRPGCS.getApplication().showMessage("Can't go that way");
+	RetroRPGCS.getInstance().showMessage("Can't go that way");
 	// Play move failed sound, if it's enabled
 	SoundManager.playSound(SoundConstants.SOUND_WALK_FAILED);
     }

@@ -30,7 +30,7 @@ public class PersonalityDataManager {
 	    }
 	    return finalData;
 	} catch (final IOException e) {
-	    RetroRPGCS.getErrorLogger().logError(e);
+	    RetroRPGCS.getInstance().handleError(e);
 	    return null;
 	}
     }

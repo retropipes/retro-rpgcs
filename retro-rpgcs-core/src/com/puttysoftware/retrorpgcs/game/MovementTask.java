@@ -2,7 +2,6 @@
 package com.puttysoftware.retrorpgcs.game;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
 import com.puttysoftware.retrorpgcs.maze.Maze;
@@ -50,7 +49,7 @@ final class MovementTask extends Thread {
 		}
 	    }
 	} catch (final Throwable t) {
-	    RetroRPGCS.getErrorLogger().logError(t);
+	    RetroRPGCS.getInstance().handleError(t);
 	}
     }
 
@@ -80,7 +79,7 @@ final class MovementTask extends Thread {
 
     public boolean tryAbsolute(final int x, final int y, final int z) {
 	try {
-	    final Application app = RetroRPGCS.getApplication();
+	    final RetroRPGCS app = RetroRPGCS.getInstance();
 	    final Maze m = app.getMazeManager().getMaze();
 	    final AbstractMazeObject below = m.getCell(m.getPlayerLocationX(), m.getPlayerLocationY(),
 		    m.getPlayerLocationZ(), MazeConstants.LAYER_GROUND);
@@ -97,7 +96,7 @@ final class MovementTask extends Thread {
     }
 
     void fireStepActions() {
-	final Maze m = RetroRPGCS.getApplication().getMazeManager().getMaze();
+	final Maze m = RetroRPGCS.getInstance().getMazeManager().getMaze();
 	final int px = m.getPlayerLocationX();
 	final int py = m.getPlayerLocationY();
 	final int pz = m.getPlayerLocationZ();
@@ -130,7 +129,7 @@ final class MovementTask extends Thread {
     }
 
     private void updatePositionRelative(final int dirX, final int dirY, final int dirZ) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final Maze m = app.getMazeManager().getMaze();
 	int px = m.getPlayerLocationX();
 	int py = m.getPlayerLocationY();
@@ -274,7 +273,7 @@ final class MovementTask extends Thread {
     }
 
     private void updatePositionAbsolute(final int x, final int y, final int z) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final Maze m = app.getMazeManager().getMaze();
 	try {
 	    m.getCell(x, y, z, MazeConstants.LAYER_OBJECT).preMoveAction(true, x, y);

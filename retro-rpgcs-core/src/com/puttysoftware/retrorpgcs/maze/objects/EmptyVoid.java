@@ -1,7 +1,6 @@
 /* Import2: An RPG */
 package com.puttysoftware.retrorpgcs.maze.objects;
 
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.maze.MazeConstants;
 import com.puttysoftware.retrorpgcs.maze.abc.AbstractMazeObject;
@@ -35,7 +34,7 @@ public class EmptyVoid extends AbstractWall {
 
     @Override
     public void determineCurrentAppearance(final int x, final int y, final int z) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	String mo1Name, mo2Name, mo3Name, mo4Name, mo6Name, mo7Name, mo8Name, mo9Name, thisName;
 	thisName = this.getName();
 	final AbstractMazeObject mo1 = app.getMazeManager().getMazeObject(x - 1, y - 1, z, MazeConstants.LAYER_OBJECT);

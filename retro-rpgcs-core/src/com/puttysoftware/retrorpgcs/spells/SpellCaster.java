@@ -104,11 +104,11 @@ public class SpellCaster {
 	    if (teamID == Creature.TEAM_PARTY) {
 		return PartyManager.getParty().getLeader();
 	    } else {
-		return RetroRPGCS.getApplication().getBattle().getEnemy();
+		return RetroRPGCS.getInstance().getBattle().getEnemy();
 	    }
 	case ENEMY:
 	    if (teamID == Creature.TEAM_PARTY) {
-		return RetroRPGCS.getApplication().getBattle().getEnemy();
+		return RetroRPGCS.getInstance().getBattle().getEnemy();
 	    } else {
 		return PartyManager.getParty().getLeader();
 	    }

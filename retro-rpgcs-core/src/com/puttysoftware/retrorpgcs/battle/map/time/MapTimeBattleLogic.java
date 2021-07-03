@@ -9,7 +9,6 @@ import javax.swing.JOptionPane;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
 import com.puttysoftware.randomrange.RandomRange;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.ai.map.AutoMapAI;
 import com.puttysoftware.retrorpgcs.ai.map.MapAI;
@@ -88,15 +87,15 @@ public class MapTimeBattleLogic extends Battle {
 	// Level Up Check
 	if (playerCharacter.checkLevelUp()) {
 	    playerCharacter.levelUp();
-	    RetroRPGCS.getApplication().getGameManager().keepNextMessage();
-	    RetroRPGCS.getApplication().showMessage("You reached level " + playerCharacter.getLevel() + ".");
+	    RetroRPGCS.getInstance().getGameManager().keepNextMessage();
+	    RetroRPGCS.getInstance().showMessage("You reached level " + playerCharacter.getLevel() + ".");
 	}
     }
 
     private void doBattleInternal(final Maze bMaze, final MapBattle b) {
 	// Initialize Battle
-	RetroRPGCS.getApplication().getGameManager().hideOutput();
-	RetroRPGCS.getApplication().setMode(Application.STATUS_BATTLE);
+	RetroRPGCS.getInstance().getGameManager().hideOutput();
+	RetroRPGCS.getInstance().setMode(RetroRPGCS.STATUS_BATTLE);
 	this.battleMaze = bMaze;
 	this.pde = AbstractDamageEngine.getPlayerInstance();
 	this.ede = AbstractDamageEngine.getEnemyInstance();
@@ -134,10 +133,10 @@ public class MapTimeBattleLogic extends Battle {
     public void battleDone() {
 	// Leave Battle
 	this.hideBattle();
-	RetroRPGCS.getApplication().setMode(Application.STATUS_GAME);
+	RetroRPGCS.getInstance().setMode(RetroRPGCS.STATUS_GAME);
 	// Return to whence we came
-	RetroRPGCS.getApplication().getGameManager().showOutput();
-	RetroRPGCS.getApplication().getGameManager().redrawMaze();
+	RetroRPGCS.getInstance().getGameManager().showOutput();
+	RetroRPGCS.getInstance().getGameManager().redrawMaze();
     }
 
     private void clearStatusMessage() {
@@ -1303,9 +1302,9 @@ public class MapTimeBattleLogic extends Battle {
 	@Override
 	public void run() {
 	    try {
-		final Application app = RetroRPGCS.getApplication();
+		final RetroRPGCS app = RetroRPGCS.getInstance();
 		final Battle b = app.getBattle();
-		if (app.getMode() == Application.STATUS_BATTLE && b instanceof MapTimeBattleLogic) {
+		if (app.getMode() == RetroRPGCS.STATUS_BATTLE && b instanceof MapTimeBattleLogic) {
 		    final MapTimeBattleLogic logic = MapTimeBattleLogic.this;
 		    final MapTimeBattleGUI gui = logic.battleGUI;
 		    if (!gui.isPlayerActionBarFull()) {
@@ -1320,7 +1319,7 @@ public class MapTimeBattleLogic extends Battle {
 		    }
 		}
 	    } catch (final Throwable t) {
-		RetroRPGCS.getErrorLogger().logError(t);
+		RetroRPGCS.getInstance().handleError(t);
 	    }
 	}
     }
@@ -1333,9 +1332,9 @@ public class MapTimeBattleLogic extends Battle {
 	@Override
 	public void run() {
 	    try {
-		final Application app = RetroRPGCS.getApplication();
+		final RetroRPGCS app = RetroRPGCS.getInstance();
 		final Battle b = app.getBattle();
-		if (app.getMode() == Application.STATUS_BATTLE && b instanceof MapTimeBattleLogic) {
+		if (app.getMode() == RetroRPGCS.STATUS_BATTLE && b instanceof MapTimeBattleLogic) {
 		    final MapTimeBattleLogic logic = MapTimeBattleLogic.this;
 		    final MapTimeBattleGUI gui = logic.battleGUI;
 		    if (!gui.isEnemyActionBarFull()) {
@@ -1348,7 +1347,7 @@ public class MapTimeBattleLogic extends Battle {
 		    }
 		}
 	    } catch (final Throwable t) {
-		RetroRPGCS.getErrorLogger().logError(t);
+		RetroRPGCS.getInstance().handleError(t);
 	    }
 	}
 

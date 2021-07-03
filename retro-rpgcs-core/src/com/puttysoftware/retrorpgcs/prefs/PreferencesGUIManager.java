@@ -26,7 +26,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.WindowConstants;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.resourcemanagers.LogoManager;
 
@@ -69,12 +68,12 @@ class PreferencesGUIManager {
     }
 
     public void showPrefs() {
-	final Application app = RetroRPGCS.getApplication();
-	if (app.getMode() == Application.STATUS_BATTLE) {
+	final RetroRPGCS app = RetroRPGCS.getInstance();
+	if (app.getMode() == RetroRPGCS.STATUS_BATTLE) {
 	    // Deny
 	    CommonDialogs.showTitledDialog("Preferences may NOT be changed in the middle of battle!", "Battle");
 	} else {
-	    app.setMode(Application.STATUS_PREFS);
+	    app.setMode(RetroRPGCS.STATUS_PREFS);
 	    if (System.getProperty("os.name").startsWith("Mac OS X")) {
 		this.prefFrame.setJMenuBar(app.getMenus().getMainMenuBar());
 	    }
@@ -82,22 +81,22 @@ class PreferencesGUIManager {
 	    this.prefFrame.setVisible(true);
 	    final int formerMode = app.getFormerMode();
 	    app.restoreFormerMode();
-	    if (formerMode == Application.STATUS_GUI) {
+	    if (formerMode == RetroRPGCS.STATUS_GUI) {
 		app.getGUIManager().hideGUITemporarily();
-	    } else if (formerMode == Application.STATUS_GAME) {
+	    } else if (formerMode == RetroRPGCS.STATUS_GAME) {
 		app.getGameManager().hideOutput();
 	    }
 	}
     }
 
     public void hidePrefs() {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	this.prefFrame.setVisible(false);
 	PreferencesManager.writePrefs();
 	final int formerMode = app.getFormerMode();
-	if (formerMode == Application.STATUS_GUI) {
+	if (formerMode == RetroRPGCS.STATUS_GUI) {
 	    app.getGUIManager().showGUI();
-	} else if (formerMode == Application.STATUS_GAME) {
+	} else if (formerMode == RetroRPGCS.STATUS_GAME) {
 	    app.getGameManager().showOutput();
 	}
     }
@@ -131,8 +130,8 @@ class PreferencesGUIManager {
 	final int newSize = this.viewingWindowGroup.getSelection().getMnemonic();
 	PreferencesManager.setViewingWindowSizeIndex(newSize);
 	if (vwSize != newSize) {
-	    RetroRPGCS.getApplication().getGameManager().viewingWindowSizeChanged();
-	    RetroRPGCS.getApplication().resetBattleGUI();
+	    RetroRPGCS.getInstance().getGameManager().viewingWindowSizeChanged();
+	    RetroRPGCS.getInstance().resetBattleGUI();
 	}
 	PreferencesManager.setSoundsEnabled(this.sound.isSelected());
 	PreferencesManager.setMapBattleEngine(this.useMapBattleEngine.isSelected());
@@ -237,7 +236,7 @@ class PreferencesGUIManager {
 		    pm.hidePrefs();
 		}
 	    } catch (final Exception ex) {
-		RetroRPGCS.getErrorLogger().logError(ex);
+		RetroRPGCS.getInstance().handleError(ex);
 	    }
 	}
 
@@ -261,7 +260,7 @@ class PreferencesGUIManager {
 		    }
 		}
 	    } catch (final Exception ex) {
-		RetroRPGCS.getErrorLogger().logError(ex);
+		RetroRPGCS.getInstance().handleError(ex);
 	    }
 	}
 

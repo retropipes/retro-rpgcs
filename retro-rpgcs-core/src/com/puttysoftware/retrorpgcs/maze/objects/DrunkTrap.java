@@ -26,8 +26,8 @@ public class DrunkTrap extends AbstractTrap {
 
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
-	RetroRPGCS.getApplication().showMessage("You stumble around drunkenly!");
-	RetroRPGCS.getApplication().getGameManager().activateEffect(MazeEffectConstants.EFFECT_DRUNK);
+	RetroRPGCS.getInstance().showMessage("You stumble around drunkenly!");
+	RetroRPGCS.getInstance().getGameManager().activateEffect(MazeEffectConstants.EFFECT_DRUNK);
 	SoundManager.playSound(SoundConstants.SOUND_DRUNK);
     }
 

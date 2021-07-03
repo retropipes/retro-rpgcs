@@ -23,7 +23,7 @@ public class CharacterLoader {
 	    CharacterRegistration.autoremoveCharacter(name);
 	    return null;
 	} catch (final IOException e) {
-	    RetroRPGCS.getErrorLogger().logError(e);
+	    RetroRPGCS.getInstance().handleError(e);
 	    return null;
 	}
     }
@@ -55,7 +55,7 @@ public class CharacterLoader {
 	try (XDataWriter saver = new XDataWriter(characterFile, "character")) {
 	    character.write(saver);
 	} catch (final IOException e) {
-	    RetroRPGCS.getErrorLogger().logError(e);
+	    RetroRPGCS.getInstance().handleError(e);
 	}
     }
 

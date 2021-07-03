@@ -53,7 +53,7 @@ public class RaceConstants {
 		RaceConstants.RACES_COUNT = RaceConstants.RACE_NAMES.length;
 		RaceConstants.INITED = true;
 	    } catch (final IOException ioe) {
-		RetroRPGCS.getErrorLogger().logError(ioe);
+		RetroRPGCS.getInstance().handleError(ioe);
 	    }
 	}
     }

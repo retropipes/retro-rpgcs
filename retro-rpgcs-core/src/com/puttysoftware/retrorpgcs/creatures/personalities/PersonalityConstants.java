@@ -64,7 +64,7 @@ public class PersonalityConstants {
 		PersonalityConstants.PERSONALITIES_COUNT = PersonalityConstants.PERSONALITY_NAMES.length;
 		PersonalityConstants.INITED = true;
 	    } catch (final IOException ioe) {
-		RetroRPGCS.getErrorLogger().logError(ioe);
+		RetroRPGCS.getInstance().handleError(ioe);
 	    }
 	}
     }

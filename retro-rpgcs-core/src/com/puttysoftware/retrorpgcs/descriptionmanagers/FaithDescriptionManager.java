@@ -18,7 +18,7 @@ public class FaithDescriptionManager {
 	    final String desc = rsr.readString();
 	    return desc;
 	} catch (final IOException e) {
-	    RetroRPGCS.getErrorLogger().logError(e);
+	    RetroRPGCS.getInstance().handleError(e);
 	    return null;
 	}
     }

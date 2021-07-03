@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import com.puttysoftware.randomrange.RandomRange;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.maze.abc.AbstractMazeObject;
 import com.puttysoftware.retrorpgcs.maze.objects.Empty;
@@ -108,7 +107,7 @@ final class LayeredTower implements Cloneable {
     // Methods
     public void updateMonsterPosition(final int move, final int xLoc,
             final int yLoc, final Monster monster) {
-        final Application app = RetroRPGCS.getApplication();
+        final RetroRPGCS app = RetroRPGCS.getInstance();
         final int[] dirMove = DirectionResolver
                 .unresolveRelativeDirection(move);
         final int pLocX = this.getPlayerRow();
@@ -122,7 +121,7 @@ final class LayeredTower implements Cloneable {
                     MazeConstants.LAYER_GROUND);
             if (!there.isSolid() && !there.getName().equals("Monster")) {
                 if (LayeredTower.radialScan(xLoc, yLoc, 0, pLocX, pLocY)) {
-                    if (app.getMode() != Application.STATUS_BATTLE) {
+                    if (app.getMode() != RetroRPGCS.STATUS_BATTLE) {
                         app.getGameManager().stopMovement();
                         app.getBattle().doBattle();
                         this.postBattle(monster, xLoc, yLoc, false);
@@ -519,7 +518,7 @@ final class LayeredTower implements Cloneable {
 
     public void fillFloorRandomly(final Maze maze, final int z, final int w) {
         // Pre-Pass
-        final MazeObjectList objects = RetroRPGCS.getApplication().getObjects();
+        final MazeObjectList objects = RetroRPGCS.getInstance().getObjects();
         final AbstractMazeObject pass1FillBottom = new Tile();
         final AbstractMazeObject pass1FillTop = new Empty();
         RandomRange r = null;
@@ -754,7 +753,7 @@ final class LayeredTower implements Cloneable {
             for (y = 0; y < lt.getRows(); y++) {
                 for (z = 0; z < lt.getFloors(); z++) {
                     for (e = 0; e < MazeConstants.LAYER_COUNT; e++) {
-                        lt.setMazeCell(RetroRPGCS.getApplication().getObjects()
+                        lt.setMazeCell(RetroRPGCS.getInstance().getObjects()
                                 .readMazeObject(reader,
                                         FormatConstants.MAZE_FORMAT_LATEST),
                                 y, x, z, e);
@@ -820,7 +819,7 @@ final class LayeredTower implements Cloneable {
                 for (z = 0; z < sizeZ; z++) {
                     for (e = 0; e < MazeConstants.LAYER_COUNT; e++) {
                         this.savedTowerState.setMazeCell(
-                                RetroRPGCS.getApplication().getObjects()
+                                RetroRPGCS.getInstance().getObjects()
                                         .readMazeObject(reader, formatVersion),
                                 y, x, z, e);
                     }

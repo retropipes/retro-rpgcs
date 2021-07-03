@@ -32,7 +32,7 @@ public class MapTurnBattleAITask extends Thread {
 		}
 	    }
 	} catch (final Throwable t) {
-	    RetroRPGCS.getErrorLogger().logError(t);
+	    RetroRPGCS.getInstance().handleError(t);
 	}
     }
 

@@ -57,7 +57,7 @@ public class NamesDataManager {
 	    }
 	    return res;
 	} catch (final IOException e) {
-	    RetroRPGCS.getErrorLogger().logError(e);
+	    RetroRPGCS.getInstance().handleError(e);
 	    return null;
 	}
     }
@@ -101,7 +101,7 @@ public class NamesDataManager {
 		return res;
 	    }
 	} catch (final IOException e) {
-	    RetroRPGCS.getErrorLogger().logError(e);
+	    RetroRPGCS.getInstance().handleError(e);
 	    return null;
 	}
     }

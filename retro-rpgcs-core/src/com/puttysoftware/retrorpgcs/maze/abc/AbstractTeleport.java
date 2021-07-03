@@ -1,7 +1,6 @@
 /* Import2: An RPG */
 package com.puttysoftware.retrorpgcs.maze.abc;
 
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.maze.MazeConstants;
 import com.puttysoftware.retrorpgcs.maze.utilities.TypeConstants;
@@ -76,7 +75,7 @@ public abstract class AbstractTeleport extends AbstractMazeObject {
     // Scriptability
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	app.getGameManager().updatePositionAbsolute(this.getDestinationRow(), this.getDestinationColumn(),
 		this.getDestinationFloor());
 	SoundManager.playSound(SoundConstants.SOUND_TELEPORT);

@@ -84,7 +84,7 @@ public class AboutDialog {
 		    ad.hideAboutDialog();
 		}
 	    } catch (final Exception ex) {
-		RetroRPGCS.getErrorLogger().logError(ex);
+		RetroRPGCS.getInstance().handleError(ex);
 	    }
 	}
     }

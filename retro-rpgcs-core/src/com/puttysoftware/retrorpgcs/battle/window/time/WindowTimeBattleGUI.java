@@ -240,7 +240,7 @@ public class WindowTimeBattleGUI {
 		boolean success = true;
 		final String cmd = e.getActionCommand();
 		final WindowTimeBattleGUI wbg = WindowTimeBattleGUI.this;
-		final Battle b = RetroRPGCS.getApplication().getBattle();
+		final Battle b = RetroRPGCS.getInstance().getBattle();
 		// Clear Message Area
 		wbg.clearMessageArea();
 		// Display Beginning Stats
@@ -310,7 +310,7 @@ public class WindowTimeBattleGUI {
 		    return;
 		}
 	    } catch (final Throwable t) {
-		RetroRPGCS.getErrorLogger().logError(t);
+		RetroRPGCS.getInstance().handleError(t);
 	    }
 	}
     }

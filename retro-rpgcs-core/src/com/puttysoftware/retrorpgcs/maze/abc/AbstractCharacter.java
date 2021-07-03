@@ -62,7 +62,7 @@ public abstract class AbstractCharacter extends AbstractMazeObject {
     @Override
     protected AbstractMazeObject readMazeObjectHook(final XDataReader reader, final int formatVersion)
 	    throws IOException {
-	this.savedObject = RetroRPGCS.getApplication().getObjects().readMazeObject(reader, formatVersion);
+	this.savedObject = RetroRPGCS.getInstance().getObjects().readMazeObject(reader, formatVersion);
 	return this;
     }
 }

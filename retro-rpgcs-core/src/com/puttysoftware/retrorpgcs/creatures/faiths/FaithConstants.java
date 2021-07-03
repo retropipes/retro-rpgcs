@@ -115,7 +115,7 @@ public class FaithConstants {
 		}
 		FaithConstants.INITED = true;
 	    } catch (final IOException ioe) {
-		RetroRPGCS.getErrorLogger().logError(ioe);
+		RetroRPGCS.getInstance().handleError(ioe);
 	    }
 	}
     }

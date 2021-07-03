@@ -39,8 +39,8 @@ public class DarkGem extends AbstractMPModifier {
 
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
-	RetroRPGCS.getApplication().showMessage("Your power withers!");
-	RetroRPGCS.getApplication().getGameManager().activateEffect(MazeEffectConstants.EFFECT_POWER_WITHER);
+	RetroRPGCS.getInstance().showMessage("Your power withers!");
+	RetroRPGCS.getInstance().getGameManager().activateEffect(MazeEffectConstants.EFFECT_POWER_WITHER);
 	SoundManager.playSound(SoundConstants.SOUND_FOCUS);
 	GameLogicManager.decay();
     }

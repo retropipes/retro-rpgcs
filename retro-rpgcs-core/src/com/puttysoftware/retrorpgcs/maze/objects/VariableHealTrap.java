@@ -38,7 +38,7 @@ public class VariableHealTrap extends AbstractTrap {
 	final RandomRange healingGiven = new RandomRange(VariableHealTrap.MIN_HEALING, maxHealing);
 	PartyManager.getParty().getLeader().heal(healingGiven.generate());
 	SoundManager.playSound(SoundConstants.SOUND_HEAL);
-	RetroRPGCS.getApplication().getGameManager();
+	RetroRPGCS.getInstance().getGameManager();
 	GameLogicManager.decay();
     }
 

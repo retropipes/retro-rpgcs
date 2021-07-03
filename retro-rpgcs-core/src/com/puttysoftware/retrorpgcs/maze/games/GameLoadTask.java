@@ -11,7 +11,6 @@ import javax.swing.WindowConstants;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
 import com.puttysoftware.fileutils.ZipUtilities;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.VersionException;
 import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
@@ -48,7 +47,7 @@ public class GameLoadTask extends Thread {
 	final File mazeFile = new File(this.filename);
 	try {
 	    this.loadFrame.setVisible(true);
-	    final Application app = RetroRPGCS.getApplication();
+	    final RetroRPGCS app = RetroRPGCS.getInstance();
 	    int startW;
 	    app.getGameManager().setSavedGameFlag(false);
 	    final File tempLock = new File(Maze.getMazeTempFolder() + "lock.tmp");
@@ -88,17 +87,17 @@ public class GameLoadTask extends Thread {
 	} catch (final VersionException ve) {
 	    CommonDialogs.showDialog(
 		    "Loading the " + sg.toLowerCase() + " failed, due to the format version being unsupported.");
-	    RetroRPGCS.getApplication().getMazeManager().handleDeferredSuccess(false, true, mazeFile);
+	    RetroRPGCS.getInstance().getMazeManager().handleDeferredSuccess(false, true, mazeFile);
 	} catch (final FileNotFoundException fnfe) {
 	    CommonDialogs.showDialog("Loading the " + sg.toLowerCase()
 		    + " failed, probably due to illegal characters in the file name.");
-	    RetroRPGCS.getApplication().getMazeManager().handleDeferredSuccess(false, false, null);
+	    RetroRPGCS.getInstance().getMazeManager().handleDeferredSuccess(false, false, null);
 	} catch (final IOException ie) {
 	    CommonDialogs
 		    .showDialog("Loading the " + sg.toLowerCase() + " failed, due to some other type of I/O error.");
-	    RetroRPGCS.getApplication().getMazeManager().handleDeferredSuccess(false, false, null);
+	    RetroRPGCS.getInstance().getMazeManager().handleDeferredSuccess(false, false, null);
 	} catch (final Exception ex) {
-	    RetroRPGCS.getErrorLogger().logError(ex);
+	    RetroRPGCS.getInstance().handleError(ex);
 	} finally {
 	    this.loadFrame.setVisible(false);
 	}

@@ -20,8 +20,8 @@ import javax.swing.WindowConstants;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
 import com.puttysoftware.images.BufferedImageIcon;
-import com.puttysoftware.retrorpgcs.DrawGrid;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
+import com.puttysoftware.retrorpgcs.DrawGrid;
 import com.puttysoftware.retrorpgcs.ai.map.MapAI;
 import com.puttysoftware.retrorpgcs.battle.Battle;
 import com.puttysoftware.retrorpgcs.battle.map.MapBattleDraw;
@@ -81,7 +81,7 @@ class MapTurnBattleGUI {
 
     void showBattle() {
 	this.battleFrame.setVisible(true);
-	this.battleFrame.setJMenuBar(RetroRPGCS.getApplication().getMenus().getMainMenuBar());
+	this.battleFrame.setJMenuBar(RetroRPGCS.getInstance().getMenus().getMainMenuBar());
     }
 
     void hideBattle() {
@@ -261,7 +261,7 @@ class MapTurnBattleGUI {
 	public void actionPerformed(final ActionEvent e) {
 	    try {
 		final String cmd = e.getActionCommand();
-		final Battle b = RetroRPGCS.getApplication().getBattle();
+		final Battle b = RetroRPGCS.getInstance().getBattle();
 		// Do Player Actions
 		if (cmd.equals("Cast Spell") || cmd.equals("c")) {
 		    // Cast Spell
@@ -280,7 +280,7 @@ class MapTurnBattleGUI {
 		    b.endTurn();
 		}
 	    } catch (final Throwable t) {
-		RetroRPGCS.getErrorLogger().logError(t);
+		RetroRPGCS.getInstance().handleError(t);
 	    }
 	}
 
@@ -322,7 +322,7 @@ class MapTurnBattleGUI {
 			return;
 		    }
 		}
-		final Battle bl = RetroRPGCS.getApplication().getBattle();
+		final Battle bl = RetroRPGCS.getInstance().getBattle();
 		final MapTurnBattleGUI bg = MapTurnBattleGUI.this;
 		if (bg.eventHandlersOn) {
 		    final int keyCode = e.getKeyCode();
@@ -377,7 +377,7 @@ class MapTurnBattleGUI {
 		    }
 		}
 	    } catch (final Exception ex) {
-		RetroRPGCS.getErrorLogger().logError(ex);
+		RetroRPGCS.getInstance().handleError(ex);
 	    }
 	}
 
@@ -392,7 +392,7 @@ class MapTurnBattleGUI {
 			return;
 		    }
 		}
-		final Battle bl = RetroRPGCS.getApplication().getBattle();
+		final Battle bl = RetroRPGCS.getInstance().getBattle();
 		final MapTurnBattleGUI bg = MapTurnBattleGUI.this;
 		if (bg.eventHandlersOn) {
 		    final int keyCode = e.getKeyCode();
@@ -447,7 +447,7 @@ class MapTurnBattleGUI {
 		    }
 		}
 	    } catch (final Exception ex) {
-		RetroRPGCS.getErrorLogger().logError(ex);
+		RetroRPGCS.getInstance().handleError(ex);
 	    }
 	}
     }

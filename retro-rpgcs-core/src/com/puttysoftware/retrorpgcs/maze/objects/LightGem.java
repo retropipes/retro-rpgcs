@@ -39,8 +39,8 @@ public class LightGem extends AbstractMPModifier {
 
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
-	RetroRPGCS.getApplication().showMessage("Your power gathers!");
-	RetroRPGCS.getApplication().getGameManager().activateEffect(MazeEffectConstants.EFFECT_POWER_GATHER);
+	RetroRPGCS.getInstance().showMessage("Your power gathers!");
+	RetroRPGCS.getInstance().getGameManager().activateEffect(MazeEffectConstants.EFFECT_POWER_GATHER);
 	SoundManager.playSound(SoundConstants.SOUND_FOCUS);
 	GameLogicManager.decay();
     }

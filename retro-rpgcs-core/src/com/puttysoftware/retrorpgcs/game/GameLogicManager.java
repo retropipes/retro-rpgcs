@@ -4,7 +4,6 @@ package com.puttysoftware.retrorpgcs.game;
 import javax.swing.JFrame;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
 import com.puttysoftware.retrorpgcs.maze.GenerateTask;
@@ -40,7 +39,7 @@ public final class GameLogicManager {
 
     // Methods
     public boolean newGame() {
-	final JFrame owner = RetroRPGCS.getApplication().getOutputFrame();
+	final JFrame owner = RetroRPGCS.getInstance().getOutputFrame();
 	this.em.deactivateAllEffects();
 	if (this.savedGameFlag) {
 	    if (PartyManager.getParty() != null) {
@@ -117,7 +116,7 @@ public final class GameLogicManager {
     }
 
     public void resetViewingWindow() {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final Maze m = app.getMazeManager().getMaze();
 	if (m != null && this.vwMgr != null) {
 	    this.vwMgr.setViewingWindowLocationX(m.getPlayerLocationY() - GameViewingWindowManager.getOffsetFactorX());
@@ -130,7 +129,7 @@ public final class GameLogicManager {
     }
 
     public static void resetPlayerLocation(final int level) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final Maze m = app.getMazeManager().getMaze();
 	if (m != null) {
 	    m.switchLevel(level);
@@ -139,7 +138,7 @@ public final class GameLogicManager {
     }
 
     public void goToLevelOffset(final int level) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final Maze m = app.getMazeManager().getMaze();
 	final boolean levelExists = m.doesLevelExistOffset(level);
 	this.stopMovement();
@@ -152,7 +151,7 @@ public final class GameLogicManager {
 
     public void exitGame() {
 	this.stateChanged = true;
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final Maze m = app.getMazeManager().getMaze();
 	// Restore the maze
 	m.restore();
@@ -176,14 +175,14 @@ public final class GameLogicManager {
     }
 
     public static void decay() {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final Maze m = app.getMazeManager().getMaze();
 	m.setCell(new Empty(), m.getPlayerLocationX(), m.getPlayerLocationY(), m.getPlayerLocationZ(),
 		MazeConstants.LAYER_OBJECT);
     }
 
     public static void morph(final AbstractMazeObject morphInto) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final Maze m = app.getMazeManager().getMaze();
 	m.setCell(morphInto, m.getPlayerLocationX(), m.getPlayerLocationY(), m.getPlayerLocationZ(),
 		morphInto.getLayer());
@@ -194,7 +193,7 @@ public final class GameLogicManager {
     }
 
     public void identifyObject(final int x, final int y) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final Maze m = app.getMazeManager().getMaze();
 	final int xOffset = this.vwMgr.getViewingWindowLocationX() - GameViewingWindowManager.getOffsetFactorX();
 	final int yOffset = this.vwMgr.getViewingWindowLocationY() - GameViewingWindowManager.getOffsetFactorY();
@@ -210,18 +209,18 @@ public final class GameLogicManager {
 	    target2.determineCurrentAppearance(destX, destY, destZ);
 	    final String gameName1 = target1.getGameName();
 	    final String gameName2 = target2.getGameName();
-	    RetroRPGCS.getApplication().showMessage(gameName2 + " on " + gameName1);
+	    RetroRPGCS.getInstance().showMessage(gameName2 + " on " + gameName1);
 	    SoundManager.playSound(SoundConstants.SOUND_IDENTIFY);
 	} catch (final ArrayIndexOutOfBoundsException ae) {
 	    final EmptyVoid ev = new EmptyVoid();
 	    ev.determineCurrentAppearance(destX, destY, destZ);
-	    RetroRPGCS.getApplication().showMessage(ev.getGameName());
+	    RetroRPGCS.getInstance().showMessage(ev.getGameName());
 	    SoundManager.playSound(SoundConstants.SOUND_IDENTIFY);
 	}
     }
 
     public void playMaze() {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final Maze m = app.getMazeManager().getMaze();
 	if (app.getMazeManager().getLoaded()) {
 	    this.gui.initViewManager();
@@ -246,7 +245,7 @@ public final class GameLogicManager {
     }
 
     public void showOutput() {
-	RetroRPGCS.getApplication().setMode(Application.STATUS_GAME);
+	RetroRPGCS.getInstance().setMode(RetroRPGCS.STATUS_GAME);
 	this.gui.showOutput();
     }
 

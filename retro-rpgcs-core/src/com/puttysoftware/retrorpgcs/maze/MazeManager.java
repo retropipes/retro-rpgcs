@@ -9,7 +9,6 @@ import javax.swing.JOptionPane;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
 import com.puttysoftware.fileutils.FilenameChecker;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.maze.abc.AbstractMazeObject;
 import com.puttysoftware.retrorpgcs.maze.games.GameFinder;
@@ -51,8 +50,8 @@ public final class MazeManager {
 	    triedToLoad.delete();
 	}
 	this.setDirty(false);
-	RetroRPGCS.getApplication().getGameManager().stateChanged();
-	RetroRPGCS.getApplication().getMenus().checkFlags();
+	RetroRPGCS.getInstance().getGameManager().stateChanged();
+	RetroRPGCS.getInstance().getMenus().checkFlags();
     }
 
     public AbstractMazeObject getMazeObject(final int x, final int y, final int z, final int e) {
@@ -65,9 +64,9 @@ public final class MazeManager {
 
     public static int showSaveDialog() {
 	String type, source;
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	final int mode = app.getMode();
-	if (mode == Application.STATUS_GAME) {
+	if (mode == RetroRPGCS.STATUS_GAME) {
 	    type = "game";
 	    source = "Import2";
 	} else {
@@ -82,7 +81,7 @@ public final class MazeManager {
     }
 
     public void setLoaded(final boolean status) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	this.loaded = status;
 	app.getMenus().checkFlags();
     }
@@ -92,7 +91,7 @@ public final class MazeManager {
     }
 
     public void setDirty(final boolean newDirty) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	this.isDirty = newDirty;
 	final JFrame frame = app.getOutputFrame();
 	if (frame != null) {
@@ -193,7 +192,7 @@ public final class MazeManager {
 		    if (!file.getParentFile().exists()) {
 			final boolean okay = file.getParentFile().mkdirs();
 			if (!okay) {
-			    RetroRPGCS.getErrorLogger().logError(new IOException("Cannot create game folder!"));
+			    RetroRPGCS.getInstance().handleError(new IOException("Cannot create game folder!"));
 			}
 		    }
 		    MazeManager.saveFile(filename);
@@ -207,7 +206,7 @@ public final class MazeManager {
 
     private static void saveFile(final String filename) {
 	final String sg = "Saved Game";
-	RetroRPGCS.getApplication().showMessage("Saving " + sg + " file...");
+	RetroRPGCS.getInstance().showMessage("Saving " + sg + " file...");
 	final GameSaveTask lst = new GameSaveTask(filename);
 	lst.start();
     }

@@ -6,7 +6,6 @@ import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
 import com.puttysoftware.randomrange.RandomRange;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
 import com.puttysoftware.retrorpgcs.maze.abc.AbstractMazeObject;
@@ -37,7 +36,7 @@ public class GenerateTask extends Thread {
     public void run() {
 	try {
 	    this.generateFrame.setVisible(true);
-	    final Application app = RetroRPGCS.getApplication();
+	    final RetroRPGCS app = RetroRPGCS.getInstance();
 	    Maze gameMaze = app.getMazeManager().getMaze();
 	    if (!this.scratch) {
 		app.getGameManager().disableEvents();
@@ -91,7 +90,7 @@ public class GenerateTask extends Thread {
 		app.getGameManager().redrawMaze();
 	    }
 	} catch (final Throwable t) {
-	    RetroRPGCS.getErrorLogger().logError(t);
+	    RetroRPGCS.getInstance().handleError(t);
 	} finally {
 	    this.generateFrame.setVisible(false);
 	}

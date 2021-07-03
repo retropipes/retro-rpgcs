@@ -5,7 +5,6 @@ import javax.swing.JFrame;
 import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.creatures.party.PartyManager;
 import com.puttysoftware.retrorpgcs.maze.Maze;
@@ -37,7 +36,7 @@ public class LevelLoadTask extends Thread {
     public void run() {
 	try {
 	    this.loadFrame.setVisible(true);
-	    final Application app = RetroRPGCS.getApplication();
+	    final RetroRPGCS app = RetroRPGCS.getInstance();
 	    final Maze gameMaze = app.getMazeManager().getMaze();
 	    app.getGameManager().disableEvents();
 	    gameMaze.switchLevelOffset(this.level);
@@ -49,7 +48,7 @@ public class LevelLoadTask extends Thread {
 	    app.getGameManager().enableEvents();
 	    app.getGameManager().redrawMaze();
 	} catch (final Exception ex) {
-	    RetroRPGCS.getErrorLogger().logError(ex);
+	    RetroRPGCS.getInstance().handleError(ex);
 	} finally {
 	    this.loadFrame.setVisible(false);
 	}

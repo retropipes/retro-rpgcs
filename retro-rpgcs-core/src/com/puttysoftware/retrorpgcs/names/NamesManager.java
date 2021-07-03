@@ -13,11 +13,11 @@ public class NamesManager {
 	try {
 	    NamesManager.createCache();
 	} catch (final Exception e) {
-	    RetroRPGCS.getErrorLogger().logError(e);
+	    RetroRPGCS.getInstance().handleError(e);
 	}
 	final String key = section + ":" + type;
 	if (!NamesManager.containsKey(key)) {
-	    RetroRPGCS.getErrorLogger().logError(new IllegalArgumentException("No such key " + key));
+	    RetroRPGCS.getInstance().handleError(new IllegalArgumentException("No such key " + key));
 	}
 	return NamesManager.getValue(key);
     }

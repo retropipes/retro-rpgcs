@@ -22,7 +22,7 @@ public class MonsterDataManager {
 	    }
 	    return rawData.toArray(new String[rawData.size()]);
 	} catch (final IOException e) {
-	    RetroRPGCS.getErrorLogger().logError(e);
+	    RetroRPGCS.getInstance().handleError(e);
 	    return null;
 	}
     }

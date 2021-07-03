@@ -2,7 +2,6 @@
 package com.puttysoftware.retrorpgcs.maze.objects;
 
 import com.puttysoftware.randomrange.RandomRange;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.maze.Maze;
 import com.puttysoftware.retrorpgcs.maze.abc.AbstractMazeObject;
@@ -34,7 +33,7 @@ public class StairsDown extends AbstractTeleport {
 
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	app.getGameManager().goToLevelOffset(-1);
 	SoundManager.playSound(SoundConstants.SOUND_DOWN);
     }

@@ -1,7 +1,6 @@
 /* Import2: An RPG */
 package com.puttysoftware.retrorpgcs.battle.map;
 
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.battle.Battle;
 import com.puttysoftware.retrorpgcs.creatures.faiths.Faith;
@@ -36,7 +35,7 @@ public class MapBattleArrowTask extends Thread {
     public void run() {
 	try {
 	    boolean res = true;
-	    final Application app = RetroRPGCS.getApplication();
+	    final RetroRPGCS app = RetroRPGCS.getInstance();
 	    final Maze m = this.battleMaze;
 	    final int px = this.active.getX();
 	    final int py = this.active.getY();
@@ -100,7 +99,7 @@ public class MapBattleArrowTask extends Thread {
 	    SoundManager.playSound(SoundConstants.SOUND_ARROW_DIE);
 	    app.getBattle().arrowDone(hit);
 	} catch (final Throwable t) {
-	    RetroRPGCS.getErrorLogger().logError(t);
+	    RetroRPGCS.getInstance().handleError(t);
 	}
     }
 

@@ -6,7 +6,6 @@ import javax.swing.JOptionPane;
 
 import com.puttysoftware.diane.gui.CommonDialogs;
 import com.puttysoftware.randomrange.RandomRange;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.ai.map.AutoMapAI;
 import com.puttysoftware.retrorpgcs.ai.map.MapAI;
@@ -90,15 +89,15 @@ public class MapTurnBattleLogic extends Battle {
 	// Level Up Check
 	if (playerCharacter.checkLevelUp()) {
 	    playerCharacter.levelUp();
-	    RetroRPGCS.getApplication().getGameManager().keepNextMessage();
-	    RetroRPGCS.getApplication().showMessage("You reached level " + playerCharacter.getLevel() + ".");
+	    RetroRPGCS.getInstance().getGameManager().keepNextMessage();
+	    RetroRPGCS.getInstance().showMessage("You reached level " + playerCharacter.getLevel() + ".");
 	}
     }
 
     private void doBattleInternal(final Maze bMaze, final MapBattle b) {
 	// Initialize Battle
-	RetroRPGCS.getApplication().getGameManager().hideOutput();
-	RetroRPGCS.getApplication().setMode(Application.STATUS_BATTLE);
+	RetroRPGCS.getInstance().getGameManager().hideOutput();
+	RetroRPGCS.getInstance().setMode(RetroRPGCS.STATUS_BATTLE);
 	this.bd = new MapTurnBattleDefinitions();
 	this.bd.setBattleMaze(bMaze);
 	this.pde = AbstractDamageEngine.getPlayerInstance();
@@ -146,10 +145,10 @@ public class MapTurnBattleLogic extends Battle {
     public void battleDone() {
 	// Leave Battle
 	this.hideBattle();
-	RetroRPGCS.getApplication().setMode(Application.STATUS_GAME);
+	RetroRPGCS.getInstance().setMode(RetroRPGCS.STATUS_GAME);
 	// Return to whence we came
-	RetroRPGCS.getApplication().getGameManager().showOutput();
-	RetroRPGCS.getApplication().getGameManager().redrawMaze();
+	RetroRPGCS.getInstance().getGameManager().showOutput();
+	RetroRPGCS.getInstance().getGameManager().redrawMaze();
     }
 
     private void clearStatusMessage() {

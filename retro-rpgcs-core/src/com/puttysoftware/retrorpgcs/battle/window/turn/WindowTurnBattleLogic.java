@@ -4,7 +4,6 @@ package com.puttysoftware.retrorpgcs.battle.window.turn;
 import javax.swing.JFrame;
 
 import com.puttysoftware.randomrange.RandomRange;
-import com.puttysoftware.retrorpgcs.Application;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
 import com.puttysoftware.retrorpgcs.ai.window.WindowAI;
 import com.puttysoftware.retrorpgcs.battle.Battle;
@@ -306,12 +305,12 @@ public class WindowTurnBattleLogic extends Battle {
     @Override
     public void doBattle() {
         try {
-            final Application app = RetroRPGCS.getApplication();
+            final RetroRPGCS app = RetroRPGCS.getInstance();
             final GameLogicManager gm = app.getGameManager();
-            if (app.getMode() != Application.STATUS_BATTLE) {
+            if (app.getMode() != RetroRPGCS.STATUS_BATTLE) {
                 SoundManager.playSound(SoundConstants.SOUND_BATTLE);
             }
-            app.setMode(Application.STATUS_BATTLE);
+            app.setMode(RetroRPGCS.STATUS_BATTLE);
             gm.hideOutput();
             gm.stopMovement();
             this.enemy = MonsterFactory.getNewMonsterInstance();
@@ -322,7 +321,7 @@ public class WindowTurnBattleLogic extends Battle {
             this.battleGUI.initBattle(this.enemy.getImage());
             this.firstUpdateMessageArea();
         } catch (final Throwable t) {
-            RetroRPGCS.getErrorLogger().logError(t);
+            RetroRPGCS.getInstance().handleError(t);
         }
     }
 
@@ -337,8 +336,8 @@ public class WindowTurnBattleLogic extends Battle {
         // Level Up Check
         if (playerCharacter.checkLevelUp()) {
             playerCharacter.levelUp();
-            RetroRPGCS.getApplication().getGameManager().keepNextMessage();
-            RetroRPGCS.getApplication().showMessage(
+            RetroRPGCS.getInstance().getGameManager().keepNextMessage();
+            RetroRPGCS.getInstance().showMessage(
                     "You reached level " + playerCharacter.getLevel() + ".");
         }
     }
@@ -647,7 +646,7 @@ public class WindowTurnBattleLogic extends Battle {
     @Override
     public final void battleDone() {
         this.battleGUI.getOutputFrame().setVisible(false);
-        final GameLogicManager gm = RetroRPGCS.getApplication().getGameManager();
+        final GameLogicManager gm = RetroRPGCS.getInstance().getGameManager();
         gm.showOutput();
         gm.redrawMaze();
     }

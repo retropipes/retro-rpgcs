@@ -5,7 +5,7 @@ import com.puttysoftware.diane.ErrorLogger;
 import com.puttysoftware.diane.gui.CommonDialogs;
 
 final class GameErrorHandler implements ErrorHandler {
-    private static final String LOG_NAME = "RetroRPGCS.Core";
+    private static final String LOG_NAME = "Application.Core";
     private static final String ERROR_MESSAGE = "An unrecoverable error has occurred.\n"
             + "The details have been recorded.\n"
             + "The program will now exit.";

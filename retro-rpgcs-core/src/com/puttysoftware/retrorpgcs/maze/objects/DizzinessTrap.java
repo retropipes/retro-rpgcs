@@ -26,8 +26,8 @@ public class DizzinessTrap extends AbstractTrap {
 
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
-	RetroRPGCS.getApplication().showMessage("You feel dizzy!");
-	RetroRPGCS.getApplication().getGameManager().activateEffect(MazeEffectConstants.EFFECT_DIZZY);
+	RetroRPGCS.getInstance().showMessage("You feel dizzy!");
+	RetroRPGCS.getInstance().getGameManager().activateEffect(MazeEffectConstants.EFFECT_DIZZY);
 	SoundManager.playSound(SoundConstants.SOUND_DIZZY);
     }
 

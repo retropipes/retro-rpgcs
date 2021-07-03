@@ -84,7 +84,7 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
 	    return copy;
 	} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 		| NoSuchMethodException | SecurityException e) {
-	    RetroRPGCS.getErrorLogger().logError(e);
+	    RetroRPGCS.getInstance().handleError(e);
 	    return null;
 	}
     }
@@ -210,7 +210,7 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
      */
     public void moveFailedAction(final boolean ie, final int dirX, final int dirY) {
 	SoundManager.playSound(SoundConstants.SOUND_WALK_FAILED);
-	RetroRPGCS.getApplication().showMessage("Can't go that way");
+	RetroRPGCS.getInstance().showMessage("Can't go that way");
     }
 
     /**
@@ -404,7 +404,7 @@ public abstract class AbstractMazeObject implements RandomGenerationRule {
 	if (ident.equals(this.getIdentifier())) {
 	    final String savedIdent = reader.readString();
 	    if (!savedIdent.equals("NULL")) {
-		this.saved = RetroRPGCS.getApplication().getObjects().readSavedMazeObject(reader, savedIdent,
+		this.saved = RetroRPGCS.getInstance().getObjects().readSavedMazeObject(reader, savedIdent,
 			FormatConstants.MAZE_FORMAT_LATEST);
 	    }
 	    final int cc = this.getCustomFormat();

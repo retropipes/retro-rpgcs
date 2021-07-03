@@ -35,14 +35,14 @@ public class ObjectHelpManager {
     private void initHelp() {
 	if (!this.inited) {
 	    final ButtonHandler buttonHandler = new ButtonHandler();
-	    final MazeObjectList objectList = RetroRPGCS.getApplication().getObjects();
+	    final MazeObjectList objectList = RetroRPGCS.getInstance().getObjects();
 	    final String[] objectNames = objectList.getAllDescriptions();
 	    final BufferedImageIcon[] objectAppearances = objectList.getAllEditorAppearances();
 	    this.hv = new GraphicalHelpViewer(objectAppearances, objectNames);
 	    final JButton export = new JButton("Export");
 	    export.addActionListener(buttonHandler);
 	    this.helpFrame = new JFrame("Import2 Object Help");
-	    final Image iconlogo = Application.getIconLogo();
+	    final Image iconlogo = RetroRPGCS.getIconLogo();
 	    this.helpFrame.setIconImage(iconlogo);
 	    this.helpFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 	    this.helpFrame.setLayout(new BorderLayout());

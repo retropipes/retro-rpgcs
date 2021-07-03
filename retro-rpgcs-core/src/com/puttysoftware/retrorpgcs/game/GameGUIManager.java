@@ -17,9 +17,8 @@ import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 
 import com.puttysoftware.images.BufferedImageIcon;
-import com.puttysoftware.retrorpgcs.Application;
-import com.puttysoftware.retrorpgcs.DrawGrid;
 import com.puttysoftware.retrorpgcs.RetroRPGCS;
+import com.puttysoftware.retrorpgcs.DrawGrid;
 import com.puttysoftware.retrorpgcs.maze.Maze;
 import com.puttysoftware.retrorpgcs.maze.MazeConstants;
 import com.puttysoftware.retrorpgcs.maze.MazeManager;
@@ -73,7 +72,7 @@ class GameGUIManager {
 
     void initViewManager() {
 	if (this.vwMgr == null) {
-	    this.vwMgr = RetroRPGCS.getApplication().getGameManager().getViewManager();
+	    this.vwMgr = RetroRPGCS.getInstance().getGameManager().getViewManager();
 	    this.setUpGUI();
 	}
     }
@@ -89,7 +88,7 @@ class GameGUIManager {
     }
 
     public void showOutput() {
-	final Application app = RetroRPGCS.getApplication();
+	final RetroRPGCS app = RetroRPGCS.getInstance();
 	if (!this.outputFrame.isVisible()) {
 	    app.getMenus().setGameMenus();
 	    this.outputFrame.setVisible(true);
@@ -123,7 +122,7 @@ class GameGUIManager {
     public void redrawMaze() {
 	// Draw the maze, if it is visible
 	if (this.outputFrame.isVisible()) {
-	    final Application app = RetroRPGCS.getApplication();
+	    final RetroRPGCS app = RetroRPGCS.getInstance();
 	    final Maze m = app.getMazeManager().getMaze();
 	    int x, y, u, v;
 	    int xFix, yFix;
@@ -213,7 +212,7 @@ class GameGUIManager {
 	this.messageLabel = new JLabel(" ");
 	this.messageLabel.setOpaque(true);
 	this.outputFrame = new JFrame("Import2");
-	final Image iconlogo = Application.getIconLogo();
+	final Image iconlogo = RetroRPGCS.getIconLogo();
 	this.outputFrame.setIconImage(iconlogo);
 	this.drawGrid = new DrawGrid(PreferencesManager.getViewingWindowSize());
 	this.outputPane = new GameDraw(this.drawGrid);
@@ -255,7 +254,7 @@ class GameGUIManager {
 
 	public void handleMovement(final KeyEvent e) {
 	    try {
-		final GameLogicManager glm = RetroRPGCS.getApplication().getGameManager();
+		final GameLogicManager glm = RetroRPGCS.getInstance().getGameManager();
 		final int keyCode = e.getKeyCode();
 		switch (keyCode) {
 		case KeyEvent.VK_LEFT:
@@ -331,7 +330,7 @@ class GameGUIManager {
 		    break;
 		}
 	    } catch (final Exception ex) {
-		RetroRPGCS.getErrorLogger().logError(ex);
+		RetroRPGCS.getInstance().handleError(ex);
 	    }
 	}
 
@@ -349,7 +348,7 @@ class GameGUIManager {
 	@Override
 	public void windowClosing(final WindowEvent we) {
 	    try {
-		final Application app = RetroRPGCS.getApplication();
+		final RetroRPGCS app = RetroRPGCS.getInstance();
 		boolean success = false;
 		int status = 0;
 		if (app.getMazeManager().getDirty()) {
@@ -368,7 +367,7 @@ class GameGUIManager {
 		    app.getGameManager().exitGame();
 		}
 	    } catch (final Exception ex) {
-		RetroRPGCS.getErrorLogger().logError(ex);
+		RetroRPGCS.getInstance().handleError(ex);
 	    }
 	}
 
@@ -406,14 +405,14 @@ class GameGUIManager {
 	@Override
 	public void mouseClicked(final MouseEvent e) {
 	    try {
-		final GameLogicManager gm = RetroRPGCS.getApplication().getGameManager();
+		final GameLogicManager gm = RetroRPGCS.getInstance().getGameManager();
 		if (e.isShiftDown()) {
 		    final int x = e.getX();
 		    final int y = e.getY();
 		    gm.identifyObject(x, y);
 		}
 	    } catch (final Exception ex) {
-		RetroRPGCS.getErrorLogger().logError(ex);
+		RetroRPGCS.getInstance().handleError(ex);
 	    }
 	}
 

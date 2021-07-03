@@ -38,7 +38,7 @@ public class VariableHurtTrap extends AbstractTrap {
 	final RandomRange damageDealt = new RandomRange(VariableHurtTrap.MIN_DAMAGE, maxDamage);
 	PartyManager.getParty().getLeader().doDamage(damageDealt.generate());
 	SoundManager.playSound(SoundConstants.SOUND_BARRIER);
-	RetroRPGCS.getApplication().getGameManager();
+	RetroRPGCS.getInstance().getGameManager();
 	GameLogicManager.decay();
     }
 

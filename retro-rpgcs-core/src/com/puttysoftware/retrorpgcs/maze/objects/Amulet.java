@@ -27,8 +27,8 @@ public class Amulet extends AbstractTrap {
 
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
-	RetroRPGCS.getApplication().showMessage("You no longer slide on ice!");
-	final GameLogicManager glm = RetroRPGCS.getApplication().getGameManager();
+	RetroRPGCS.getInstance().showMessage("You no longer slide on ice!");
+	final GameLogicManager glm = RetroRPGCS.getInstance().getGameManager();
 	glm.activateEffect(MazeEffectConstants.EFFECT_STICKY);
 	SoundManager.playSound(SoundConstants.SOUND_GRAB);
 	GameLogicManager.decay();

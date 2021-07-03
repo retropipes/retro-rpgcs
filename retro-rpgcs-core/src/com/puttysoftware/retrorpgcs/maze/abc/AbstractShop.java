@@ -24,7 +24,7 @@ public abstract class AbstractShop extends AbstractMazeObject {
 
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
-	final Shop shop = RetroRPGCS.getApplication().getGenericShop(this.shopType);
+	final Shop shop = RetroRPGCS.getInstance().getGenericShop(this.shopType);
 	if (shop != null) {
 	    shop.showShop();
 	}

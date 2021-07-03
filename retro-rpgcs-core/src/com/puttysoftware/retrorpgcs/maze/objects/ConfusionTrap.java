@@ -26,8 +26,8 @@ public class ConfusionTrap extends AbstractTrap {
 
     @Override
     public void postMoveAction(final boolean ie, final int dirX, final int dirY) {
-	RetroRPGCS.getApplication().showMessage("You are confused!");
-	RetroRPGCS.getApplication().getGameManager().activateEffect(MazeEffectConstants.EFFECT_CONFUSED);
+	RetroRPGCS.getInstance().showMessage("You are confused!");
+	RetroRPGCS.getInstance().getGameManager().activateEffect(MazeEffectConstants.EFFECT_CONFUSED);
 	SoundManager.playSound(SoundConstants.SOUND_CONFUSED);
     }
 

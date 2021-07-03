@@ -53,8 +53,8 @@ public final class GUIManager {
     }
 
     public void showGUI() {
-	final Application app = RetroRPGCS.getApplication();
-	app.setMode(Application.STATUS_GUI);
+	final RetroRPGCS app = RetroRPGCS.getInstance();
+	app.setMode(RetroRPGCS.STATUS_GUI);
 	this.guiFrame.setJMenuBar(app.getMenus().getMainMenuBar());
 	this.guiFrame.setVisible(true);
 	app.getMenus().setMainMenus();
@@ -72,7 +72,7 @@ public final class GUIManager {
     public void updateLogo() {
 	final BufferedImageIcon logo = LogoManager.getLogo();
 	this.logoLabel.setIcon(logo);
-	final Image iconlogo = Application.getIconLogo();
+	final Image iconlogo = RetroRPGCS.getIconLogo();
 	this.guiFrame.setIconImage(iconlogo);
 	this.guiFrame.pack();
     }
@@ -80,7 +80,7 @@ public final class GUIManager {
     // Used by reflection, so cannot be static!
     @SuppressWarnings("static-method")
     public boolean quitHandler() {
-	final MazeManager mm = RetroRPGCS.getApplication().getMazeManager();
+	final MazeManager mm = RetroRPGCS.getInstance().getMazeManager();
 	boolean saved = true;
 	int status = JOptionPane.DEFAULT_OPTION;
 	if (mm.getDirty()) {

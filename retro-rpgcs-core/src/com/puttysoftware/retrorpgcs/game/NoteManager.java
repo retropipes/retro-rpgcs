@@ -12,7 +12,7 @@ public class NoteManager {
     }
 
     public static void editNote() {
-	final Maze m = RetroRPGCS.getApplication().getMazeManager().getMaze();
+	final Maze m = RetroRPGCS.getInstance().getMazeManager().getMaze();
 	final int x = m.getPlayerLocationX();
 	final int y = m.getPlayerLocationY();
 	final int z = m.getPlayerLocationZ();
