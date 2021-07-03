@@ -79,7 +79,6 @@ public final class RetroRPGCS extends GameShell {
     public RetroRPGCS() {
         super(RetroRPGCS.PROGRAM_NAME, RetroRPGCS.errorConfig,
                 RetroRPGCS.warningConfig);
-        System.setSecurityManager(new GameSecurityManager());
         Creature.computeActionCap(RetroRPGCS.BATTLE_MAZE_SIZE,
                 RetroRPGCS.BATTLE_MAZE_SIZE);
         this.objects = new MazeObjectList();
