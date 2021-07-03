@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.battle.damageengines;
 
 import com.puttysoftware.retrorpgcs.creatures.Creature;

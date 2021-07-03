@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs;
 
 import java.awt.event.ActionEvent;
@@ -170,8 +170,8 @@ public class MenuManager extends MenuManagerShell {
         this.gameInventory = new JMenuItem("Show Inventory...");
         this.gameEditNote = new JMenuItem("Edit Note...");
         this.gameViewStats = new JMenuItem("View Statistics...");
-        this.helpAbout = new JMenuItem("About Import2...");
-        this.helpObjectHelp = new JMenuItem("Import2 Object Help");
+        this.helpAbout = new JMenuItem("About RetroRPGCS...");
+        this.helpObjectHelp = new JMenuItem("RetroRPGCS Object Help");
         this.fileOpenGame.addActionListener(this.handler);
         this.fileClose.addActionListener(this.handler);
         this.fileSaveGame.addActionListener(this.handler);
@@ -309,9 +309,9 @@ public class MenuManager extends MenuManagerShell {
                 } else if (cmd.equals("View Statistics...")) {
                     // View Statistics
                     StatisticsViewer.viewStatistics();
-                } else if (cmd.equals("About Import2...")) {
+                } else if (cmd.equals("About RetroRPGCS...")) {
                     app.getAboutDialog().showAboutDialog();
-                } else if (cmd.equals("Import2 Object Help")) {
+                } else if (cmd.equals("RetroRPGCS Object Help")) {
                     app.getObjectHelpManager().showHelp();
                 }
                 MenuManager.this.checkFlags();

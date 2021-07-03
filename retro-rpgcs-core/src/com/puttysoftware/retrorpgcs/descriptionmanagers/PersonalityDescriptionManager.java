@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.descriptionmanagers;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class PersonalityDescriptionManager {
     public static String getPersonalityDescription(final int p) {
 	final String name = PersonalityConstants.getPersonalityName(p).toLowerCase();
 	try (final ResourceStreamReader rsr = new ResourceStreamReader(PersonalityDescriptionManager.class
-		.getResourceAsStream("/com/puttysoftware/tallertower/resources/descriptions/personality/" + name
+		.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/descriptions/personality/" + name
 			+ Extension.getInternalDataExtensionWithPeriod()))) {
 	    // Fetch description
 	    final String desc = rsr.readString();

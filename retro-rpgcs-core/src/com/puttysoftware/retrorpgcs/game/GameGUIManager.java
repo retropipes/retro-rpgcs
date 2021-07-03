@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.game;
 
 import java.awt.BorderLayout;
@@ -211,7 +211,7 @@ class GameGUIManager {
 	this.borderPane.setLayout(new BorderLayout());
 	this.messageLabel = new JLabel(" ");
 	this.messageLabel.setOpaque(true);
-	this.outputFrame = new JFrame("Import2");
+	this.outputFrame = new JFrame("RetroRPGCS");
 	final Image iconlogo = RetroRPGCS.getIconLogo();
 	this.outputFrame.setIconImage(iconlogo);
 	this.drawGrid = new DrawGrid(PreferencesManager.getViewingWindowSize());

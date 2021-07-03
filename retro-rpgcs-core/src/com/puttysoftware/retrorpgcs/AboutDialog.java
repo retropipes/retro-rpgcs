@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs;
 
 import java.awt.BorderLayout;
@@ -37,7 +37,7 @@ public class AboutDialog {
 
     private void setUpGUI(final String ver) {
 	final EventHandler handler = new EventHandler();
-	this.aboutFrame = new JFrame("About Import2");
+	this.aboutFrame = new JFrame("About RetroRPGCS");
 	final Image iconlogo = LogoManager.getIconLogo();
 	this.aboutFrame.setIconImage(iconlogo);
 	final Container aboutPane = new Container();
@@ -54,9 +54,9 @@ public class AboutDialog {
 	logoPane.setLayout(new FlowLayout());
 	logoPane.add(miniLabel);
 	textPane.setLayout(new GridLayout(4, 1));
-	textPane.add(new JLabel("Import2 Version: " + ver));
+	textPane.add(new JLabel("RetroRPGCS Version: " + ver));
 	textPane.add(new JLabel("Author: Eric Ahnell"));
-	textPane.add(new JLabel("Web Site: http://www.puttysoftware.com/tallertower/"));
+	textPane.add(new JLabel("Web Site: http://www.puttysoftware.com/retrorpgcs/"));
 	textPane.add(new JLabel("E-mail bug reports to: products@puttysoftware.com  "));
 	buttonPane.setLayout(new FlowLayout());
 	buttonPane.add(aboutOK);

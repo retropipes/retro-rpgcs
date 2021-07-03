@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.maze;
 
 import java.io.File;
@@ -22,9 +22,9 @@ public final class MazeManager {
     private static final String MAC_PREFIX = "HOME";
     private static final String WIN_PREFIX = "APPDATA";
     private static final String UNIX_PREFIX = "HOME";
-    private static final String MAC_DIR = "/Library/Application Support/Putty Software/Import2/Games/";
-    private static final String WIN_DIR = "\\Putty Software\\Import2\\Games\\";
-    private static final String UNIX_DIR = "/.puttysoftware/tallertower/games/";
+    private static final String MAC_DIR = "/Library/Application Support/Putty Software/RetroRPGCS/Games/";
+    private static final String WIN_DIR = "\\Putty Software\\RetroRPGCS\\Games\\";
+    private static final String UNIX_DIR = "/.puttysoftware/retrorpgcs/games/";
 
     // Constructors
     public MazeManager() {
@@ -68,7 +68,7 @@ public final class MazeManager {
 	final int mode = app.getMode();
 	if (mode == RetroRPGCS.STATUS_GAME) {
 	    type = "game";
-	    source = "Import2";
+	    source = "RetroRPGCS";
 	} else {
 	    // Not in the game or editor, so abort
 	    return JOptionPane.NO_OPTION;

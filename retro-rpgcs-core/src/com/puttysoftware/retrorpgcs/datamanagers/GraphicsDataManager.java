@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.datamanagers;
 
 import java.io.IOException;
@@ -10,7 +10,7 @@ import com.puttysoftware.retrorpgcs.RetroRPGCS;
 public class GraphicsDataManager {
     public static String[] getObjectGraphicsData() {
 	try (final ResourceStreamReader rsr = new ResourceStreamReader(GraphicsDataManager.class
-		.getResourceAsStream("/com/puttysoftware/tallertower/resources/data/graphics/objects.txt"))) {
+		.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/data/graphics/objects.txt"))) {
 	    // Fetch data
 	    final ArrayList<String> rawData = new ArrayList<>();
 	    String line = "";
@@ -29,7 +29,7 @@ public class GraphicsDataManager {
 
     public static String[] getStatGraphicsData() {
 	try (final ResourceStreamReader rsr = new ResourceStreamReader(GraphicsDataManager.class
-		.getResourceAsStream("/com/puttysoftware/tallertower/resources/data/graphics/stats.txt"))) {
+		.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/data/graphics/stats.txt"))) {
 	    // Fetch data
 	    final ArrayList<String> rawData = new ArrayList<>();
 	    String line = "";

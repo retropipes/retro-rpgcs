@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.resourcemanagers;
 
 import java.awt.image.BufferedImage;
@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 import com.puttysoftware.images.BufferedImageIcon;
 
 public class BossImageManager {
-    private static final String DEFAULT_LOAD_PATH = "/com/puttysoftware/tallertower/resources/graphics/boss/";
+    private static final String DEFAULT_LOAD_PATH = "/com/puttysoftware/retrorpgcs/resources/graphics/boss/";
     private static String LOAD_PATH = BossImageManager.DEFAULT_LOAD_PATH;
     private static Class<?> LOAD_CLASS = BossImageManager.class;
     static int BOSS_IMAGE_SIZE = 64;

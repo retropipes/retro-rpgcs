@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.datamanagers;
 
 import java.io.File;
@@ -14,9 +14,9 @@ public class NamesDataManager {
     private static final String MAC_PREFIX = "HOME";
     private static final String WIN_PREFIX = "APPDATA";
     private static final String UNIX_PREFIX = "HOME";
-    private static final String MAC_DIR = "/Library/Application Support/Putty Software/Import2/";
-    private static final String WIN_DIR = "\\Putty Software\\Import2\\";
-    private static final String UNIX_DIR = "/.puttysoftware/tallertower/";
+    private static final String MAC_DIR = "/Library/Application Support/Putty Software/RetroRPGCS/";
+    private static final String WIN_DIR = "\\Putty Software\\RetroRPGCS\\";
+    private static final String UNIX_DIR = "/.puttysoftware/retrorpgcs/";
 
     public static String[] getNamesData() {
 	final File overrideData = NamesDataManager.getNamesOverrideFile();
@@ -29,7 +29,7 @@ public class NamesDataManager {
 
     private static String[] getNamesDefaultData() {
 	try (ResourceStreamReader rsr = new ResourceStreamReader(NamesDataManager.class
-		.getResourceAsStream("/com/puttysoftware/tallertower/resources/data/names/names.txt"))) {
+		.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/data/names/names.txt"))) {
 	    // Load default
 	    final ArrayList<String> data = new ArrayList<>();
 	    // Ignore first line

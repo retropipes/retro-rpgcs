@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs;
 
 import java.awt.BorderLayout;
@@ -41,7 +41,7 @@ public class ObjectHelpManager {
 	    this.hv = new GraphicalHelpViewer(objectAppearances, objectNames);
 	    final JButton export = new JButton("Export");
 	    export.addActionListener(buttonHandler);
-	    this.helpFrame = new JFrame("Import2 Object Help");
+	    this.helpFrame = new JFrame("RetroRPGCS Object Help");
 	    final Image iconlogo = RetroRPGCS.getIconLogo();
 	    this.helpFrame.setIconImage(iconlogo);
 	    this.helpFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);

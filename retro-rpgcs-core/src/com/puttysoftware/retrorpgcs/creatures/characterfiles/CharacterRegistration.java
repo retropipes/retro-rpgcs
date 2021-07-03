@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.creatures.characterfiles;
 
 import java.io.BufferedWriter;
@@ -18,9 +18,9 @@ public class CharacterRegistration {
     private static final String MAC_PREFIX = "HOME";
     private static final String WIN_PREFIX = "APPDATA";
     private static final String UNIX_PREFIX = "HOME";
-    private static final String MAC_DIR = "/Library/Application Support/Putty Software/Import2/Characters";
-    private static final String WIN_DIR = "\\Putty Software\\Import2\\Characters";
-    private static final String UNIX_DIR = "/.puttysoftware/tallertower/characters";
+    private static final String MAC_DIR = "/Library/Application Support/Putty Software/RetroRPGCS/Characters";
+    private static final String WIN_DIR = "\\Putty Software\\RetroRPGCS\\Characters";
+    private static final String UNIX_DIR = "/.puttysoftware/retrorpgcs/characters";
 
     // Methods
     public static void registerCharacter() {

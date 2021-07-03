@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.datamanagers;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class FaithDataManager {
     public static double[] getFaithData(final int f) {
 	final String name = FaithConstants.getFaithName(f).toLowerCase();
 	try (final ResourceStreamReader rsr = new ResourceStreamReader(
-		FaithDataManager.class.getResourceAsStream("/com/puttysoftware/tallertower/resources/data/faith/" + name
+		FaithDataManager.class.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/data/faith/" + name
 			+ Extension.getInternalDataExtensionWithPeriod()))) {
 	    // Fetch data
 	    final int[] rawData = new int[FaithConstants.getFaithsCount()];

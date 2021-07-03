@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs;
 
 import java.awt.Container;
@@ -30,7 +30,7 @@ public final class GUIManager {
     // Constructors
     public GUIManager() {
 	final CloseHandler cHandler = new CloseHandler();
-	this.guiFrame = new JFrame("Import2");
+	this.guiFrame = new JFrame("RetroRPGCS");
 	final Image iconlogo = LogoManager.getIconLogo();
 	this.guiFrame.setIconImage(iconlogo);
 	final Container guiPane = this.guiFrame.getContentPane();

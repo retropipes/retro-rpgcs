@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.items.combat;
 
 import com.puttysoftware.retrorpgcs.items.combat.predefined.Bolt;

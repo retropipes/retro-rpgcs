@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.creatures.personalities;
 
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class PersonalityConstants {
     static void initPersonalities() {
 	if (!PersonalityConstants.INITED) {
 	    try (final ResourceStreamReader rsr = new ResourceStreamReader(PersonalityDataManager.class
-		    .getResourceAsStream("/com/puttysoftware/tallertower/resources/data/personality/catalog.txt"))) {
+		    .getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/data/personality/catalog.txt"))) {
 		// Fetch data
 		final ArrayList<String> tempNames = new ArrayList<>();
 		String input = "";

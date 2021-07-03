@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.maze.objects;
 
 import com.puttysoftware.retrorpgcs.maze.abc.AbstractMarker;

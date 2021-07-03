@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.resourcemanagers;
 
 import java.awt.image.BufferedImage;
@@ -11,7 +11,7 @@ import com.puttysoftware.images.BufferedImageIcon;
 import com.puttysoftware.retrorpgcs.creatures.monsters.Element;
 
 public class MonsterImageManager {
-    private static final String DEFAULT_LOAD_PATH = "/com/puttysoftware/tallertower/resources/graphics/monsters/";
+    private static final String DEFAULT_LOAD_PATH = "/com/puttysoftware/retrorpgcs/resources/graphics/monsters/";
     private static String LOAD_PATH = MonsterImageManager.DEFAULT_LOAD_PATH;
     private static Class<?> LOAD_CLASS = MonsterImageManager.class;
     static int MONSTER_IMAGE_SIZE = 64;

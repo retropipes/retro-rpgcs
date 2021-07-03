@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.maze;
 
 import java.io.File;
@@ -41,18 +41,18 @@ public class Maze {
 	this.savedStart = new int[4];
 	final long random = new RandomLongRange(0, Long.MAX_VALUE).generate();
 	final String randomID = Long.toHexString(random);
-	this.basePath = System.getProperty("java.io.tmpdir") + File.separator + "Import2" + File.separator + randomID
+	this.basePath = System.getProperty("java.io.tmpdir") + File.separator + "RetroRPGCS" + File.separator + randomID
 		+ ".maze";
 	final File base = new File(this.basePath);
 	final boolean success = base.mkdirs();
 	if (!success) {
-	    CommonDialogs.showErrorDialog("Maze temporary folder creation failed!", "Import2");
+	    CommonDialogs.showErrorDialog("Maze temporary folder creation failed!", "RetroRPGCS");
 	}
     }
 
     // Static methods
     public static String getMazeTempFolder() {
-	return System.getProperty("java.io.tmpdir") + File.separator + "Import2";
+	return System.getProperty("java.io.tmpdir") + File.separator + "RetroRPGCS";
     }
 
     public static int getMinLevels() {

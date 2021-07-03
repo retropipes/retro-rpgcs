@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.battle.map.turn;
 
 import com.puttysoftware.retrorpgcs.ai.map.MapAIContext;

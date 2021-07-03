@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.descriptionmanagers;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class FaithDescriptionManager {
     public static String getFaithDescription(final int f) {
 	final String name = FaithConstants.getFaithName(f).toLowerCase();
 	try (final ResourceStreamReader rsr = new ResourceStreamReader(FaithDescriptionManager.class
-		.getResourceAsStream("/com/puttysoftware/tallertower/resources/descriptions/faith/" + name
+		.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/descriptions/faith/" + name
 			+ Extension.getInternalDataExtensionWithPeriod()))) {
 	    // Fetch description
 	    final String desc = rsr.readString();

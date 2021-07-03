@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.creatures.races;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class RaceConstants {
     static void initRaces() {
 	if (!RaceConstants.INITED) {
 	    try (final ResourceStreamReader rsr = new ResourceStreamReader(RaceDataManager.class
-		    .getResourceAsStream("/com/puttysoftware/tallertower/resources/data/race/catalog.txt"))) {
+		    .getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/data/race/catalog.txt"))) {
 		// Fetch data
 		final ArrayList<String> tempNames = new ArrayList<>();
 		String input = "";

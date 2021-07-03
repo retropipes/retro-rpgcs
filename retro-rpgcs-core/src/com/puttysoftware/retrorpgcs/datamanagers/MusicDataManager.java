@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.datamanagers;
 
 import java.io.IOException;
@@ -10,7 +10,7 @@ import com.puttysoftware.retrorpgcs.RetroRPGCS;
 public class MusicDataManager {
     public static String[] getMusicData() {
 	try (final ResourceStreamReader rsr = new ResourceStreamReader(MusicDataManager.class
-		.getResourceAsStream("/com/puttysoftware/tallertower/resources/data/music/music.txt"))) {
+		.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/data/music/music.txt"))) {
 	    // Fetch data
 	    final ArrayList<String> rawData = new ArrayList<>();
 	    String line = "";

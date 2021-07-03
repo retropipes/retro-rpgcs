@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.creatures.faiths;
 
 import java.awt.Color;
@@ -73,7 +73,7 @@ public class FaithConstants {
 		// Fetch data
 		final ArrayList<String> tempNames = new ArrayList<>();
 		try (final ResourceStreamReader rsr1 = new ResourceStreamReader(FaithDataManager.class
-			.getResourceAsStream("/com/puttysoftware/tallertower/resources/data/faith/catalog.txt"))) {
+			.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/data/faith/catalog.txt"))) {
 		    String input1 = "";
 		    while (input1 != null) {
 			input1 = rsr1.readString();
@@ -86,7 +86,7 @@ public class FaithConstants {
 		FaithConstants.FAITHS_COUNT = FaithConstants.FAITH_NAMES.length;
 		final ArrayList<String> tempColors = new ArrayList<>();
 		try (final ResourceStreamReader rsr2 = new ResourceStreamReader(FaithDataManager.class
-			.getResourceAsStream("/com/puttysoftware/tallertower/resources/data/faith/colors.txt"))) {
+			.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/data/faith/colors.txt"))) {
 		    String input2 = "";
 		    while (input2 != null) {
 			input2 = rsr2.readString();

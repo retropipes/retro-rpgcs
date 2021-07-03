@@ -1,4 +1,4 @@
-/* Import2: An RPG */
+/* RetroRPGCS: An RPG */
 package com.puttysoftware.retrorpgcs.descriptionmanagers;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class CasteDescriptionManager {
     public static String getCasteDescription(final int c) {
 	final String name = CasteConstants.CASTE_NAMES[c].toLowerCase();
 	try (final ResourceStreamReader rsr = new ResourceStreamReader(CasteDescriptionManager.class
-		.getResourceAsStream("/com/puttysoftware/tallertower/resources/descriptions/caste/" + name
+		.getResourceAsStream("/com/puttysoftware/retrorpgcs/resources/descriptions/caste/" + name
 			+ Extension.getInternalDataExtensionWithPeriod()))) {
 	    // Fetch description
 	    final String desc = rsr.readString();
