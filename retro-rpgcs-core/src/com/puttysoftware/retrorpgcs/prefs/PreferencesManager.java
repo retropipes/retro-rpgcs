@@ -3,6 +3,7 @@ package com.puttysoftware.retrorpgcs.prefs;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,9 +27,7 @@ public class PreferencesManager {
     public static final int DIFFICULTY_HARD = 3;
     public static final int DIFFICULTY_VERY_HARD = 4;
     private static final int DEFAULT_DIFFICULTY = PreferencesManager.DIFFICULTY_NORMAL;
-    private static final String MAC_DIR = "/Library/Preferences/";
-    private static final String WIN_DIR = "\\Putty Software\\RetroRPGCS\\";
-    private static final String UNIX_DIR = "/.puttysoftware/retrorpgcs/";
+    private static final String DIR = "Preferences";
     private static final String MAC_FILE = "com.puttysoftware.retrorpgcs";
     private static final String WIN_FILE = "RetroRPGCSPreferences";
     private static final String UNIX_FILE = "RetroRPGCSPreferences";
@@ -158,17 +157,7 @@ public class PreferencesManager {
     }
 
     private static String getPrefsDirectory() {
-        final String osName = System.getProperty("os.name");
-        if (osName.indexOf("Mac OS X") != -1) {
-            // Mac OS X
-            return PreferencesManager.MAC_DIR;
-        } else if (osName.indexOf("Windows") != -1) {
-            // Windows
-            return PreferencesManager.WIN_DIR;
-        } else {
-            // Other - assume UNIX-like
-            return PreferencesManager.UNIX_DIR;
-        }
+        return PreferencesManager.DIR;
     }
 
     private static String getPrefsFileExtension() {
@@ -192,8 +181,11 @@ public class PreferencesManager {
     private static String getPrefsFile() {
         final StringBuilder b = new StringBuilder();
         b.append(PreferencesManager.getPrefsDirPrefix());
+        b.append(File.pathSeparator);
         b.append(PreferencesManager.getPrefsDirectory());
+        b.append(File.pathSeparator);
         b.append(PreferencesManager.getPrefsFileName());
+        b.append(File.pathSeparator);
         b.append(PreferencesManager.getPrefsFileExtension());
         return b.toString();
     }
