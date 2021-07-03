@@ -2,7 +2,7 @@ package com.puttysoftware.retrorpgcs.core;
 
 import com.puttysoftware.retrorpgcs.core.security.SandboxManager;
 
-class CoreSecurityManager extends SecurityManager {
+final class CoreSecurityManager extends SecurityManager {
     // Fields
     private final SandboxManager sandbox;
 
