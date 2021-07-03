@@ -51,11 +51,8 @@ public class DirectionResolver {
                 unresolveRelativeDirectionY(dir) };
     }
 
-    private static final int unresolveRelativeDirectionX(final int dir) {
+    public static final int unresolveRelativeDirectionX(final int dir) {
         return switch (dir) {
-        case DirectionConstants.DIRECTION_NONE -> {
-            yield 0;
-        }
         case DirectionConstants.DIRECTION_NORTH -> {
             yield 0;
         }
@@ -84,11 +81,8 @@ public class DirectionResolver {
         };
     }
 
-    private static final int unresolveRelativeDirectionY(final int dir) {
+    public static final int unresolveRelativeDirectionY(final int dir) {
         return switch (dir) {
-        case DirectionConstants.DIRECTION_NONE -> {
-            yield 0;
-        }
         case DirectionConstants.DIRECTION_NORTH -> {
             yield -1;
         }

@@ -48,8 +48,7 @@ final class LayeredTower implements Cloneable {
         mazeSizeX = reader.readInt();
         mazeSizeY = reader.readInt();
         mazeSizeZ = reader.readInt();
-        final var lt = new LayeredTower(mazeSizeX, mazeSizeY,
-                mazeSizeZ);
+        final var lt = new LayeredTower(mazeSizeX, mazeSizeY, mazeSizeZ);
         for (x = 0; x < lt.getColumns(); x++) {
             for (y = 0; y < lt.getRows(); y++) {
                 for (z = 0; z < lt.getFloors(); z++) {
@@ -227,8 +226,8 @@ final class LayeredTower implements Cloneable {
                     for (y = 0; y < rows; y++) {
                         final var placeObj = objectsWithoutPrerequisites[r
                                 .generate()];
-                        final var okay = placeObj.shouldGenerateObject(maze,
-                                x, y, z, w, e);
+                        final var okay = placeObj.shouldGenerateObject(maze, x,
+                                y, z, w, e);
                         if (okay) {
                             this.setMazeCell(objects.getNewInstanceByName(
                                     placeObj.getName()), y, x, z, e);
@@ -240,12 +239,10 @@ final class LayeredTower implements Cloneable {
         }
         // Pass 3
         for (var layer = 0; layer < MazeConstants.LAYER_COUNT; layer++) {
-            final var requiredObjects = objects
-                    .getAllRequired(layer);
+            final var requiredObjects = objects.getAllRequired(layer);
             if (requiredObjects != null) {
                 final var row = new RandomRange(0, this.getRows() - 1);
-                final var column = new RandomRange(0,
-                        this.getColumns() - 1);
+                final var column = new RandomRange(0, this.getColumns() - 1);
                 int randomColumn, randomRow;
                 for (x = 0; x < requiredObjects.length; x++) {
                     final var currObj = requiredObjects[x];
@@ -318,8 +315,8 @@ final class LayeredTower implements Cloneable {
         int randomRow, randomColumn;
         randomRow = row.generate();
         randomColumn = column.generate();
-        var currObj = this.getMazeCell(randomRow, randomColumn,
-                zLoc, MazeConstants.LAYER_OBJECT);
+        var currObj = this.getMazeCell(randomRow, randomColumn, zLoc,
+                MazeConstants.LAYER_OBJECT);
         if (!currObj.isSolid()) {
             final var m = new Monster();
             m.setSavedObject(currObj);
@@ -682,17 +679,18 @@ final class LayeredTower implements Cloneable {
     public void updateMonsterPosition(final int move, final int xLoc,
             final int yLoc, final Monster monster) {
         final var app = RetroRPGCS.getInstance();
-        final var dirMove = DirectionResolver
-                .unresolveRelativeDirection(move);
+        final var dirMoveX = DirectionResolver
+                .unresolveRelativeDirectionX(move);
+        final var dirMoveY = DirectionResolver
+                .unresolveRelativeDirectionY(move);
         final var pLocX = this.getPlayerRow();
         final var pLocY = this.getPlayerColumn();
         final var zLoc = this.getPlayerFloor();
         try {
-            final var there = this.getMazeCell(xLoc + dirMove[0],
-                    yLoc + dirMove[1], zLoc, MazeConstants.LAYER_OBJECT);
-            final var ground = this.getMazeCell(
-                    xLoc + dirMove[0], yLoc + dirMove[1], zLoc,
-                    MazeConstants.LAYER_GROUND);
+            final var there = this.getMazeCell(xLoc + dirMoveX, yLoc + dirMoveY,
+                    zLoc, MazeConstants.LAYER_OBJECT);
+            final var ground = this.getMazeCell(xLoc + dirMoveX,
+                    yLoc + dirMoveY, zLoc, MazeConstants.LAYER_GROUND);
             if (!there.isSolid() && !there.getName().equals("Monster")) {
                 if (LayeredTower.radialScan(xLoc, yLoc, 0, pLocX, pLocY)) {
                     if (app.getMode() != RetroRPGCS.STATUS_BATTLE) {
@@ -705,14 +703,13 @@ final class LayeredTower implements Cloneable {
                     this.setMazeCell(monster.getSavedObject(), xLoc, yLoc, zLoc,
                             MazeConstants.LAYER_OBJECT);
                     monster.setSavedObject(there);
-                    this.setMazeCell(monster, xLoc + dirMove[0],
-                            yLoc + dirMove[1], zLoc,
-                            MazeConstants.LAYER_OBJECT);
+                    this.setMazeCell(monster, xLoc + dirMoveX, yLoc + dirMoveY,
+                            zLoc, MazeConstants.LAYER_OBJECT);
                     // Does the ground have friction?
                     if (!ground.hasFriction()) {
                         // No - move the monster again
-                        this.updateMonsterPosition(move, xLoc + dirMove[0],
-                                yLoc + dirMove[1], monster);
+                        this.updateMonsterPosition(move, xLoc + dirMoveX,
+                                yLoc + dirMoveY, monster);
                     }
                 }
             }
@@ -780,8 +777,7 @@ final class LayeredTower implements Cloneable {
                         this.getMazeCell(y, x, z, e).writeMazeObject(writer);
                     }
                     writer.writeBoolean(this.visionData.getCell(y, x, z));
-                    final var hasNote = this.noteData.getNote(y, x,
-                            z) != null;
+                    final var hasNote = this.noteData.getNote(y, x, z) != null;
                     writer.writeBoolean(hasNote);
                     if (hasNote) {
                         this.noteData.getNote(y, x, z).writeNote(writer);
