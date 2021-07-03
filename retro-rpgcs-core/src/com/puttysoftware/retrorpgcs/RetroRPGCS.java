@@ -119,8 +119,12 @@ public final class RetroRPGCS extends GameShell {
             CommonDialogs.setDefaultTitle(RetroRPGCS.PROGRAM_NAME);
             CommonDialogs.setIcon(RetroRPGCS.getMicroLogo());
         } catch (final Throwable t) {
-            t.printStackTrace();
-            System.exit(2);
+            if (RetroRPGCS.instance != null) {
+                RetroRPGCS.instance.handleError(t);
+            } else {
+                t.printStackTrace();
+                System.exit(2);
+            }
         }
     }
 
